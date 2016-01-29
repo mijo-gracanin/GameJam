@@ -44,12 +44,19 @@ public class GameScreen extends ScreenAdapter {
         update(delta);
         clearScreen();
 
+        draw(delta);
+        drawDebug(delta);
+    }
+
+    private void draw(float delta) {
         batch.setProjectionMatrix(camera.projection);
         batch.setTransformMatrix(camera.view);
         batch.begin();
         // Draw sprites
         batch.end();
+    }
 
+    private void drawDebug(float delta) {
         shapeRenderer.setProjectionMatrix(camera.projection);
         shapeRenderer.setTransformMatrix(camera.view);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
