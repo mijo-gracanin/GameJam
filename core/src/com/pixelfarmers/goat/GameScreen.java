@@ -1,4 +1,4 @@
-package com.pixelfarmers.game;
+package com.pixelfarmers.goat;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;

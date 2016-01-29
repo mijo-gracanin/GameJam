@@ -3,8 +3,8 @@
 <module rename-to="html">
 	<inherits name='com.badlogic.gdx.backends.gdx_backends_gwt' />
 
-	<inherits name='MyGdxGame' />
-	<entry-point class='com.pixelfarmers.game.client.HtmlLauncher' />
+	<inherits name='GoatGame' />
+	<entry-point class='com.pixelfarmers.goat.client.HtmlLauncher' />
 	
 	<set-configuration-property name="gdx.assetpath" value="../core/assets" />
 </module>
