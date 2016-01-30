@@ -25,6 +25,7 @@ import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.enemy.TextureFilePaths;
 import com.pixelfarmers.goat.fx.ParticleEngine;
+import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.TiledMapLevelLoader;
@@ -50,6 +51,7 @@ public class GameScreen extends ScreenAdapter {
     private LevelRenderer levelRenderer;
     private ParticleEngine particleEngine;
     private Array<Projectile> projectiles = new Array<Projectile>();
+    private Array<Projectile>projectilesForRemoval = new Array<Projectile>();
 
     private EnemyManager enemyManager;
 
@@ -83,11 +85,16 @@ public class GameScreen extends ScreenAdapter {
         player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
         currentLevel = new TiledMapLevelLoader("test_level.tmx").generate();
-        enemyManager = new EnemyManager(assetManager, player);
+        enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld());
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
 
         setupInputProcessor();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
     }
 
     @Override
@@ -159,7 +166,13 @@ public class GameScreen extends ScreenAdapter {
     private void updateProjectiles(float delta) {
         for (Projectile projectile: projectiles) {
             projectile.update(delta);
+            if (CollisionDetection.isCharacterCollidingWall(projectile, currentLevel)) {
+                projectilesForRemoval.add(projectile);
         }
+    }
+
+        projectiles.removeAll(projectilesForRemoval, true);
+        projectilesForRemoval.clear();
     }
 
     private void clearScreen() {
