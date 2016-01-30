@@ -9,10 +9,14 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.pixelfarmers.goat.level.Level;
+import com.pixelfarmers.goat.level.LevelRenderer;
+import com.pixelfarmers.goat.level.MockLevelGenerator;
 
 /**
  * Created by mijo on 1/27/16.
@@ -28,6 +32,15 @@ public class GameScreen extends ScreenAdapter {
     private SpriteBatch batch;
 
     private Player player;
+    private Level currentLevel;
+    private LevelRenderer levelRenderer;
+
+    private BitmapFont bitmapFont;
+
+    public GameScreen() {
+        bitmapFont = new BitmapFont();
+        bitmapFont.setColor(Color.WHITE);
+    }
 
     @Override
     public void resize(int width, int height) {
@@ -44,6 +57,8 @@ public class GameScreen extends ScreenAdapter {
         batch = new SpriteBatch();
 
         player = new Player();
+        levelRenderer = new LevelRenderer();
+        currentLevel = new MockLevelGenerator().generate();
 
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
     }
@@ -61,8 +76,10 @@ public class GameScreen extends ScreenAdapter {
     private void draw(float delta) {
         batch.setProjectionMatrix(camera.projection);
         batch.setTransformMatrix(camera.view);
+
         batch.begin();
         // Draw sprites
+        levelRenderer.render(batch, currentLevel);
         batch.end();
     }
 
@@ -78,6 +95,8 @@ public class GameScreen extends ScreenAdapter {
 
     private void update(float delta) {
         player.update(delta);
+        camera.position.set(player.getX(), player.getY(), 0);
+        camera.update();
     }
 
     private void clearScreen() {
@@ -90,6 +109,11 @@ public class GameScreen extends ScreenAdapter {
         boolean rPressed = Gdx.input.isKeyPressed(Input.Keys.D);
         boolean uPressed = Gdx.input.isKeyPressed(Input.Keys.W);
         boolean dPressed = Gdx.input.isKeyPressed(Input.Keys.S);
+        boolean escPressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+
+        if (escPressed) {
+            Gdx.app.exit();
+        }
 
         if (lPressed) player.movementDirection = Player.Movement.LEFT;
         if (rPressed) player.movementDirection = Player.Movement.RIGHT;
