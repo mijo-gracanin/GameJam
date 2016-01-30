@@ -120,7 +120,9 @@ public class GameScreen extends ScreenAdapter {
         enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld(), new EnemyManager.EnemyDeathListener() {
             @Override
             public void onDeath(float x, float y) {
-                levelRenderer.addBloodStain(x, y);
+                if (GameSettings.getInstance().getBloodLevel() == GameSettings.BloodLevel.NORMAL) {
+                    levelRenderer.addBloodStain(x, y);
+                }
             }
         });
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
