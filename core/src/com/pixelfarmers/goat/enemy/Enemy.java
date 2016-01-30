@@ -20,7 +20,7 @@ public class Enemy extends SteerableAdapter<Vector2> {
     float orientation;
     Vector2 linearVelocity = new Vector2(0, 0);
     float angularVelocity = 0;
-    float maxSpeed = 60;
+    float maxSpeed = 80;
     float maxAcceleration = 1000;
 
     public Enemy(Texture texture, Vector2 startingPosition) {

@@ -82,14 +82,14 @@ public class EnemyManager {
         RaycastObstacleAvoidance<Vector2> raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<Vector2>(enemy, createRayConfiguration(enemy));
         raycastObstacleAvoidanceSB.setRaycastCollisionDetector(raycastCollisionDetector);
 
-        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(separationSb, 2));
+        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(separationSb, 1));
         kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(seekSb, 1));
-        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(raycastObstacleAvoidanceSB, 10));
+        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(raycastObstacleAvoidanceSB, 4));
         return kamikazeSteering;
     }
 
     private RayConfiguration<Vector2> createRayConfiguration(Enemy enemy) {
-        return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, 100, 40, 35 * MathUtils.degreesToRadians);
+        return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.maxSpeed * 2, 40, 35 * MathUtils.degreesToRadians);
     }
 
     private class KamikazeProximity implements Proximity<Vector2> {
