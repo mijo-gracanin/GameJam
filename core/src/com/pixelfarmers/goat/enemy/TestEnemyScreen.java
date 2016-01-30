@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.PFMathUtils;
@@ -27,14 +26,11 @@ public class TestEnemyScreen extends ScreenAdapter {
     private Viewport viewport;
     private Camera camera;
     private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
     private AssetManager assetManager;
 
-    Array<Enemy> enemies;
-    EnemyFactory enemyFactory;
-    Texture kamikazeTexture;
+    Enemies enemies;
     Player player;
-    EnemySpawner enemySpawner;
-    private ShapeRenderer shapeRenderer;
 
     @Override
     public void resize(int width, int height) {
@@ -52,14 +48,13 @@ public class TestEnemyScreen extends ScreenAdapter {
 
         player = new Player();
 
-        kamikazeTexture = new Texture("test_enemy.png");
-        enemies = new Array<Enemy>();
         assetManager = new AssetManager();
         assetManager.load(TextureFilePaths.KAMIKAZE, Texture.class);
         assetManager.finishLoading();
 
-        enemyFactory = new EnemyFactory(assetManager);
-        enemySpawner = new EnemySpawner(enemyFactory, new Vector2(0, 0), 16, 1, 2);
+        enemies = new Enemies(assetManager, player);
+        EnemySpawner enemySpawner = new EnemySpawner(enemies, new Vector2(250, 250), 6, 1, 3);
+        enemies.addSpawner(enemySpawner);
     }
 
     @Override
@@ -72,33 +67,22 @@ public class TestEnemyScreen extends ScreenAdapter {
     private void draw(float delta) {
         batch.setProjectionMatrix(camera.projection);
         batch.setTransformMatrix(camera.view);
-        batch.begin();
 
-        for(Enemy enemy : enemies) {
-            enemy.draw(batch);
-        }
+        batch.begin();
+        enemies.draw(batch);
         batch.end();
 
         shapeRenderer.setAutoShapeType(true);
         shapeRenderer.begin();
         player.drawDebug(shapeRenderer);
         shapeRenderer.end();
-
     }
 
     private void update(float delta) {
         GdxAI.getTimepiece().update(delta);
         queryInput();
         player.update(delta);
-
-        for (Enemy enemy : enemies) {
-            enemy.update(delta);
-        }
-
-        enemySpawner.update(delta);
-        if(enemySpawner.isReadyToSpawn()) {
-            enemies.addAll(enemySpawner.spawn(player));
-        }
+        enemies.update(delta);
     }
 
     private void clearScreen() {
