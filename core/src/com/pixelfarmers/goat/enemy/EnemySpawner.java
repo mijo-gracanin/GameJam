@@ -38,10 +38,10 @@ public class EnemySpawner {
                 && timeToSpawn <= 0;
     }
 
-    public Array<Enemy> spawn(Location<Vector2> player) {
+    public Array<EnemyBat> spawn(Location<Vector2> player) {
         spawnedSoFar+=numEnemiesToSpawnAtOnce;
         timeToSpawn = spawnRateSeconds;
-        Array<Enemy> spawnedEnemies = new Array<Enemy>(numEnemiesToSpawnAtOnce);
+        Array<EnemyBat> spawnedEnemies = new Array<EnemyBat>(numEnemiesToSpawnAtOnce);
         for(int i = 0; i < numEnemiesToSpawnAtOnce; i++) {
             float xOffset = MathUtils.random(0, 0);
             float yOffset = MathUtils.random(0, 0);
