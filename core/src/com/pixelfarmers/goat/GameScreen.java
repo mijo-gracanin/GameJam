@@ -37,9 +37,6 @@ public class GameScreen extends ScreenAdapter {
     private static final float WORLD_WIDTH = 640;
     private static final float WORLD_HEIGHT = 480;
 
-    private static final int SCREEN_WIDTH = 800;
-    private static final int SCREEN_HEIGHT = 600;
-
     private AssetManager assetManager;
     private ShapeRenderer shapeRenderer;
     private Viewport viewport;
@@ -60,7 +57,6 @@ public class GameScreen extends ScreenAdapter {
         bitmapFont = new BitmapFont();
         particleEngine = new ParticleEngine();
         bitmapFont.setColor(Color.WHITE);
-        Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
     @Override
