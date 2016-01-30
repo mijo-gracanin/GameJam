@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Enemy extends SteerableAdapter<Vector2> {
@@ -23,10 +24,14 @@ public class Enemy extends SteerableAdapter<Vector2> {
     float angularVelocity = 0;
     float maxSpeed = 80;
     float maxAcceleration = 1000;
+    boolean isActive = true;
+    private Circle collisionCircle;
+    private int hitPoints = 4;
 
     public Enemy(Texture texture, Vector2 startingPosition) {
         this.texture = texture;
         this.position = new Vector2(startingPosition.x, startingPosition.y);
+        this.collisionCircle = new Circle(position, BOUNDING_RADIUS);
     }
 
     public void setSteeringBehavior(SteeringBehavior<Vector2> steeringBehavior) {
@@ -36,14 +41,19 @@ public class Enemy extends SteerableAdapter<Vector2> {
     public void update(float delta) {
         steeringBehavior.calculateSteering(steeringOutput);
         applySteering(steeringOutput, delta);
+        collisionCircle.setPosition(position.x, position.y);
     }
 
     public void draw(Batch batch) {
-        batch.draw(texture, position.x, position.y);
+        batch.draw(texture, position.x - BOUNDING_RADIUS, position.y - BOUNDING_RADIUS);
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
-        shapeRenderer.circle(position.x + BOUNDING_RADIUS, position.y + BOUNDING_RADIUS, BOUNDING_RADIUS);
+        shapeRenderer.circle(position.x, position.y, BOUNDING_RADIUS);
+    }
+
+    public Circle getCollisionCircle() {
+        return collisionCircle;
     }
 
     private void applySteering(SteeringAcceleration<Vector2> steering, float time) {
@@ -51,6 +61,11 @@ public class Enemy extends SteerableAdapter<Vector2> {
         this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
         this.orientation += angularVelocity * time;
         this.angularVelocity += steering.angular * time;
+    }
+
+    public boolean onHit(int damage) {
+        hitPoints -= damage;
+        return hitPoints <= 0;
     }
 
     @Override
@@ -99,4 +114,5 @@ public class Enemy extends SteerableAdapter<Vector2> {
     public float getBoundingRadius() {
         return BOUNDING_RADIUS;
     }
+
 }
