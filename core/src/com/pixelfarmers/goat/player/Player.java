@@ -1,4 +1,4 @@
-package com.pixelfarmers.goat;
+package com.pixelfarmers.goat.player;
 
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 
-public class Player implements Location<Vector2> {
+public class Player implements PhysicalEntity {
 
     private Vector2 movementDirection = new Vector2();
 
@@ -92,5 +92,16 @@ public class Player implements Location<Vector2> {
     @Override
     public Vector2 getPosition() {
         return position;
+    }
+
+    @Override
+    public Vector2 getVelocity() {
+        return movementDirection;
+    }
+
+    @Override
+    public void setPosition(float x, float y) {
+        position.x = x;
+        position.y = y;
     }
 }

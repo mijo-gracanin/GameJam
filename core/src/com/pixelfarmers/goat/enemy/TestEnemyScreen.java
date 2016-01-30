@@ -17,7 +17,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.PFMathUtils;
-import com.pixelfarmers.goat.Player;
+import com.pixelfarmers.goat.player.Player;
 
 public class TestEnemyScreen extends ScreenAdapter {
 

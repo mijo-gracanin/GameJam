@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.MockLevelGenerator;
+import com.pixelfarmers.goat.player.Player;
 
 public class GameScreen extends ScreenAdapter {
 
@@ -40,6 +41,7 @@ public class GameScreen extends ScreenAdapter {
     public GameScreen() {
         bitmapFont = new BitmapFont();
         bitmapFont.setColor(Color.WHITE);
+        Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
     @Override
@@ -53,10 +55,9 @@ public class GameScreen extends ScreenAdapter {
         camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
         camera.update();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
-        Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
+
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
-
         player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
         currentLevel = new MockLevelGenerator().generate();
