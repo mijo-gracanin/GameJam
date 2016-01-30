@@ -97,13 +97,13 @@ public class GameScreen extends ScreenAdapter {
         assetManager.load(TextureFilePaths.CHARACTER_WALKING_2, Texture.class);
         assetManager.load(TextureFilePaths.CHARACTER_WALKING_3, Texture.class);
         assetManager.load(TextureFilePaths.PROJECTILE, Texture.class);
-        assetManager.load("projectile_hit.wav", Sound.class);
+        assetManager.load("goat.wav", Sound.class);
         assetManager.load("projectile_shoot.wav", Sound.class);
         assetManager.load("sword_hit.wav", Sound.class);
         assetManager.finishLoading();
 
         swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
-        projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
+        projectileHitSound = assetManager.get("goat.wav", Sound.class);
         projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
 
         levelRenderer = new LevelRenderer();
