@@ -6,6 +6,7 @@ public class GoatGame extends Game {
 	
 	@Override
 	public void create() {
-		setScreen(new GameScreen());
+		setScreen(new GameScreen(this));
 	}
+
 }

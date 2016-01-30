@@ -24,6 +24,7 @@ public class Player implements PhysicalEntity {
     private float orientationInRadians = 0;
     private Vector2 movementDirection = new Vector2();
     private Vector2 position;
+    private int hitPoints = 10;
 
     public Player(int x, int y) {
         position = new Vector2(x, y);
@@ -42,6 +43,15 @@ public class Player implements PhysicalEntity {
 
         movementDirection.scl(SPEED_DECREASE_FACTOR);
         collisionCircle.setPosition(position.x, position.y);
+    }
+
+    public boolean onHit(int damage) {
+        hitPoints -= damage;
+        return hitPoints <= 0;
+    }
+
+    public boolean isAlive() {
+        return hitPoints > 0;
     }
 
     private void tryMovingVertically(Level currentLevel, float dy) {
