@@ -24,9 +24,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.enemy.TextureFilePaths;
+import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
-import com.pixelfarmers.goat.level.MockLevelGenerator;
+import com.pixelfarmers.goat.level.TiledMapLevelLoader;
 import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.projectile.Projectile;
 
@@ -48,6 +49,7 @@ public class GameScreen extends ScreenAdapter {
     private Level currentLevel;
     private LevelRenderer levelRenderer;
     private Array<Projectile> projectiles = new Array<Projectile>();
+    private Array<Projectile>projectilesForRemoval = new Array<Projectile>();
 
     private EnemyManager enemyManager;
 
@@ -79,12 +81,17 @@ public class GameScreen extends ScreenAdapter {
 
         player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
-        currentLevel = new MockLevelGenerator().generate();
+        currentLevel = new TiledMapLevelLoader("test_level.tmx").generate();
         enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld());
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
 
         setupInputProcessor();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
     }
 
     @Override
@@ -153,7 +160,13 @@ public class GameScreen extends ScreenAdapter {
     private void updateProjectiles(float delta) {
         for (Projectile projectile: projectiles) {
             projectile.update(delta);
+            if (CollisionDetection.isCharacterCollidingWall(projectile, currentLevel)) {
+                projectilesForRemoval.add(projectile);
         }
+    }
+
+        projectiles.removeAll(projectilesForRemoval, true);
+        projectilesForRemoval.clear();
     }
 
     private void clearScreen() {
