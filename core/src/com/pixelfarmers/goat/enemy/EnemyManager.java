@@ -82,7 +82,7 @@ public class EnemyManager {
         }
     }
 
-    public void checkForSwordCollisions(Sword sword, ParticleEngine particleEngine) {
+    public void checkForSwordCollisions(Sword sword, ParticleEngine particleEngine, Sound hitSound) {
         if(!sword.isActive()) return;
 
         enemyList.begin();
