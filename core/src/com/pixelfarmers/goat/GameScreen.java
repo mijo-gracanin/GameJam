@@ -27,7 +27,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
-import com.pixelfarmers.goat.enemy.TextureFilePaths;
 import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
@@ -92,7 +91,11 @@ public class GameScreen extends ScreenAdapter {
         stage.addActor(fog);
 
         assetManager = new AssetManager();
-        assetManager.load(TextureFilePaths.KAMIKAZE, Texture.class);
+        assetManager.load(TextureFilePaths.CHARACTER_STANDING_1, Texture.class);
+        assetManager.load(TextureFilePaths.CHARACTER_STANDING_2, Texture.class);
+        assetManager.load(TextureFilePaths.CHARACTER_WALKING_1, Texture.class);
+        assetManager.load(TextureFilePaths.CHARACTER_WALKING_2, Texture.class);
+        assetManager.load(TextureFilePaths.CHARACTER_WALKING_3, Texture.class);
         assetManager.load("projectile_hit.wav", Sound.class);
         assetManager.load("projectile_shoot.wav", Sound.class);
         assetManager.load("sword_hit.wav", Sound.class);
@@ -111,7 +114,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void init() {
-        player = new Player(32, 32);
+        player = new Player(assetManager, new Vector2(32, 32));
         currentLevel = new TiledMapLevelLoader("test_level.tmx").generate();
         enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld());
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
@@ -151,6 +154,7 @@ public class GameScreen extends ScreenAdapter {
         batch.begin();
         levelRenderer.render(batch, currentLevel);
         enemyManager.draw(batch);
+        player.draw(batch);
         particleEngine.draw(batch);
         batch.end();
     }
