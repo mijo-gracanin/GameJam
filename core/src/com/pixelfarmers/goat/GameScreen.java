@@ -1,5 +1,6 @@
 package com.pixelfarmers.goat;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -53,7 +54,10 @@ public class GameScreen extends ScreenAdapter {
 
     private BitmapFont bitmapFont;
 
-    public GameScreen() {
+    Game game;
+
+    public GameScreen(Game game) {
+        this.game = game;
         bitmapFont = new BitmapFont();
         particleEngine = new ParticleEngine();
         bitmapFont.setColor(Color.WHITE);
@@ -77,14 +81,19 @@ public class GameScreen extends ScreenAdapter {
         assetManager.load(TextureFilePaths.KAMIKAZE, Texture.class);
         assetManager.finishLoading();
 
-        player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
-        currentLevel = new TiledMapLevelLoader("test_level.tmx").generate();
-        enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld());
-        enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
 
         setupInputProcessor();
+
+        init();
+    }
+
+    private void init() {
+        player = new Player(32, 32);
+        currentLevel = new TiledMapLevelLoader("test_level.tmx").generate();
+        enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld());
+        enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
     }
 
     @Override
@@ -95,28 +104,21 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
         queryKeyboardInput();
-        update(delta);
         clearScreen();
+        update(delta);
         draw(delta);
         drawDebug(delta);
     }
 
     private void queryKeyboardInput() {
-        boolean escPressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
-
-        if (escPressed) {
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
 
-        boolean lPressed = Gdx.input.isKeyPressed(Input.Keys.A);
-        boolean rPressed = Gdx.input.isKeyPressed(Input.Keys.D);
-        boolean uPressed = Gdx.input.isKeyPressed(Input.Keys.W);
-        boolean dPressed = Gdx.input.isKeyPressed(Input.Keys.S);
-
-        if (lPressed) player.goLeft();
-        if (rPressed) player.goRight();
-        if (uPressed) player.goUp();
-        if (dPressed) player.goDown();
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) player.goLeft();
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) player.goRight();
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) player.goUp();
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) player.goDown();
     }
 
     private void draw(float delta) {
@@ -149,18 +151,33 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void update(float delta) {
-        GdxAI.getTimepiece().update(delta);
-        player.update(delta, currentLevel);
+        checkForGameOver();
 
+        GdxAI.getTimepiece().update(delta);
+
+        player.update(delta, currentLevel);
         updateProjectiles(delta);
         enemyManager.checkForProjectileCollisions(projectiles, particleEngine);
         enemyManager.checkForSwordCollisions(player.sword, particleEngine);
         enemyManager.update(delta);
-
         particleEngine.update(delta);
 
+        updateCamera();
+    }
+
+    private void updateCamera() {
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();
+    }
+
+    private void checkForGameOver() {
+        if(!player.isAlive()) {
+            onGameOver();
+        }
+    }
+
+    private void onGameOver() {
+        game.setScreen(new GameOverScreen(game));
     }
 
     private void updateProjectiles(float delta) {

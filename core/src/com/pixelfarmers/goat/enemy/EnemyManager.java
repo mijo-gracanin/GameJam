@@ -47,6 +47,40 @@ public class EnemyManager {
         enemySpawners.addAll(spawners);
     }
 
+    public void update(float delta) {
+        checkForPlayerCollisions();
+
+        for (int i = 0; i < enemyList.size; i++) {
+            enemyList.get(i).update(delta);
+        }
+
+        for (EnemySpawner spawner : enemySpawners) {
+            spawner.update(delta);
+            if (spawner.isReadyToSpawn()) {
+                enemyList.addAll(spawner.spawn(player));
+            }
+        }
+    }
+
+    public void draw(SpriteBatch spriteBatch) {
+        for (Enemy enemy : enemyList) {
+            enemy.draw(spriteBatch);
+        }
+    }
+
+
+    public void checkForPlayerCollisions() {
+        for (Enemy enemy : enemyList) {
+            if (!enemy.isActive) {
+                continue;
+            }
+
+            if(Intersector.overlaps(enemy.getCollisionCircle(), player.getCollisionCircle())) {
+                player.onHit(enemy.getDamage());
+            }
+        }
+    }
+
     public void checkForSwordCollisions(Sword sword, ParticleEngine particleEngine) {
         if(!sword.isActive()) return;
 
@@ -86,25 +120,6 @@ public class EnemyManager {
         }
         projectiles.end();
         enemyList.end();
-    }
-
-    public void update(float delta) {
-        for (int i = 0; i < enemyList.size; i++) {
-            enemyList.get(i).update(delta);
-        }
-
-        for (EnemySpawner spawner : enemySpawners) {
-            spawner.update(delta);
-            if (spawner.isReadyToSpawn()) {
-                enemyList.addAll(spawner.spawn(player));
-            }
-        }
-    }
-
-    public void draw(SpriteBatch spriteBatch) {
-        for (Enemy enemy : enemyList) {
-            enemy.draw(spriteBatch);
-        }
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
