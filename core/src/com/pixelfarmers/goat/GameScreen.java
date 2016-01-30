@@ -17,7 +17,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.pixelfarmers.goat.enemy.Enemies;
+import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.enemy.TextureFilePaths;
 import com.pixelfarmers.goat.level.Level;
@@ -43,7 +43,7 @@ public class GameScreen extends ScreenAdapter {
     private Level currentLevel;
     private LevelRenderer levelRenderer;
 
-    private Enemies enemies;
+    private EnemyManager enemyManager;
 
     private BitmapFont bitmapFont;
 
@@ -74,8 +74,8 @@ public class GameScreen extends ScreenAdapter {
         player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
         currentLevel = new MockLevelGenerator().generate();
-        enemies = new Enemies(assetManager, player);
-        enemies.addSpawners(SpawnerFactory.createSpawnersForLevel(enemies, 1));
+        enemyManager = new EnemyManager(assetManager, player);
+        enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
     }
 
@@ -94,7 +94,7 @@ public class GameScreen extends ScreenAdapter {
 
         batch.begin();
         levelRenderer.render(batch, currentLevel);
-        enemies.draw(batch);
+        enemyManager.draw(batch);
         batch.end();
     }
 
@@ -111,7 +111,7 @@ public class GameScreen extends ScreenAdapter {
     private void update(float delta) {
         GdxAI.getTimepiece().update(delta);
         player.update(delta);
-        enemies.update(delta);
+        enemyManager.update(delta);
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();
     }
@@ -142,7 +142,7 @@ public class GameScreen extends ScreenAdapter {
                 mousePosition.y >= 0 && mousePosition.y < WORLD_HEIGHT) {
             mousePosition.y = WORLD_HEIGHT - mousePosition.y; // Mouse origin is at TOP left
         }
-        Gdx.app.log("Mouse", "" + mousePosition.x + " " + mousePosition.y);
+        //Gdx.app.log("Mouse", "" + mousePosition.x + " " + mousePosition.y);
         float orientation = PFMathUtils.calcRotationAngleInRadians(player.getPosition(), mousePosition);
         player.setOrientation(orientation);
     }

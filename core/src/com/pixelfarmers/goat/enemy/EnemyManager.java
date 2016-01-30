@@ -14,14 +14,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.pixelfarmers.goat.player.Player;
 
-public class Enemies {
+public class EnemyManager {
 
     private AssetManager assetManager;
     private Array<Enemy> enemyList;
     private Array<EnemySpawner> enemySpawners;
     private Player player;
 
-    public Enemies(AssetManager assetManager, Player player) {
+    public EnemyManager(AssetManager assetManager, Player player) {
         this.assetManager = assetManager;
         this.player = player;
         enemyList = new Array<Enemy>();

@@ -29,7 +29,7 @@ public class TestEnemyScreen extends ScreenAdapter {
     private ShapeRenderer shapeRenderer;
     private AssetManager assetManager;
 
-    Enemies enemies;
+    EnemyManager enemyManager;
     Player player;
 
     @Override
@@ -52,9 +52,9 @@ public class TestEnemyScreen extends ScreenAdapter {
         assetManager.load(TextureFilePaths.KAMIKAZE, Texture.class);
         assetManager.finishLoading();
 
-        enemies = new Enemies(assetManager, player);
-        EnemySpawner enemySpawner = new EnemySpawner(enemies, new Vector2(250, 250), 6, 1, 3);
-        enemies.addSpawner(enemySpawner);
+        enemyManager = new EnemyManager(assetManager, player);
+        EnemySpawner enemySpawner = new EnemySpawner(enemyManager, new Vector2(250, 250), 6, 1, 3);
+        enemyManager.addSpawner(enemySpawner);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class TestEnemyScreen extends ScreenAdapter {
         batch.setTransformMatrix(camera.view);
 
         batch.begin();
-        enemies.draw(batch);
+        enemyManager.draw(batch);
         batch.end();
 
         shapeRenderer.setAutoShapeType(true);
@@ -82,7 +82,7 @@ public class TestEnemyScreen extends ScreenAdapter {
         GdxAI.getTimepiece().update(delta);
         queryInput();
         player.update(delta);
-        enemies.update(delta);
+        enemyManager.update(delta);
     }
 
     private void clearScreen() {
