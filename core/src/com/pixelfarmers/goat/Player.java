@@ -16,7 +16,7 @@ public class Player implements Location<Vector2> {
         UP, DOWN, LEFT, RIGHT, STOP
     }
 
-    public Movement movementDirection = Movement.UP;
+    public Movement movementDirection = Movement.STOP;
 
     private static final float COLLISION_RADIUS = 16f;
     private static final float MOVEMENT_SPEED = 4;
