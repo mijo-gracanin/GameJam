@@ -28,12 +28,15 @@ public class Player implements PhysicalEntity {
     private static final float WEAPON_HEIGHT = 16;
     private static final float SPEED_DECREASE_FACTOR = 0.8f;
     private final Circle collisionCircle;
-    private final Animation walkingAnimation;
+
     private float orientationInRadians = 0;
     private Vector2 movementDirection = new Vector2();
     private Vector2 position;
     private int hitPoints = 10;
+
+    private Animation walkingAnimation;
     float animationStateTime;
+    private Animation idleAnimation;
 
     AssetManager assetManager;
 
@@ -42,13 +45,21 @@ public class Player implements PhysicalEntity {
         position = startingPosition;
         collisionCircle = new Circle(position.x, position.y, COLLISION_RADIUS);
         sword = new Sword(position.cpy());
+        setupAnimations();
+    }
 
+    private void setupAnimations() {
         TextureRegion[] frames = new TextureRegion[3];
         frames[0] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_WALKING_1, Texture.class));
         frames[1] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_WALKING_2, Texture.class));
         frames[2] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_WALKING_3, Texture.class));
         walkingAnimation = new Animation(0.1f, frames);
         animationStateTime = 0;
+
+        frames = new TextureRegion[2];
+        frames[0] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_STANDING_1, Texture.class));
+        frames[1] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_STANDING_2, Texture.class));
+        idleAnimation = new Animation(0.8f, frames);
     }
 
     public void update(float delta, Level currentLevel) {
@@ -124,7 +135,15 @@ public class Player implements PhysicalEntity {
     }
 
     private TextureRegion getCurrentTexture() {
-        return walkingAnimation.getKeyFrame(animationStateTime, true);
+        if(isMoving()) {
+            return walkingAnimation.getKeyFrame(animationStateTime, true);
+        } else {
+            return idleAnimation.getKeyFrame(animationStateTime, true);
+        }
+    }
+
+    private boolean isMoving() {
+        return movementDirection.len2() > 0.1;
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
