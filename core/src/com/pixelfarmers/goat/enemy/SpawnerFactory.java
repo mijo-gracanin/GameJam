@@ -8,7 +8,7 @@ public class SpawnerFactory {
     public static Array<EnemySpawner> createSpawnersForLevel(EnemyManager enemyManager, int levelId) {
         Array<EnemySpawner> spawners = new Array<EnemySpawner>();
         if(levelId == 1) {
-            EnemySpawner spawner = new EnemySpawner(enemyManager, new Vector2(160, 176), 20, 2, 1);
+            EnemySpawner spawner = new EnemySpawner(enemyManager, new Vector2(160, 100), 10, 1, 1);
             spawners.add(spawner);
         }
         return spawners;

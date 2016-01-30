@@ -18,6 +18,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -52,16 +54,20 @@ public class GameScreen extends ScreenAdapter {
     private EnemyManager enemyManager;
 
     private BitmapFont bitmapFont;
+    private Texture fogTexture;
+    private Stage stage;
 
     public GameScreen() {
         bitmapFont = new BitmapFont();
         particleEngine = new ParticleEngine();
         bitmapFont.setColor(Color.WHITE);
+        fogTexture = new Texture("fog.png");
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -72,6 +78,9 @@ public class GameScreen extends ScreenAdapter {
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
+        stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
+        Image fog = new Image(fogTexture);
+        stage.addActor(fog);
 
         assetManager = new AssetManager();
         assetManager.load(TextureFilePaths.KAMIKAZE, Texture.class);
@@ -99,6 +108,8 @@ public class GameScreen extends ScreenAdapter {
         clearScreen();
         draw(delta);
         drawDebug(delta);
+        stage.act(delta);
+        stage.draw();
     }
 
     private void queryKeyboardInput() {

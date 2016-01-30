@@ -56,8 +56,8 @@ public class EnemyManager {
             for (Projectile projectile : projectiles) {
                 if (Intersector.overlaps(enemy.getCollisionCircle(), projectile.getCollisionCircle())) {
                     boolean isDead = enemy.onHit(projectile.getDamage());
+                    bloodSplash(particleEngine, enemy);
                     if (isDead) {
-                        particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
                         enemyList.removeValue(enemy, true);
                     }
                     projectiles.removeValue(projectile, true);
@@ -66,6 +66,12 @@ public class EnemyManager {
         }
         projectiles.end();
         enemyList.end();
+    }
+
+    private void bloodSplash(ParticleEngine particleEngine, Enemy enemy) {
+        for (int i = 0; i < 4; i++) {
+            particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
+        }
     }
 
     public void update(float delta) {
