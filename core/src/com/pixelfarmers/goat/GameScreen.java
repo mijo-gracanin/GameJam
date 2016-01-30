@@ -1,11 +1,14 @@
 package com.pixelfarmers.goat;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -24,6 +27,8 @@ public class GameScreen extends ScreenAdapter {
     private Camera camera;
     private SpriteBatch batch;
 
+    private Player player;
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -37,10 +42,15 @@ public class GameScreen extends ScreenAdapter {
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
+
+        player = new Player();
+
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
     }
 
     @Override
     public void render(float delta) {
+        queryInput();
         update(delta);
         clearScreen();
 
@@ -60,16 +70,34 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer.setProjectionMatrix(camera.projection);
         shapeRenderer.setTransformMatrix(camera.view);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        // Draw shapes
+
+        player.drawDebug(shapeRenderer);
+
         shapeRenderer.end();
     }
 
     private void update(float delta) {
-        // Update Game state
+        player.update(delta);
     }
 
     private void clearScreen() {
         Gdx.gl.glClearColor(Color.BLACK.r, Color.BLACK.g, Color.BLACK.b, Color.BLACK.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
+
+    private void queryInput() {
+        boolean lPressed = Gdx.input.isKeyPressed(Input.Keys.A);
+        boolean rPressed = Gdx.input.isKeyPressed(Input.Keys.D);
+        boolean uPressed = Gdx.input.isKeyPressed(Input.Keys.W);
+        boolean dPressed = Gdx.input.isKeyPressed(Input.Keys.S);
+
+        if (lPressed) player.movementDirection = Player.Movement.LEFT;
+        if (rPressed) player.movementDirection = Player.Movement.RIGHT;
+        if (uPressed) player.movementDirection = Player.Movement.UP;
+        if (dPressed) player.movementDirection = Player.Movement.DOWN;
+
+        if (!lPressed && !rPressed && !uPressed && !dPressed) {
+            player.movementDirection = Player.Movement.STOP;
+        }
     }
 }
