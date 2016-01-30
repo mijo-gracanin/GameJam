@@ -2,7 +2,6 @@ package com.pixelfarmers.goat.level;
 
 
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Vector2;
 import com.pixelfarmers.goat.PhysicalEntity;
 
 import java.util.ArrayList;
@@ -12,22 +11,9 @@ public class CollisionDetection {
     private static int[] dx = {1, -1, 0,  0};
     private static int[] dy = {0,  0, 1, -1};
 
-    public static void doCharacterLevelCollision(PhysicalEntity character, Level level) {
+    public static boolean isCharacterCollidingWall(PhysicalEntity character, Level level) {
         List<Tile> overlappingTiles = findOverlappingTiles(character, level);
-
-        float xSpeed = 0;
-        float ySpeed = 0;
-
-        for (Tile overlappingTile : overlappingTiles) {
-            float dx = character.getPosition().x - overlappingTile.x;
-            float dy = character.getPosition().y - overlappingTile.y;
-            xSpeed += dx;
-            ySpeed += dy;
-        }
-
-        if (!overlappingTiles.isEmpty()) {
-            character.setVelocity(xSpeed, ySpeed);
-        }
+        return !overlappingTiles.isEmpty();
     }
 
     private static List<Tile> findOverlappingTiles(PhysicalEntity character, Level level) {
@@ -58,9 +44,5 @@ public class CollisionDetection {
                 overlappingTiles.add(tile);
             }
         }
-    }
-
-    public static boolean isCharacterCollidingWall(PhysicalEntity character) {
-        return false;
     }
 }
