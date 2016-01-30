@@ -13,8 +13,8 @@ import com.pixelfarmers.goat.PhysicalEntity;
 public class Sword implements PhysicalEntity {
 
     private boolean isActive = false;
-    private static final float STRETCHING_SPEED = 50f;
-    private static final float MAX_SWORD_LENGTH = 18;
+    private static final float STRETCHING_SPEED = 60f;
+    private static final float MAX_SWORD_LENGTH = 16;
     private static final float COLLISION_RADIUS = 3f;
     private Vector2 position = new Vector2();
     private Circle collisionCircle = new Circle(position, COLLISION_RADIUS);;

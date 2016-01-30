@@ -6,6 +6,8 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.SoundLoader;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
@@ -75,6 +77,9 @@ public class GameScreen extends ScreenAdapter {
 
         assetManager = new AssetManager();
         assetManager.load(TextureFilePaths.KAMIKAZE, Texture.class);
+        assetManager.load("projectile_hit.wav", Sound.class);
+        assetManager.load("projectile_shoot.wav", Sound.class);
+        assetManager.load("sword_hit.wav", Sound.class);
         assetManager.finishLoading();
 
         player = new Player(32, 32);
@@ -153,8 +158,10 @@ public class GameScreen extends ScreenAdapter {
         player.update(delta, currentLevel);
 
         updateProjectiles(delta);
-        enemyManager.checkForProjectileCollisions(projectiles, particleEngine);
-        enemyManager.checkForSwordCollisions(player.sword, particleEngine);
+        Sound swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
+        Sound projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
+        enemyManager.checkForProjectileCollisions(projectiles, particleEngine, projectileHitSound);
+        enemyManager.checkForSwordCollisions(player.sword, particleEngine, swordHitSound);
         enemyManager.update(delta);
 
         particleEngine.update(delta);
