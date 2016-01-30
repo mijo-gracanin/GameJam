@@ -2,6 +2,8 @@ package com.pixelfarmers.goat;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.assets.AssetManager;
@@ -15,6 +17,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.level.CollisionDetection;
@@ -25,6 +29,7 @@ import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.MockLevelGenerator;
 import com.pixelfarmers.goat.player.Player;
+import com.pixelfarmers.goat.projectile.Projectile;
 
 public class GameScreen extends ScreenAdapter {
 
@@ -43,6 +48,7 @@ public class GameScreen extends ScreenAdapter {
     private Player player;
     private Level currentLevel;
     private LevelRenderer levelRenderer;
+    private Array<Projectile> projectiles = new Array<Projectile>();
 
     private EnemyManager enemyManager;
 
@@ -78,15 +84,35 @@ public class GameScreen extends ScreenAdapter {
         enemyManager = new EnemyManager(assetManager, player);
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
+
+        setupInputProcessor();
     }
 
     @Override
     public void render(float delta) {
-        queryInput();
+        queryKeyboardInput();
         update(delta);
         clearScreen();
         draw(delta);
         drawDebug(delta);
+    }
+
+    private void queryKeyboardInput() {
+        boolean escPressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+
+        if (escPressed) {
+            Gdx.app.exit();
+        }
+
+        boolean lPressed = Gdx.input.isKeyPressed(Input.Keys.A);
+        boolean rPressed = Gdx.input.isKeyPressed(Input.Keys.D);
+        boolean uPressed = Gdx.input.isKeyPressed(Input.Keys.W);
+        boolean dPressed = Gdx.input.isKeyPressed(Input.Keys.S);
+
+        if (lPressed) player.goLeft();
+        if (rPressed) player.goRight();
+        if (uPressed) player.goUp();
+        if (dPressed) player.goDown();
     }
 
     private void draw(float delta) {
@@ -105,8 +131,15 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         player.drawDebug(shapeRenderer);
+        drawDebugProjectiles(shapeRenderer);
 
         shapeRenderer.end();
+    }
+
+    private void drawDebugProjectiles(ShapeRenderer shapeRenderer) {
+        for (Projectile projectile: projectiles) {
+            projectile.drawDebug(shapeRenderer);
+        }
     }
 
     private void update(float delta) {
@@ -122,30 +155,26 @@ public class GameScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
-    private void queryInput() {
-        boolean lPressed = Gdx.input.isKeyPressed(Input.Keys.A);
-        boolean rPressed = Gdx.input.isKeyPressed(Input.Keys.D);
-        boolean uPressed = Gdx.input.isKeyPressed(Input.Keys.W);
-        boolean dPressed = Gdx.input.isKeyPressed(Input.Keys.S);
-        boolean escPressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+    private void setupInputProcessor() {
+        Gdx.input.setInputProcessor(new InputAdapter() {
 
-        if (escPressed) {
-            Gdx.app.exit();
-        }
+            @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                if (button == Input.Buttons.LEFT) {
+                    // do something
+                }
+                return true;
+            }
 
-        if (lPressed) player.goLeft();
-        if (rPressed) player.goRight();
-        if (uPressed) player.goUp();
-        if (dPressed) player.goDown();
-
-        Vector2 mousePosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-        if (mousePosition.x >= 0 && mousePosition.x < WORLD_WIDTH &&
-                mousePosition.y >= 0 && mousePosition.y < WORLD_HEIGHT) {
-            mousePosition.y = WORLD_HEIGHT - mousePosition.y; // Mouse origin is at TOP left
-        }
-        //Gdx.app.log("Mouse", "" + mousePosition.x + " " + mousePosition.y);
-        float orientation = PFMathUtils.calcRotationAngleInRadians(player.getPosition(), mousePosition);
-        player.setOrientation(orientation);
+            @Override public boolean mouseMoved (int screenX, int screenY) {
+                // we can also handle mouse movement without anything pressed
+                Vector3 tp = new Vector3();
+                camera.unproject(tp.set(screenX, screenY, 0));
+                float orientation = PFMathUtils.calcRotationAngleInRadians(player.getPosition(),
+                        new Vector2(tp.x, tp.y));
+                player.setOrientation(orientation);
+                return true;
+            }
+        });
     }
 
     @Override

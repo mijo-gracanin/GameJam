@@ -89,7 +89,6 @@ public class Player implements PhysicalEntity {
                 WEAPON_WIDTH, WEAPON_HEIGHT,
                 1.0f, 1.0f,
                 orientationInRadians * MathUtils.radDeg);
-        //Gdx.app.log("Angle", "" + orientationInRadians * MathUtils.radDeg);
     }
 
     @Override
