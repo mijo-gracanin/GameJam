@@ -7,8 +7,9 @@ import com.pixelfarmers.goat.GoatGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = 640;
-		config.height = 480;
+		config.width = 1280;
+		config.height = 720;
+		config.fullscreen = true;
 		new LwjglApplication(new GoatGame(), config);
 	}
 }

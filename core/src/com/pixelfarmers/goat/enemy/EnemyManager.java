@@ -13,17 +13,23 @@ import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.DelayedRemovalArray;
+import com.pixelfarmers.goat.fx.BloodParticle;
+import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.level.Box2dRaycastCollisionDetector;
 import com.pixelfarmers.goat.player.Player;
+import com.pixelfarmers.goat.projectile.Projectile;
 
 public class EnemyManager {
 
     private AssetManager assetManager;
-    private Array<Enemy> enemyList;
+    private DelayedRemovalArray<Enemy> enemyList;
     private Array<EnemySpawner> enemySpawners;
     private Player player;
     private World world;
@@ -31,17 +37,35 @@ public class EnemyManager {
     public EnemyManager(AssetManager assetManager, Player player, World world) {
         this.assetManager = assetManager;
         this.player = player;
-        enemyList = new Array<Enemy>();
+        enemyList = new DelayedRemovalArray<Enemy>();
         this.enemySpawners = new Array<EnemySpawner>();
         this.world = world;
     }
 
-    public void addSpawner(EnemySpawner spawner) {
-        enemySpawners.add(spawner);
-    }
-
     public void addSpawners(Array<EnemySpawner> spawners) {
         enemySpawners.addAll(spawners);
+    }
+
+    public void checkForProjectileCollisions(DelayedRemovalArray<Projectile> projectiles, ParticleEngine particleEngine) {
+        projectiles.begin();
+        enemyList.begin();
+        for (Enemy enemy : enemyList) {
+            if(!enemy.isActive) {
+                continue;
+            }
+            for (Projectile projectile : projectiles) {
+                if (Intersector.overlaps(enemy.getCollisionCircle(), projectile.getCollisionCircle())) {
+                    boolean isDead = enemy.onHit(projectile.getDamage());
+                    if (isDead) {
+                        particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
+                        enemyList.removeValue(enemy, true);
+                    }
+                    projectiles.removeValue(projectile, true);
+                }
+            }
+        }
+        projectiles.end();
+        enemyList.end();
     }
 
     public void update(float delta) {
@@ -49,17 +73,23 @@ public class EnemyManager {
             enemyList.get(i).update(delta);
         }
 
-        for(EnemySpawner spawner : enemySpawners) {
+        for (EnemySpawner spawner : enemySpawners) {
             spawner.update(delta);
-            if(spawner.isReadyToSpawn()) {
+            if (spawner.isReadyToSpawn()) {
                 enemyList.addAll(spawner.spawn(player));
             }
         }
     }
 
     public void draw(SpriteBatch spriteBatch) {
-        for(Enemy enemy : enemyList) {
+        for (Enemy enemy : enemyList) {
             enemy.draw(spriteBatch);
+        }
+    }
+
+    public void drawDebug(ShapeRenderer shapeRenderer) {
+        for (Enemy enemy : enemyList) {
+            enemy.drawDebug(shapeRenderer);
         }
     }
 
@@ -108,8 +138,8 @@ public class EnemyManager {
 
         @Override
         public int findNeighbors(ProximityCallback<Vector2> callback) {
-            for(Enemy enemy : enemyList) {
-                if(enemy != owner) {
+            for (Enemy enemy : enemyList) {
+                if (enemy != owner) {
                     callback.reportNeighbor(enemy);
                 }
             }

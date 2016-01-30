@@ -6,9 +6,6 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.pixelfarmers.goat.PhysicalEntity;
 
-/**
- * Created by mijo on 30/01/16.
- */
 public class Projectile implements PhysicalEntity {
 
     private static final float MOVEMENT_SPEED = 80f;
@@ -16,6 +13,8 @@ public class Projectile implements PhysicalEntity {
     private float orientationInRadians = 0;
     private Vector2 position = new Vector2();
     private Circle collisionCircle = new Circle(position, COLLISION_RADIUS);
+
+    private int damage = 2;
 
     public Projectile(Vector2 position, float orientationInRadians) {
         this.position = position;
@@ -77,5 +76,9 @@ public class Projectile implements PhysicalEntity {
     @Override
     public float getVerticalSpeed() {
         return 0;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 }

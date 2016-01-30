@@ -33,6 +33,10 @@ public class ParticleEngine {
         }
     }
 
+    public void addParticle(Particle particle) {
+        particles.add(particle);
+    }
+
     private void swapWithLastAndRemove(int i, List<Particle> list) {
         if (list.size() == 1) {
             list.remove(0);

@@ -43,8 +43,8 @@ public class EnemySpawner {
         timeToSpawn = spawnRateSeconds;
         Array<Enemy> spawnedEnemies = new Array<Enemy>(numEnemiesToSpawnAtOnce);
         for(int i = 0; i < numEnemiesToSpawnAtOnce; i++) {
-            float xOffset = MathUtils.random(0, 5);
-            float yOffset = MathUtils.random(0, 5);
+            float xOffset = MathUtils.random(0, 0);
+            float yOffset = MathUtils.random(0, 0);
             Vector2 spawnPosition = new Vector2(position.x + xOffset, position.y + yOffset);
             spawnedEnemies.add(enemyManager.createKamikaze(spawnPosition, player));
         }

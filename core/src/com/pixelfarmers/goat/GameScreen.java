@@ -18,7 +18,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.enemy.EnemyManager;
@@ -37,9 +37,6 @@ public class GameScreen extends ScreenAdapter {
     private static final float WORLD_WIDTH = 640;
     private static final float WORLD_HEIGHT = 480;
 
-    private static final int SCREEN_WIDTH = 800;
-    private static final int SCREEN_HEIGHT = 600;
-
     private AssetManager assetManager;
     private ShapeRenderer shapeRenderer;
     private Viewport viewport;
@@ -50,8 +47,7 @@ public class GameScreen extends ScreenAdapter {
     private Level currentLevel;
     private LevelRenderer levelRenderer;
     private ParticleEngine particleEngine;
-    private Array<Projectile> projectiles = new Array<Projectile>();
-    private Array<Projectile>projectilesForRemoval = new Array<Projectile>();
+    private DelayedRemovalArray<Projectile> projectiles = new DelayedRemovalArray<Projectile>();
 
     private EnemyManager enemyManager;
 
@@ -61,7 +57,6 @@ public class GameScreen extends ScreenAdapter {
         bitmapFont = new BitmapFont();
         particleEngine = new ParticleEngine();
         bitmapFont.setColor(Color.WHITE);
-        Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
     @Override
@@ -141,6 +136,7 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         player.drawDebug(shapeRenderer);
+        enemyManager.drawDebug(shapeRenderer);
         drawDebugProjectiles(shapeRenderer);
 
         shapeRenderer.end();
@@ -155,8 +151,11 @@ public class GameScreen extends ScreenAdapter {
     private void update(float delta) {
         GdxAI.getTimepiece().update(delta);
         player.update(delta, currentLevel);
-        enemyManager.update(delta);
+
         updateProjectiles(delta);
+        enemyManager.checkForProjectileCollisions(projectiles, particleEngine);
+        enemyManager.update(delta);
+
         particleEngine.update(delta);
 
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
@@ -164,15 +163,15 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void updateProjectiles(float delta) {
+        projectiles.begin();
         for (Projectile projectile : projectiles) {
             projectile.update(delta);
             if (CollisionDetection.isCharacterCollidingWall(projectile, currentLevel)) {
-                projectilesForRemoval.add(projectile);
+                projectiles.removeValue(projectile, true);
+            }
         }
-    }
 
-        projectiles.removeAll(projectilesForRemoval, true);
-        projectilesForRemoval.clear();
+        projectiles.end();
     }
 
     private void clearScreen() {
