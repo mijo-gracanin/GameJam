@@ -1,11 +1,18 @@
 package com.pixelfarmers.goat.player;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.utils.Location;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.pixelfarmers.goat.PhysicalEntity;
+import com.pixelfarmers.goat.TextureFilePaths;
 import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.weapon.Sword;
@@ -21,15 +28,38 @@ public class Player implements PhysicalEntity {
     private static final float WEAPON_HEIGHT = 16;
     private static final float SPEED_DECREASE_FACTOR = 0.8f;
     private final Circle collisionCircle;
+
     private float orientationInRadians = 0;
     private Vector2 movementDirection = new Vector2();
     private Vector2 position;
     private int hitPoints = 10;
 
-    public Player(int x, int y) {
-        position = new Vector2(x, y);
+    private Animation walkingAnimation;
+    float animationStateTime;
+    private Animation idleAnimation;
+
+    AssetManager assetManager;
+
+    public Player(AssetManager assetManager, Vector2 startingPosition) {
+        this.assetManager = assetManager;
+        position = startingPosition;
         collisionCircle = new Circle(position.x, position.y, COLLISION_RADIUS);
         sword = new Sword(position.cpy());
+        setupAnimations();
+    }
+
+    private void setupAnimations() {
+        TextureRegion[] frames = new TextureRegion[3];
+        frames[0] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_WALKING_1, Texture.class));
+        frames[1] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_WALKING_2, Texture.class));
+        frames[2] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_WALKING_3, Texture.class));
+        walkingAnimation = new Animation(0.1f, frames);
+        animationStateTime = 0;
+
+        frames = new TextureRegion[2];
+        frames[0] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_STANDING_1, Texture.class));
+        frames[1] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_STANDING_2, Texture.class));
+        idleAnimation = new Animation(0.8f, frames);
     }
 
     public void update(float delta, Level currentLevel) {
@@ -99,13 +129,30 @@ public class Player implements PhysicalEntity {
         movementDirection.nor();
     }
 
+    public void draw(Batch batch) {
+        animationStateTime += Gdx.graphics.getDeltaTime();
+        batch.draw(getCurrentTexture(), position.x - COLLISION_RADIUS, position.y - COLLISION_RADIUS);
+    }
+
+    private TextureRegion getCurrentTexture() {
+        if(isMoving()) {
+            return walkingAnimation.getKeyFrame(animationStateTime, true);
+        } else {
+            return idleAnimation.getKeyFrame(animationStateTime, true);
+        }
+    }
+
+    private boolean isMoving() {
+        return movementDirection.len2() > 0.1;
+    }
+
     public void drawDebug(ShapeRenderer shapeRenderer) {
-        shapeRenderer.circle(position.x, position.y, collisionCircle.radius);
+        /*shapeRenderer.circle(position.x, position.y, collisionCircle.radius);
         shapeRenderer.rect(position.x - WEAPON_WIDTH / 2, position.y - WEAPON_HEIGHT / 2,
                 WEAPON_WIDTH / 2, WEAPON_HEIGHT / 2,
                 WEAPON_WIDTH, WEAPON_HEIGHT,
                 1.0f, 1.0f,
-                orientationInRadians * MathUtils.radDeg);
+                orientationInRadians * MathUtils.radDeg);*/
         sword.drawDebug(shapeRenderer);
     }
 
