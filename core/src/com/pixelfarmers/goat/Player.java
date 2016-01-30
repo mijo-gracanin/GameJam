@@ -7,31 +7,16 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-/**
- * Created by mijo on 29/01/16.
- */
+
 public class Player implements Location<Vector2> {
 
-    public enum Direction {
-        NORTH(new Vector2(0, 1)),
-        EAST(new Vector2(1, 0)),
-        SOUTH(new Vector2(0, -1)),
-        WEST(new Vector2(-1, 0)),
-        NONE(new Vector2(0, 0));
-
-        public final Vector2 movementDirection;
-
-        Direction(Vector2 movementDirection) {
-            this.movementDirection = movementDirection;
-        }
-    }
-
-    public Vector2 movementDirection = new Vector2();
+    private Vector2 movementDirection = new Vector2();
 
     private static final float COLLISION_RADIUS = 16f;
-    private static final float MOVEMENT_SPEED = 4;
+    private static final float MOVEMENT_SPEED = 100f;
     private static final float WEAPON_WIDTH = 4;
     private static final float WEAPON_HEIGHT = 16;
+    private static final float SPEED_DECREASE_FACTOR = 0.8f;
     private final Circle collisionCircle;
     private final Rectangle weapon;
     private float orientationInRadians = 0;
@@ -44,8 +29,29 @@ public class Player implements Location<Vector2> {
     }
 
     public void update(float delta) {
-        position.x = movementDirection.x * MOVEMENT_SPEED;
-        position.y = movementDirection.y * MOVEMENT_SPEED;
+        position.x += movementDirection.x * MOVEMENT_SPEED * delta;
+        position.y += movementDirection.y * MOVEMENT_SPEED * delta;
+        movementDirection.scl(SPEED_DECREASE_FACTOR);
+    }
+
+    public void goLeft() {
+        movementDirection.set(-1, movementDirection.y);
+        movementDirection.nor();
+    }
+
+    public void goRight() {
+        movementDirection.set(1, movementDirection.y);
+        movementDirection.nor();
+    }
+
+    public void goDown() {
+        movementDirection.set(movementDirection.x, -1);
+        movementDirection.nor();
+    }
+
+    public void goUp() {
+        movementDirection.set(movementDirection.x, 1);
+        movementDirection.nor();
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {

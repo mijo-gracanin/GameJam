@@ -116,10 +116,10 @@ public class GameScreen extends ScreenAdapter {
             Gdx.app.exit();
         }
 
-        if (lPressed) player.movementDirection.add(Player.Direction.WEST.movementDirection);
-        if (rPressed) player.movementDirection.add(Player.Direction.EAST.movementDirection);
-        if (uPressed) player.movementDirection.add(Player.Direction.NORTH.movementDirection);
-        if (dPressed) player.movementDirection.add(Player.Direction.SOUTH.movementDirection);
+        if (lPressed) player.goLeft();
+        if (rPressed) player.goRight();
+        if (uPressed) player.goUp();
+        if (dPressed) player.goDown();
 
         Vector2 mousePosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
         if (mousePosition.x >= 0 && mousePosition.x < WORLD_WIDTH &&
