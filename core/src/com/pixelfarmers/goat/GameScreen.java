@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.enemy.TextureFilePaths;
+import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
@@ -48,6 +49,7 @@ public class GameScreen extends ScreenAdapter {
     private Player player;
     private Level currentLevel;
     private LevelRenderer levelRenderer;
+    private ParticleEngine particleEngine;
     private Array<Projectile> projectiles = new Array<Projectile>();
     private Array<Projectile>projectilesForRemoval = new Array<Projectile>();
 
@@ -57,6 +59,7 @@ public class GameScreen extends ScreenAdapter {
 
     public GameScreen() {
         bitmapFont = new BitmapFont();
+        particleEngine = new ParticleEngine();
         bitmapFont.setColor(Color.WHITE);
         Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
     }
@@ -128,6 +131,7 @@ public class GameScreen extends ScreenAdapter {
         batch.begin();
         levelRenderer.render(batch, currentLevel);
         enemyManager.draw(batch);
+        particleEngine.draw(batch);
         batch.end();
     }
 
@@ -154,6 +158,8 @@ public class GameScreen extends ScreenAdapter {
         player.update(delta, currentLevel);
         enemyManager.update(delta);
         updateProjectiles(delta);
+        particleEngine.update(delta);
+
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();
     }
