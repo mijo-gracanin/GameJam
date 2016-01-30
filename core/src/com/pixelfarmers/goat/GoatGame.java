@@ -5,7 +5,7 @@ import com.badlogic.gdx.Game;
 public class GoatGame extends Game {
 	
 	@Override
-	public void create () {
+	public void create() {
 		setScreen(new GameScreen());
 	}
 }
