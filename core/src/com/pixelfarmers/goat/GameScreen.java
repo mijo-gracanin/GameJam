@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -147,8 +148,15 @@ public class GameScreen extends ScreenAdapter {
         player.update(delta);
         CollisionDetection.doCharacterLevelCollision(player, currentLevel);
         enemyManager.update(delta);
+        updateProjectiles(delta);
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();
+    }
+
+    private void updateProjectiles(float delta) {
+        for (Projectile projectile: projectiles) {
+            projectile.update(delta);
+        }
     }
 
     private void clearScreen() {
@@ -161,7 +169,9 @@ public class GameScreen extends ScreenAdapter {
 
             @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 if (button == Input.Buttons.LEFT) {
-                    // do something
+                    Projectile projectile = new Projectile(player.getPosition().cpy(),
+                            player.getOrientation() - MathUtils.PI/2);
+                    projectiles.add(projectile);
                 }
                 return true;
             }
