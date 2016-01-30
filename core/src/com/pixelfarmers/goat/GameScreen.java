@@ -6,6 +6,8 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.SoundLoader;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
@@ -32,7 +34,7 @@ import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.TiledMapLevelLoader;
 import com.pixelfarmers.goat.player.Player;
-import com.pixelfarmers.goat.projectile.Projectile;
+import com.pixelfarmers.goat.weapon.Projectile;
 
 public class GameScreen extends ScreenAdapter {
 
@@ -84,6 +86,9 @@ public class GameScreen extends ScreenAdapter {
 
         assetManager = new AssetManager();
         assetManager.load(TextureFilePaths.KAMIKAZE, Texture.class);
+        assetManager.load("projectile_hit.wav", Sound.class);
+        assetManager.load("projectile_shoot.wav", Sound.class);
+        assetManager.load("sword_hit.wav", Sound.class);
         assetManager.finishLoading();
 
         player = new Player(32, 32);
@@ -164,7 +169,10 @@ public class GameScreen extends ScreenAdapter {
         player.update(delta, currentLevel);
 
         updateProjectiles(delta);
-        enemyManager.checkForProjectileCollisions(projectiles, particleEngine);
+        Sound swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
+        Sound projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
+        enemyManager.checkForProjectileCollisions(projectiles, particleEngine, projectileHitSound);
+        enemyManager.checkForSwordCollisions(player.sword, particleEngine, swordHitSound);
         enemyManager.update(delta);
 
         particleEngine.update(delta);
@@ -198,6 +206,9 @@ public class GameScreen extends ScreenAdapter {
                     Projectile projectile = new Projectile(player.getPosition().cpy(),
                             player.getOrientation() - MathUtils.PI/2);
                     projectiles.add(projectile);
+                }
+                else if (button == Input.Buttons.RIGHT) {
+                    player.castSword();
                 }
                 return true;
             }

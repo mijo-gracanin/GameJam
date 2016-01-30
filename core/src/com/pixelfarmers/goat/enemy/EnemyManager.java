@@ -11,6 +11,7 @@ import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -24,7 +25,8 @@ import com.pixelfarmers.goat.fx.BloodParticle;
 import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.level.Box2dRaycastCollisionDetector;
 import com.pixelfarmers.goat.player.Player;
-import com.pixelfarmers.goat.projectile.Projectile;
+import com.pixelfarmers.goat.weapon.Projectile;
+import com.pixelfarmers.goat.weapon.Sword;
 
 public class EnemyManager {
 
@@ -46,7 +48,29 @@ public class EnemyManager {
         enemySpawners.addAll(spawners);
     }
 
-    public void checkForProjectileCollisions(DelayedRemovalArray<Projectile> projectiles, ParticleEngine particleEngine) {
+    public void checkForSwordCollisions(Sword sword, ParticleEngine particleEngine, Sound hitSound) {
+        if(!sword.isActive()) return;
+
+        enemyList.begin();
+        for (Enemy enemy : enemyList) {
+            if(!enemy.isActive) {
+                continue;
+            }
+            if (Intersector.overlaps(enemy.getCollisionCircle(), sword.getCollisionCircle())) {
+                hitSound.play();
+                boolean isDead = enemy.onHit(sword.getDamage());
+                if (isDead) {
+                    particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
+                    enemyList.removeValue(enemy, true);
+                }
+            }
+        }
+        enemyList.end();
+    }
+
+    public void checkForProjectileCollisions(DelayedRemovalArray<Projectile> projectiles,
+                                             ParticleEngine particleEngine,
+                                             Sound hitSound) {
         projectiles.begin();
         enemyList.begin();
         for (Enemy enemy : enemyList) {
@@ -55,6 +79,7 @@ public class EnemyManager {
             }
             for (Projectile projectile : projectiles) {
                 if (Intersector.overlaps(enemy.getCollisionCircle(), projectile.getCollisionCircle())) {
+                    hitSound.play();
                     boolean isDead = enemy.onHit(projectile.getDamage());
                     bloodSplash(particleEngine, enemy);
                     if (isDead) {
