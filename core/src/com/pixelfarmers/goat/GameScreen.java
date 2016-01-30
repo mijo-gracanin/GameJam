@@ -30,7 +30,7 @@ import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.TiledMapLevelLoader;
 import com.pixelfarmers.goat.player.Player;
-import com.pixelfarmers.goat.projectile.Projectile;
+import com.pixelfarmers.goat.weapon.Projectile;
 
 public class GameScreen extends ScreenAdapter {
 
@@ -154,6 +154,7 @@ public class GameScreen extends ScreenAdapter {
 
         updateProjectiles(delta);
         enemyManager.checkForProjectileCollisions(projectiles, particleEngine);
+        enemyManager.checkForSwordCollisions(player.sword, particleEngine);
         enemyManager.update(delta);
 
         particleEngine.update(delta);
@@ -187,6 +188,9 @@ public class GameScreen extends ScreenAdapter {
                     Projectile projectile = new Projectile(player.getPosition().cpy(),
                             player.getOrientation() - MathUtils.PI/2);
                     projectiles.add(projectile);
+                }
+                else if (button == Input.Buttons.RIGHT) {
+                    player.castSword();
                 }
                 return true;
             }

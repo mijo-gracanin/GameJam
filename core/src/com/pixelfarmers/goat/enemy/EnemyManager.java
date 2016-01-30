@@ -24,7 +24,8 @@ import com.pixelfarmers.goat.fx.BloodParticle;
 import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.level.Box2dRaycastCollisionDetector;
 import com.pixelfarmers.goat.player.Player;
-import com.pixelfarmers.goat.projectile.Projectile;
+import com.pixelfarmers.goat.weapon.Projectile;
+import com.pixelfarmers.goat.weapon.Sword;
 
 public class EnemyManager {
 
@@ -44,6 +45,25 @@ public class EnemyManager {
 
     public void addSpawners(Array<EnemySpawner> spawners) {
         enemySpawners.addAll(spawners);
+    }
+
+    public void checkForSwordCollisions(Sword sword, ParticleEngine particleEngine) {
+        if(!sword.isActive()) return;
+
+        enemyList.begin();
+        for (Enemy enemy : enemyList) {
+            if(!enemy.isActive) {
+                continue;
+            }
+            if (Intersector.overlaps(enemy.getCollisionCircle(), sword.getCollisionCircle())) {
+                boolean isDead = enemy.onHit(sword.getDamage());
+                if (isDead) {
+                    particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
+                    enemyList.removeValue(enemy, true);
+                }
+            }
+        }
+        enemyList.end();
     }
 
     public void checkForProjectileCollisions(DelayedRemovalArray<Projectile> projectiles, ParticleEngine particleEngine) {
