@@ -6,12 +6,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class LevelRenderer {
-    private TextureRegion floor, wall;
+    private TextureRegion[] textures;
 
     public LevelRenderer() {
         Texture tileset = new Texture("tileset.png");
-        floor = new TextureRegion(tileset, 0, 0, Tile.TILE_SIZE, Tile.TILE_SIZE);
-        wall = new TextureRegion(tileset, Tile.TILE_SIZE, 0, Tile.TILE_SIZE, Tile.TILE_SIZE);
+        int heightInTiles = tileset.getHeight() / Tile.TILE_SIZE;
+        int widthInTiles = tileset.getWidth() / Tile.TILE_SIZE;
+        textures = new TextureRegion[heightInTiles * widthInTiles];
+
+        for (int row = 0; row < heightInTiles; row++) {
+            for (int col = 0; col < widthInTiles; col++) {
+                textures[row * widthInTiles + col] = new TextureRegion(tileset, col * Tile.TILE_SIZE, row * Tile.TILE_SIZE, Tile.TILE_SIZE, Tile.TILE_SIZE);
+            }
+        }
     }
 
     public void render(SpriteBatch batch, Level level) {
@@ -24,7 +31,6 @@ public class LevelRenderer {
     }
 
     public void renderTile(SpriteBatch batch, Tile tile, float x, float y) {
-        TextureRegion texture = tile.type == Tile.Type.FLOOR ? floor : wall;
-        batch.draw(texture, x, y);
+        batch.draw(textures[tile.tilesetIndex - 1], x, y);
     }
 }

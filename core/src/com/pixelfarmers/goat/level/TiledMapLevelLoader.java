@@ -4,18 +4,32 @@ package com.pixelfarmers.goat.level;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TiledMapLevelLoader implements LevelGenerator {
 
-    private static Tile.Type[] tileTypeMapping = {
-            null,
-            Tile.Type.FLOOR,
-            Tile.Type.WALL
-    };
+    private static Map<Integer, Boolean> tilePassabilityMap;
 
     private final String filename;
 
     public TiledMapLevelLoader(String filename) {
         this.filename = filename;
+
+        tilePassabilityMap = new HashMap<Integer, Boolean>();
+        tilePassabilityMap.put(1, true);
+        tilePassabilityMap.put(2, true);
+        tilePassabilityMap.put(3, false);
+        tilePassabilityMap.put(9, true);
+        tilePassabilityMap.put(10, true);
+        tilePassabilityMap.put(11, true);
+        tilePassabilityMap.put(12, true);
+        tilePassabilityMap.put(13, true);
+        tilePassabilityMap.put(17, true);
+        tilePassabilityMap.put(18, true);
+        tilePassabilityMap.put(19, true);
+        tilePassabilityMap.put(26, true);
+        tilePassabilityMap.put(27, true);
     }
 
     @Override
@@ -35,7 +49,7 @@ public class TiledMapLevelLoader implements LevelGenerator {
             for (int col = 0; col < cols; col++) {
                 int index = Integer.valueOf(values[col]);
                 int inverseRow = rows - row - 1;
-                tiles[inverseRow][col] = new Tile(tileTypeMapping[index], col * Tile.TILE_SIZE, inverseRow * Tile.TILE_SIZE);
+                tiles[inverseRow][col] = new Tile(index, tilePassabilityMap.get(index), col * Tile.TILE_SIZE, inverseRow * Tile.TILE_SIZE);
             }
         }
 

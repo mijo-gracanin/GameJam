@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.World;
 public class Level {
 
     private final Tile[][] tiles;
-    private static final Tile nullTile = new Tile(Tile.Type.FLOOR, 0, 0);
+    private static final Tile nullTile = new Tile(1, true, 0, 0);
     private World world;
 
     public Level(Tile[][] tiles) {
@@ -23,7 +23,7 @@ public class Level {
         for (int w = 0; w < width(); w++) {
             for (int h = 0; h < height(); h++) {
                 Tile tile = tiles[h][w];
-                if(tile.isSolid()) {
+                if(tile.isSolid) {
                     groundBodyDef.position.set(new Vector2(tile.x, tile.y));
                     Body body = world.createBody(groundBodyDef);
                     PolygonShape groundBox = new PolygonShape();

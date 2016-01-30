@@ -164,7 +164,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void updateProjectiles(float delta) {
-        for (Projectile projectile: projectiles) {
+        for (Projectile projectile : projectiles) {
             projectile.update(delta);
             if (CollisionDetection.isCharacterCollidingWall(projectile, currentLevel)) {
                 projectilesForRemoval.add(projectile);

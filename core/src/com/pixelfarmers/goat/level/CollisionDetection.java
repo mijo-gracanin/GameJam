@@ -23,7 +23,7 @@ public class CollisionDetection {
             for (int col = 0; col < level.width(); col++) {
                 Tile tile = level.getTile(col, row);
 
-                if (tile.isSolid() && Intersector.overlaps(character.getCollisionCircle(), tile.boundingBox)) {
+                if (tile.isSolid && Intersector.overlaps(character.getCollisionCircle(), tile.boundingBox)) {
                     overlappingTiles.add(tile);
                     checkNeighbouringTilesForCollision(overlappingTiles, character, level, row, col);
                     return overlappingTiles;
@@ -40,7 +40,7 @@ public class CollisionDetection {
             int row = startingRow + dy[i];
             Tile tile = level.getTile(col, row);
 
-            if (tile.isSolid() && Intersector.overlaps(character.getCollisionCircle(), tile.boundingBox)) {
+            if (tile.isSolid && Intersector.overlaps(character.getCollisionCircle(), tile.boundingBox)) {
                 overlappingTiles.add(tile);
             }
         }
