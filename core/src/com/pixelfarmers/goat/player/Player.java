@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.pixelfarmers.goat.PhysicalEntity;
+import com.pixelfarmers.goat.level.CollisionDetection;
+import com.pixelfarmers.goat.level.Level;
 
 
 public class Player implements PhysicalEntity {
@@ -29,11 +31,35 @@ public class Player implements PhysicalEntity {
         weapon = new Rectangle(position.x, position.y, WEAPON_WIDTH, WEAPON_HEIGHT);
     }
 
-    public void update(float delta) {
-        position.x += movementDirection.x * MOVEMENT_SPEED * delta;
-        position.y += movementDirection.y * MOVEMENT_SPEED * delta;
+    public void update(float delta, Level currentLevel) {
+        float dx = movementDirection.x * MOVEMENT_SPEED * delta;
+        float dy = movementDirection.y * MOVEMENT_SPEED * delta;
+
+        tryMovingHorizontally(currentLevel, dx);
+        tryMovingVertically(currentLevel, dy);
+
         movementDirection.scl(SPEED_DECREASE_FACTOR);
         collisionCircle.setPosition(position.x, position.y);
+    }
+
+    private void tryMovingVertically(Level currentLevel, float dy) {
+        float yOld = position.y;
+        position.y += dy;
+        collisionCircle.setPosition(position.x, position.y);
+
+        if (CollisionDetection.isCharacterCollidingWall(this, currentLevel)) {
+            position.y = yOld;
+        }
+    }
+
+    private void tryMovingHorizontally(Level currentLevel, float dx) {
+        float xOld = position.x;
+        position.x += dx;
+        collisionCircle.setPosition(position.x, position.y);
+
+        if (CollisionDetection.isCharacterCollidingWall(this, currentLevel)) {
+            position.x = xOld;
+        }
     }
 
     public void goLeft() {
@@ -103,12 +129,6 @@ public class Player implements PhysicalEntity {
     @Override
     public float getVerticalSpeed() {
         return movementDirection.y;
-    }
-
-    @Override
-    public void setVelocity(float x, float y) {
-        movementDirection.set(x, y);
-        movementDirection.nor();
     }
 
     @Override

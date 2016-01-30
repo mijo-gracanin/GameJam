@@ -145,8 +145,7 @@ public class GameScreen extends ScreenAdapter {
 
     private void update(float delta) {
         GdxAI.getTimepiece().update(delta);
-        player.update(delta);
-        CollisionDetection.doCharacterLevelCollision(player, currentLevel);
+        player.update(delta, currentLevel);
         enemyManager.update(delta);
         updateProjectiles(delta);
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
