@@ -13,6 +13,7 @@ import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
@@ -32,7 +33,7 @@ import com.pixelfarmers.goat.weapon.Sword;
 public class EnemyManager {
 
     private AssetManager assetManager;
-    private DelayedRemovalArray<Enemy> enemyList;
+    private DelayedRemovalArray<EnemyBat> enemyList;
     private Array<EnemySpawner> enemySpawners;
     private Player player;
     private World world;
@@ -40,7 +41,7 @@ public class EnemyManager {
     public EnemyManager(AssetManager assetManager, Player player, World world) {
         this.assetManager = assetManager;
         this.player = player;
-        enemyList = new DelayedRemovalArray<Enemy>();
+        enemyList = new DelayedRemovalArray<EnemyBat>();
         this.enemySpawners = new Array<EnemySpawner>();
         this.world = world;
     }
@@ -65,14 +66,14 @@ public class EnemyManager {
     }
 
     public void draw(SpriteBatch spriteBatch) {
-        for (Enemy enemy : enemyList) {
+        for (EnemyBat enemy : enemyList) {
             enemy.draw(spriteBatch);
         }
     }
 
 
     public void checkForPlayerCollisions() {
-        for (Enemy enemy : enemyList) {
+        for (EnemyBat enemy : enemyList) {
             if (!enemy.isActive) {
                 continue;
             }
@@ -87,7 +88,7 @@ public class EnemyManager {
         if(!sword.isActive()) return;
 
         enemyList.begin();
-        for (Enemy enemy : enemyList) {
+        for (EnemyBat enemy : enemyList) {
             if(!enemy.isActive) {
                 continue;
             }
@@ -108,7 +109,7 @@ public class EnemyManager {
                                              Sound hitSound) {
         projectiles.begin();
         enemyList.begin();
-        for (Enemy enemy : enemyList) {
+        for (EnemyBat enemy : enemyList) {
             if(!enemy.isActive) {
                 continue;
             }
@@ -128,24 +129,24 @@ public class EnemyManager {
         enemyList.end();
     }
 
-    private void bloodSplash(ParticleEngine particleEngine, Enemy enemy) {
+    private void bloodSplash(ParticleEngine particleEngine, EnemyBat enemy) {
         for (int i = 0; i < 4; i++) {
             particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
         }
     }
     public void drawDebug(ShapeRenderer shapeRenderer) {
-        for (Enemy enemy : enemyList) {
+        for (EnemyBat enemy : enemyList) {
             enemy.drawDebug(shapeRenderer);
         }
     }
 
-    public Enemy createKamikaze(Vector2 position, Location<Vector2> player) {
-        Enemy enemy = new Enemy(assetManager.get(TextureFilePaths.CHARACTER_STANDING_1, Texture.class), position);
+    public EnemyBat createKamikaze(Vector2 position, Location<Vector2> player) {
+        EnemyBat enemy = new EnemyBat(position);
         enemy.setSteeringBehavior(createKamikazeSteeringBehavior(enemy, player));
         return enemy;
     }
 
-    private SteeringBehavior<Vector2> createKamikazeSteeringBehavior(Enemy enemy, Location<Vector2> player) {
+    private SteeringBehavior<Vector2> createKamikazeSteeringBehavior(EnemyBat enemy, Location<Vector2> player) {
         BlendedSteering<Vector2> kamikazeSteering = new BlendedSteering<Vector2>(enemy);
 
         Proximity<Vector2> proximity = new KamikazeProximity();
@@ -164,7 +165,7 @@ public class EnemyManager {
         return kamikazeSteering;
     }
 
-    private RayConfiguration<Vector2> createRayConfiguration(Enemy enemy) {
+    private RayConfiguration<Vector2> createRayConfiguration(EnemyBat enemy) {
         return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.maxSpeed * 2, 40, 35 * MathUtils.degreesToRadians);
     }
 
@@ -184,7 +185,7 @@ public class EnemyManager {
 
         @Override
         public int findNeighbors(ProximityCallback<Vector2> callback) {
-            for (Enemy enemy : enemyList) {
+            for (EnemyBat enemy : enemyList) {
                 if (enemy != owner) {
                     callback.reportNeighbor(enemy);
                 }
