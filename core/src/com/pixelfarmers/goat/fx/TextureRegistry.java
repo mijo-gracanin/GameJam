@@ -14,7 +14,8 @@ public class TextureRegistry {
     private TextureRegistry() {
         textureRegistry = new HashMap<String, Texture>();
         textureRegistry.put("blood_particle", new Texture("blood_particle.png"));
-        textureRegistry.put("blood_stain", new Texture("blood_stain.png"));
+        textureRegistry.put("blood_stain_1", new Texture("blood_stain.png"));
+        textureRegistry.put("blood_stain_2", new Texture("blood_stain_2.png"));
     }
 
     public static TextureRegistry getInstance() {

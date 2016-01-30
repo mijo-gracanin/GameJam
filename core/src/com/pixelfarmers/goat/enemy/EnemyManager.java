@@ -32,18 +32,24 @@ import com.pixelfarmers.goat.weapon.Sword;
 
 public class EnemyManager {
 
+    public interface EnemyDeathListener {
+        void onDeath(float x, float y);
+    }
+
     private AssetManager assetManager;
     private DelayedRemovalArray<EnemyBat> enemyList;
     private Array<EnemySpawner> enemySpawners;
     private Player player;
     private World world;
+    private EnemyDeathListener enemyDeathListener;
 
-    public EnemyManager(AssetManager assetManager, Player player, World world) {
+    public EnemyManager(AssetManager assetManager, Player player, World world, EnemyDeathListener enemyDeathListener) {
         this.assetManager = assetManager;
         this.player = player;
         enemyList = new DelayedRemovalArray<EnemyBat>();
         this.enemySpawners = new Array<EnemySpawner>();
         this.world = world;
+        this.enemyDeathListener = enemyDeathListener;
     }
 
     public void addSpawners(Array<EnemySpawner> spawners) {
@@ -98,6 +104,7 @@ public class EnemyManager {
                 if (isDead) {
                     particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
                     enemyList.removeValue(enemy, true);
+                    enemyDeathListener.onDeath(enemy.getPosition().x, enemy.getPosition().y);
                 }
             }
         }
@@ -120,6 +127,7 @@ public class EnemyManager {
                     bloodSplash(particleEngine, enemy);
                     if (isDead) {
                         enemyList.removeValue(enemy, true);
+                        enemyDeathListener.onDeath(enemy.getPosition().x, enemy.getPosition().y);
                     }
                     projectiles.removeValue(projectile, true);
                 }

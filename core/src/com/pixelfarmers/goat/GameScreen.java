@@ -116,7 +116,12 @@ public class GameScreen extends ScreenAdapter {
     private void init() {
         player = new Player(assetManager, new Vector2(32, 32));
         currentLevel = new TiledMapLevelLoader("test_level.tmx").generate();
-        enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld());
+        enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld(), new EnemyManager.EnemyDeathListener() {
+            @Override
+            public void onDeath(float x, float y) {
+                levelRenderer.addBloodStain(x, y);
+            }
+        });
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
     }
 
