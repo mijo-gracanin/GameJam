@@ -4,8 +4,8 @@ import com.badlogic.gdx.ai.steer.Proximity;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
+import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
-import com.badlogic.gdx.ai.steer.behaviors.Separation;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -65,10 +65,10 @@ public class EnemyManager {
         BlendedSteering<Vector2> kamikazeSteering = new BlendedSteering<Vector2>(enemy);
         Proximity<Vector2> proximity = new KamikazeProximity();
         proximity.setOwner(enemy);
-        Separation<Vector2> separationSb = new Separation<Vector2>(enemy, proximity);
+        CollisionAvoidance<Vector2> separationSb = new CollisionAvoidance<Vector2>(enemy, proximity);
         Seek<Vector2> seekSb = new Seek<Vector2>(enemy, player);
-        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(separationSb, 1));
-        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(seekSb, 1));
+        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(separationSb, 3));
+        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(seekSb, 2));
         return kamikazeSteering;
     }
 
