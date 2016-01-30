@@ -18,12 +18,12 @@ public class LevelRenderer {
         for (int col = 0; col < level.width(); col++) {
             for (int row = 0; row < level.height(); row++) {
                 Tile tile = level.getTile(col, row);
-                renderTile(batch, tile, Tile.TILE_SIZE * col, Tile.TILE_SIZE * row);
+                renderTile(batch, tile, tile.x, tile.y);
             }
         }
     }
 
-    public void renderTile(SpriteBatch batch, Tile tile, int x, int y) {
+    public void renderTile(SpriteBatch batch, Tile tile, float x, float y) {
         TextureRegion texture = tile.type == Tile.Type.FLOOR ? floor : wall;
         batch.draw(texture, x, y);
     }

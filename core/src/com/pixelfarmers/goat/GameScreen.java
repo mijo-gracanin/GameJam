@@ -3,7 +3,6 @@ package com.pixelfarmers.goat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.assets.AssetManager;
@@ -21,13 +20,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.enemy.TextureFilePaths;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
-import com.pixelfarmers.goat.level.MockLevelGenerator;
+import com.pixelfarmers.goat.level.TiledMapLevelLoader;
 import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.projectile.Projectile;
 
@@ -80,7 +78,7 @@ public class GameScreen extends ScreenAdapter {
 
         player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
-        currentLevel = new MockLevelGenerator().generate();
+        currentLevel = new TiledMapLevelLoader("test_level.tmx").generate();
         enemyManager = new EnemyManager(assetManager, player);
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
