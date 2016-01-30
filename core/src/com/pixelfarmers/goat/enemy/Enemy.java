@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 public class Enemy extends SteerableAdapter<Vector2> {
@@ -39,6 +40,10 @@ public class Enemy extends SteerableAdapter<Vector2> {
 
     public void draw(Batch batch) {
         batch.draw(texture, position.x, position.y);
+    }
+
+    public void drawDebug(ShapeRenderer shapeRenderer) {
+        shapeRenderer.circle(position.x + BOUNDING_RADIUS, position.y + BOUNDING_RADIUS, BOUNDING_RADIUS);
     }
 
     private void applySteering(SteeringAcceleration<Vector2> steering, float time) {

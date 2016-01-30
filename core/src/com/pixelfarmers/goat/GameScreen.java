@@ -137,6 +137,7 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         player.drawDebug(shapeRenderer);
+        enemyManager.drawDebug(shapeRenderer);
         drawDebugProjectiles(shapeRenderer);
 
         shapeRenderer.end();
@@ -158,12 +159,12 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void updateProjectiles(float delta) {
-        for (Projectile projectile: projectiles) {
+        for (Projectile projectile : projectiles) {
             projectile.update(delta);
             if (CollisionDetection.isCharacterCollidingWall(projectile, currentLevel)) {
                 projectilesForRemoval.add(projectile);
+            }
         }
-    }
 
         projectiles.removeAll(projectilesForRemoval, true);
         projectilesForRemoval.clear();

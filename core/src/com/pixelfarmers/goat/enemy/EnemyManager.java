@@ -13,6 +13,7 @@ import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -46,7 +47,7 @@ public class EnemyManager {
 
     public void update(float delta) {
         for (int i = 0; i < enemyList.size; i++) {
-            enemyList.get(i).update(delta);
+            //enemyList.get(i).update(delta);
         }
 
         for(EnemySpawner spawner : enemySpawners) {
@@ -60,6 +61,12 @@ public class EnemyManager {
     public void draw(SpriteBatch spriteBatch) {
         for(Enemy enemy : enemyList) {
             enemy.draw(spriteBatch);
+        }
+    }
+
+    public void drawDebug(ShapeRenderer shapeRenderer) {
+        for(Enemy enemy : enemyList) {
+            enemy.drawDebug(shapeRenderer);
         }
     }
 
