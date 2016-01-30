@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.enemy.TextureFilePaths;
@@ -125,6 +126,7 @@ public class GameScreen extends ScreenAdapter {
     private void update(float delta) {
         GdxAI.getTimepiece().update(delta);
         player.update(delta);
+        CollisionDetection.doCharacterLevelCollision(player, currentLevel);
         enemyManager.update(delta);
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();

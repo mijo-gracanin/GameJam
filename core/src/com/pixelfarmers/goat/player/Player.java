@@ -6,13 +6,14 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.pixelfarmers.goat.PhysicalEntity;
 
 
 public class Player implements PhysicalEntity {
 
     private Vector2 movementDirection = new Vector2();
 
-    private static final float COLLISION_RADIUS = 16f;
+    private static final float COLLISION_RADIUS = 8f;
     private static final float MOVEMENT_SPEED = 100f;
     private static final float WEAPON_WIDTH = 4;
     private static final float WEAPON_HEIGHT = 16;
@@ -32,6 +33,7 @@ public class Player implements PhysicalEntity {
         position.x += movementDirection.x * MOVEMENT_SPEED * delta;
         position.y += movementDirection.y * MOVEMENT_SPEED * delta;
         movementDirection.scl(SPEED_DECREASE_FACTOR);
+        collisionCircle.setPosition(position.x, position.y);
     }
 
     public void goLeft() {
@@ -94,13 +96,23 @@ public class Player implements PhysicalEntity {
     }
 
     @Override
-    public Vector2 getVelocity() {
-        return movementDirection;
+    public float getHorizontalSpeed() {
+        return movementDirection.x;
     }
 
     @Override
-    public void setPosition(float x, float y) {
-        position.x = x;
-        position.y = y;
+    public float getVerticalSpeed() {
+        return movementDirection.y;
+    }
+
+    @Override
+    public void setVelocity(float x, float y) {
+        movementDirection.set(x, y);
+        movementDirection.nor();
+    }
+
+    @Override
+    public Circle getCollisionCircle() {
+        return collisionCircle;
     }
 }
