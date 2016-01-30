@@ -59,6 +59,10 @@ public class GameScreen extends ScreenAdapter {
     private Texture fogTexture;
     private Stage stage;
 
+    private Sound swordHitSound;
+    private Sound projectileHitSound;
+    private Sound projectileSound;
+
     public GameScreen() {
         bitmapFont = new BitmapFont();
         particleEngine = new ParticleEngine();
@@ -90,6 +94,10 @@ public class GameScreen extends ScreenAdapter {
         assetManager.load("projectile_shoot.wav", Sound.class);
         assetManager.load("sword_hit.wav", Sound.class);
         assetManager.finishLoading();
+
+        swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
+        projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
+        projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
 
         player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
@@ -169,8 +177,6 @@ public class GameScreen extends ScreenAdapter {
         player.update(delta, currentLevel);
 
         updateProjectiles(delta);
-        Sound swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
-        Sound projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
         enemyManager.checkForProjectileCollisions(projectiles, particleEngine, projectileHitSound);
         enemyManager.checkForSwordCollisions(player.sword, particleEngine, swordHitSound);
         enemyManager.update(delta);
@@ -199,7 +205,6 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void setupInputProcessor() {
-        final Sound projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
         Gdx.input.setInputProcessor(new InputAdapter() {
 
             @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
