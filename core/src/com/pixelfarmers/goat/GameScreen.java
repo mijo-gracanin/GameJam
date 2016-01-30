@@ -9,8 +9,10 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -44,8 +46,6 @@ public class GameScreen extends ScreenAdapter {
         batch = new SpriteBatch();
 
         player = new Player();
-
-        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
     }
 
     @Override
@@ -99,5 +99,9 @@ public class GameScreen extends ScreenAdapter {
         if (!lPressed && !rPressed && !uPressed && !dPressed) {
             player.movementDirection = Player.Movement.STOP;
         }
+
+        Vector2 mousePosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+        float orientation = PFMathUtils.calcRotationAngleInDegrees(player.getPosition(), mousePosition);
+        player.setOrientation(orientation);
     }
 }
