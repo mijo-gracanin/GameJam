@@ -27,6 +27,7 @@ public class Enemy extends SteerableAdapter<Vector2> {
     boolean isActive = true;
     private Circle collisionCircle;
     private int hitPoints = 4;
+    private int damage = 10;
 
     public Enemy(Texture texture, Vector2 startingPosition) {
         this.texture = texture;
@@ -49,7 +50,7 @@ public class Enemy extends SteerableAdapter<Vector2> {
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
-        shapeRenderer.circle(position.x, position.y, BOUNDING_RADIUS);
+        //shapeRenderer.circle(position.x, position.y, BOUNDING_RADIUS);
     }
 
     public Circle getCollisionCircle() {
@@ -113,6 +114,10 @@ public class Enemy extends SteerableAdapter<Vector2> {
     @Override
     public float getBoundingRadius() {
         return BOUNDING_RADIUS;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
 }
