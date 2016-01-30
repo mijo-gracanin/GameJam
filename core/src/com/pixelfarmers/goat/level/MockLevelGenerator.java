@@ -24,7 +24,8 @@ public class MockLevelGenerator implements LevelGenerator {
 
         for (int w = 0; w < width; w++) {
             for (int h = 0; h < height; h++) {
-                tiles[h][w] = level[h].charAt(w) == '*' ? Tile.WALL : Tile.FLOOR;
+                Tile.Type tileType = level[h].charAt(w) == '*' ? Tile.Type.WALL : Tile.Type.FLOOR;
+                tiles[h][w] = new Tile(tileType, w * Tile.TILE_SIZE, h * Tile.TILE_SIZE);
             }
         }
 

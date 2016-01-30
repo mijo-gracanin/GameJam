@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.MockLevelGenerator;
@@ -97,6 +98,7 @@ public class GameScreen extends ScreenAdapter {
 
     private void update(float delta) {
         player.update(delta);
+        CollisionDetection.doCharacterLevelCollision(player, currentLevel);
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();
     }
