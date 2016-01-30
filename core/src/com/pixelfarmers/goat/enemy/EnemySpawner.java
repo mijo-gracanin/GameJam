@@ -2,6 +2,7 @@ package com.pixelfarmers.goat.enemy;
 
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public class EnemySpawner {
 
@@ -36,10 +37,14 @@ public class EnemySpawner {
                 && timeToSpawn <= 0;
     }
 
-    public Enemy spawn(Location<Vector2> player) {
+    public Array<Enemy> spawn(Location<Vector2> player) {
         spawnedSoFar++;
         timeToSpawn = spawnRateSeconds;
-        return enemyFactory.createKamikaze(position, player);
+        Array<Enemy> spawnedEnemies = new Array<Enemy>(numEnemiesToSpawnAtOnce);
+        for(int i = 0; i < numEnemiesToSpawnAtOnce; i++) {
+            spawnedEnemies.add(enemyFactory.createKamikaze(position, player));
+        }
+        return spawnedEnemies;
     }
 
 }

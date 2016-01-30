@@ -59,7 +59,7 @@ public class TestEnemyScreen extends ScreenAdapter {
         assetManager.finishLoading();
 
         enemyFactory = new EnemyFactory(assetManager);
-        enemySpawner = new EnemySpawner(enemyFactory, new Vector2(0, 0), 2, 1, 1);
+        enemySpawner = new EnemySpawner(enemyFactory, new Vector2(0, 0), 16, 1, 2);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class TestEnemyScreen extends ScreenAdapter {
 
         enemySpawner.update(delta);
         if(enemySpawner.isReadyToSpawn()) {
-            enemies.add(enemySpawner.spawn(player));
+            enemies.addAll(enemySpawner.spawn(player));
         }
     }
 
