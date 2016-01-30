@@ -57,7 +57,7 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
 
-        player = new Player();
+        player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
         currentLevel = new MockLevelGenerator().generate();
 

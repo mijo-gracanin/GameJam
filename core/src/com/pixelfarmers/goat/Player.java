@@ -25,9 +25,10 @@ public class Player implements Location<Vector2> {
     private final Circle collisionCircle;
     private final Rectangle weapon;
     private float orientationInRadians = 0;
-    private Vector2 position = new Vector2();
+    private Vector2 position;
 
-    public Player() {
+    public Player(int x, int y) {
+        position = new Vector2(x, y);
         collisionCircle = new Circle(position.x, position.y, COLLISION_RADIUS);
         weapon = new Rectangle(position.x, position.y, WEAPON_WIDTH, WEAPON_HEIGHT);
     }

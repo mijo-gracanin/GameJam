@@ -50,7 +50,7 @@ public class TestEnemyScreen extends ScreenAdapter {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-        player = new Player();
+        player = new Player(32, 32);
 
         kamikazeTexture = new Texture("test_enemy.png");
         enemies = new Array<Enemy>();
