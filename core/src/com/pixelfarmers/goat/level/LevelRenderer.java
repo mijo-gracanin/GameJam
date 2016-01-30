@@ -4,9 +4,14 @@ package com.pixelfarmers.goat.level;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.pixelfarmers.goat.fx.BloodStain;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LevelRenderer {
     private TextureRegion[] textures;
+    private List<BloodStain> bloodStains;
 
     public LevelRenderer() {
         Texture tileset = new Texture("tileset.png");
@@ -19,6 +24,8 @@ public class LevelRenderer {
                 textures[row * widthInTiles + col] = new TextureRegion(tileset, col * Tile.TILE_SIZE, row * Tile.TILE_SIZE, Tile.TILE_SIZE, Tile.TILE_SIZE);
             }
         }
+
+        bloodStains = new ArrayList<BloodStain>();
     }
 
     public void render(SpriteBatch batch, Level level) {
@@ -28,6 +35,13 @@ public class LevelRenderer {
                 renderTile(batch, tile, tile.x, tile.y);
             }
         }
+        for (BloodStain bloodStain : bloodStains) {
+            bloodStain.render(batch);
+        }
+    }
+
+    public void addBloodStain(float x, float y) {
+        bloodStains.add(new BloodStain(x, y));
     }
 
     public void renderTile(SpriteBatch batch, Tile tile, float x, float y) {
