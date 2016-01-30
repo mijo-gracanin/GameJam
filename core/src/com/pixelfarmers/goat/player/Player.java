@@ -131,12 +131,20 @@ public class Player implements PhysicalEntity {
 
     public void draw(Batch batch) {
         animationStateTime += Gdx.graphics.getDeltaTime();
-        batch.draw(getCurrentTexture(), position.x - COLLISION_RADIUS, position.y - COLLISION_RADIUS);
+        batch.draw(getCurrentTexture(),
+                position.x - COLLISION_RADIUS,
+                position.y - COLLISION_RADIUS);
     }
 
     private TextureRegion getCurrentTexture() {
-        if(isMoving()) {
-            return walkingAnimation.getKeyFrame(animationStateTime, true);
+        if (isMoving()) {
+            TextureRegion textureRegion = walkingAnimation.getKeyFrame(animationStateTime, true);
+            if (movementDirection.x < 0 && !textureRegion.isFlipX()) {
+                textureRegion.flip(true, false);
+            } else if (movementDirection.x > 0 && textureRegion.isFlipX()) {
+                textureRegion.flip(true, false);
+            }
+            return textureRegion;
         } else {
             return idleAnimation.getKeyFrame(animationStateTime, true);
         }

@@ -96,13 +96,14 @@ public class GameScreen extends ScreenAdapter {
         assetManager.load(TextureFilePaths.CHARACTER_WALKING_1, Texture.class);
         assetManager.load(TextureFilePaths.CHARACTER_WALKING_2, Texture.class);
         assetManager.load(TextureFilePaths.CHARACTER_WALKING_3, Texture.class);
-        assetManager.load("projectile_hit.wav", Sound.class);
+        assetManager.load(TextureFilePaths.PROJECTILE, Texture.class);
+        assetManager.load("goat.wav", Sound.class);
         assetManager.load("projectile_shoot.wav", Sound.class);
         assetManager.load("sword_hit.wav", Sound.class);
         assetManager.finishLoading();
 
         swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
-        projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
+        projectileHitSound = assetManager.get("goat.wav", Sound.class);
         projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
 
         levelRenderer = new LevelRenderer();
@@ -161,6 +162,11 @@ public class GameScreen extends ScreenAdapter {
         enemyManager.draw(batch);
         player.draw(batch);
         particleEngine.draw(batch);
+
+        for (Projectile projectile: projectiles) {
+            projectile.draw(batch);
+        }
+
         batch.end();
     }
 
@@ -234,8 +240,10 @@ public class GameScreen extends ScreenAdapter {
 
             @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 if (button == Input.Buttons.LEFT) {
-                    Projectile projectile = new Projectile(player.getPosition().cpy(),
-                            player.getOrientation() - MathUtils.PI/2);
+                    Projectile projectile =
+                            new Projectile(assetManager.get(TextureFilePaths.PROJECTILE, Texture.class),
+                                    player.getPosition().cpy(),
+                                    player.getOrientation() - MathUtils.PI/2);
                     projectiles.add(projectile);
                     projectileSound.play();
                 }
