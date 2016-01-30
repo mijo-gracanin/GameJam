@@ -10,20 +10,21 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Projectile implements Location<Vector2> {
 
-    private static final float MOVEMENT_SPEED = 30f;
+    private static final float MOVEMENT_SPEED = 80f;
     private static final float COLLISION_RADIUS = 3f;
     private float orientationInRadians = 0;
     private Vector2 position = new Vector2();
 
-    public Projectile(float orientationInRadians) {
+    public Projectile(Vector2 position, float orientationInRadians) {
+        this.position = position;
         this.orientationInRadians = orientationInRadians;
     }
 
     public void update(float delta) {
-        Vector2 speedVector = new Vector2(0, 1);
+        Vector2 speedVector = new Vector2(1, 1);
         speedVector.setAngleRad(orientationInRadians);
-        position.x += speedVector.x * MOVEMENT_SPEED;
-        position.y += speedVector.y * MOVEMENT_SPEED;
+        position.x += speedVector.x * MOVEMENT_SPEED * delta;
+        position.y += speedVector.y * MOVEMENT_SPEED * delta;
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
