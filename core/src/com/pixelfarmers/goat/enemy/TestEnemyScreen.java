@@ -117,18 +117,24 @@ public class TestEnemyScreen extends ScreenAdapter {
         boolean rPressed = Gdx.input.isKeyPressed(Input.Keys.D);
         boolean uPressed = Gdx.input.isKeyPressed(Input.Keys.W);
         boolean dPressed = Gdx.input.isKeyPressed(Input.Keys.S);
+        boolean escPressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
 
-        if (lPressed) player.movementDirection = Player.Movement.LEFT;
-        if (rPressed) player.movementDirection = Player.Movement.RIGHT;
-        if (uPressed) player.movementDirection = Player.Movement.UP;
-        if (dPressed) player.movementDirection = Player.Movement.DOWN;
-
-        if (!lPressed && !rPressed && !uPressed && !dPressed) {
-            player.movementDirection = Player.Movement.STOP;
+        if (escPressed) {
+            Gdx.app.exit();
         }
 
+        if (lPressed) player.movementDirection.add(Player.Direction.WEST.movementDirection);
+        if (rPressed) player.movementDirection.add(Player.Direction.EAST.movementDirection);
+        if (uPressed) player.movementDirection.add(Player.Direction.NORTH.movementDirection);
+        if (dPressed) player.movementDirection.add(Player.Direction.SOUTH.movementDirection);
+
         Vector2 mousePosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-        float orientation = PFMathUtils.calcRotationAngleInDegrees(player.getPosition(), mousePosition);
+        if (mousePosition.x >= 0 && mousePosition.x < WORLD_WIDTH &&
+                mousePosition.y >= 0 && mousePosition.y < WORLD_HEIGHT) {
+            mousePosition.y = WORLD_HEIGHT - mousePosition.y; // Mouse origin is at TOP left
+        }
+        Gdx.app.log("Mouse", "" + mousePosition.x + " " + mousePosition.y);
+        float orientation = PFMathUtils.calcRotationAngleInRadians(player.getPosition(), mousePosition);
         player.setOrientation(orientation);
     }
 

@@ -12,16 +12,26 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Player implements Location<Vector2> {
 
-    public enum Movement {
-        UP, DOWN, LEFT, RIGHT, STOP
+    public enum Direction {
+        NORTH(new Vector2(0, 1)),
+        EAST(new Vector2(1, 0)),
+        SOUTH(new Vector2(0, -1)),
+        WEST(new Vector2(-1, 0)),
+        NONE(new Vector2(0, 0));
+
+        public final Vector2 movementDirection;
+
+        Direction(Vector2 movementDirection) {
+            this.movementDirection = movementDirection;
+        }
     }
 
-    public Movement movementDirection = Movement.STOP;
+    public Vector2 movementDirection = new Vector2();
 
     private static final float COLLISION_RADIUS = 16f;
     private static final float MOVEMENT_SPEED = 4;
     private static final float WEAPON_WIDTH = 4;
-    private static final float WEAPON_HEIGHT = 12;
+    private static final float WEAPON_HEIGHT = 16;
     private final Circle collisionCircle;
     private final Rectangle weapon;
     private float orientationInRadians = 0;
@@ -34,24 +44,8 @@ public class Player implements Location<Vector2> {
     }
 
     public void update(float delta) {
-        switch (movementDirection) {
-            case UP: {
-                position.y += MOVEMENT_SPEED;
-            }
-            break;
-            case DOWN: {
-                position.y -= MOVEMENT_SPEED;
-            }
-            break;
-            case LEFT: {
-                position.x -= MOVEMENT_SPEED;
-            }
-            break;
-            case RIGHT: {
-                position.x += MOVEMENT_SPEED;
-            }
-            break;
-        }
+        position.x = movementDirection.x * MOVEMENT_SPEED;
+        position.y = movementDirection.y * MOVEMENT_SPEED;
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
@@ -61,6 +55,7 @@ public class Player implements Location<Vector2> {
                 WEAPON_WIDTH, WEAPON_HEIGHT,
                 1.0f, 1.0f,
                 orientationInRadians * MathUtils.radDeg);
+        //Gdx.app.log("Angle", "" + orientationInRadians * MathUtils.radDeg);
     }
 
     @Override
