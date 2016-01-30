@@ -11,6 +11,7 @@ import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -90,6 +91,7 @@ public class EnemyManager {
                 continue;
             }
             if (Intersector.overlaps(enemy.getCollisionCircle(), sword.getCollisionCircle())) {
+                hitSound.play();
                 boolean isDead = enemy.onHit(sword.getDamage());
                 if (isDead) {
                     particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
@@ -100,7 +102,9 @@ public class EnemyManager {
         enemyList.end();
     }
 
-    public void checkForProjectileCollisions(DelayedRemovalArray<Projectile> projectiles, ParticleEngine particleEngine) {
+    public void checkForProjectileCollisions(DelayedRemovalArray<Projectile> projectiles,
+                                             ParticleEngine particleEngine,
+                                             Sound hitSound) {
         projectiles.begin();
         enemyList.begin();
         for (Enemy enemy : enemyList) {
@@ -109,9 +113,10 @@ public class EnemyManager {
             }
             for (Projectile projectile : projectiles) {
                 if (Intersector.overlaps(enemy.getCollisionCircle(), projectile.getCollisionCircle())) {
+                    hitSound.play();
                     boolean isDead = enemy.onHit(projectile.getDamage());
+                    bloodSplash(particleEngine, enemy);
                     if (isDead) {
-                        particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
                         enemyList.removeValue(enemy, true);
                     }
                     projectiles.removeValue(projectile, true);
@@ -122,6 +127,11 @@ public class EnemyManager {
         enemyList.end();
     }
 
+    private void bloodSplash(ParticleEngine particleEngine, Enemy enemy) {
+        for (int i = 0; i < 4; i++) {
+            particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
+        }
+    }
     public void drawDebug(ShapeRenderer shapeRenderer) {
         for (Enemy enemy : enemyList) {
             enemy.drawDebug(shapeRenderer);

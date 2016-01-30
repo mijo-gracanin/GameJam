@@ -7,6 +7,8 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.SoundLoader;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
@@ -19,6 +21,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -53,6 +57,8 @@ public class GameScreen extends ScreenAdapter {
     private EnemyManager enemyManager;
 
     private BitmapFont bitmapFont;
+    private Texture fogTexture;
+    private Stage stage;
 
     Game game;
 
@@ -61,11 +67,13 @@ public class GameScreen extends ScreenAdapter {
         bitmapFont = new BitmapFont();
         particleEngine = new ParticleEngine();
         bitmapFont.setColor(Color.WHITE);
+        fogTexture = new Texture("fog.png");
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -76,9 +84,15 @@ public class GameScreen extends ScreenAdapter {
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
+        stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
+        Image fog = new Image(fogTexture);
+        stage.addActor(fog);
 
         assetManager = new AssetManager();
         assetManager.load(TextureFilePaths.KAMIKAZE, Texture.class);
+        assetManager.load("projectile_hit.wav", Sound.class);
+        assetManager.load("projectile_shoot.wav", Sound.class);
+        assetManager.load("sword_hit.wav", Sound.class);
         assetManager.finishLoading();
 
         levelRenderer = new LevelRenderer();
@@ -108,6 +122,8 @@ public class GameScreen extends ScreenAdapter {
         update(delta);
         draw(delta);
         drawDebug(delta);
+        stage.act(delta);
+        stage.draw();
     }
 
     private void queryKeyboardInput() {
@@ -157,8 +173,10 @@ public class GameScreen extends ScreenAdapter {
 
         player.update(delta, currentLevel);
         updateProjectiles(delta);
-        enemyManager.checkForProjectileCollisions(projectiles, particleEngine);
-        enemyManager.checkForSwordCollisions(player.sword, particleEngine);
+        Sound swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
+        Sound projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
+        enemyManager.checkForProjectileCollisions(projectiles, particleEngine, projectileHitSound);
+        enemyManager.checkForSwordCollisions(player.sword, particleEngine, swordHitSound);
         enemyManager.update(delta);
         particleEngine.update(delta);
 

@@ -9,34 +9,43 @@ import com.badlogic.gdx.math.Vector2;
 public class BloodParticle implements Particle {
     private float secondsToLive;
     private Vector2 direction;
-    private float speed;
     private float gravity;
     private Texture texture;
+    private float delay;
 
     private float x, y;
+    private float width, height;
 
     public BloodParticle(float x, float y) {
         this.x = x;
         this.y = y;
         this.texture = TextureRegistry.getInstance().getTexture("blood_particle");
 
-        secondsToLive = 1f + 2*MathUtils.random();
-        direction = new Vector2(-0.5f + MathUtils.random(), -0.5f + MathUtils.random()).nor();
-        speed = 8f + 4*MathUtils.random();
-        gravity = -0.05f - (MathUtils.random() / 10);
+        secondsToLive = 0.4f + 0.1f*MathUtils.random();
+        delay = 0.1f*MathUtils.random();
+        width = 6f + 2*MathUtils.random();
+        height = 6f + 2*MathUtils.random();
+        direction = new Vector2(100*(-0.5f + MathUtils.random()), 200);
+        gravity = 900f;
     }
 
     @Override
     public void update(float delta) {
-        secondsToLive -= delta;
-        x += direction.x * delta * speed;
-        y += direction.y * delta * speed;
-        direction.y -= delta * gravity;
+        if (delay < 0) {
+            secondsToLive -= delta;
+            x += direction.x * delta;
+            y += direction.y * delta;
+            direction.y -= delta * gravity;
+        } else {
+            delay -= delta;
+        }
     }
 
     @Override
     public void render(SpriteBatch batch) {
-        batch.draw(texture, x, y);
+        if (delay < 0) {
+            batch.draw(texture, x, y, width, height);
+        }
     }
 
     @Override
