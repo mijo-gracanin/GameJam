@@ -1,12 +1,13 @@
 package com.pixelfarmers.goat;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 
 /**
  * Created by mijo on 29/01/16.
  */
-public class Player {
+public class Player extends Sprite {
 
 
     public enum Movement {
@@ -20,38 +21,34 @@ public class Player {
     private static final float MOVEMENT_SPEED = 4;
     private final Circle collisionCircle;
 
-    private float x = 0;
-    private float y = 0;
 
     public Player() {
-        collisionCircle = new Circle(x,y, COLLISION_RADIUS);
+        collisionCircle = new Circle(getX(), getY(), COLLISION_RADIUS);
     }
 
     public void update(float delta) {
         switch (movementDirection) {
             case UP: {
-                y += MOVEMENT_SPEED;
+                setPosition(getX(), getY() + MOVEMENT_SPEED);
             }
             break;
             case DOWN: {
-                y -= MOVEMENT_SPEED;
+                setPosition(getX(), getY() - MOVEMENT_SPEED);
             }
             break;
             case LEFT: {
-                x -= MOVEMENT_SPEED;
+                setPosition(getX() - MOVEMENT_SPEED, getY());
             }
             break;
             case RIGHT: {
-                x += MOVEMENT_SPEED;
+                setPosition(getX() + MOVEMENT_SPEED, getY());
             }
             break;
         }
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
-        shapeRenderer.circle(x, y, collisionCircle.radius);
+        shapeRenderer.circle(getX(), getY(), collisionCircle.radius);
     }
-
-
 
 }
