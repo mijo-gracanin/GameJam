@@ -1,6 +1,8 @@
 package com.pixelfarmers.goat.weapon;
 
 import com.badlogic.gdx.ai.utils.Location;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
@@ -8,29 +10,35 @@ import com.pixelfarmers.goat.PhysicalEntity;
 
 public class Projectile implements PhysicalEntity {
 
-    private static final float MOVEMENT_SPEED = 80f;
+    private static final float SPEED_MODIFIER = 100f;
     private static final float COLLISION_RADIUS = 3f;
     private float orientationInRadians = 0;
     private Vector2 position = new Vector2();
-    private Vector2 speedVector = new Vector2(1, 1);
+    private Vector2 velocity = new Vector2(1 * SPEED_MODIFIER, 1 * SPEED_MODIFIER);
     private Circle collisionCircle = new Circle(position, COLLISION_RADIUS);
+    private Texture texture;
 
     private int damage = 2;
 
-    public Projectile(Vector2 position, float orientationInRadians) {
+    public Projectile(Texture texture, Vector2 position, float orientationInRadians) {
+        this.texture = texture;
         this.position = position.cpy();
         this.orientationInRadians = orientationInRadians;
     }
 
     public void update(float delta) {
-        speedVector.setAngleRad(orientationInRadians);
-        position.x += speedVector.x * MOVEMENT_SPEED * delta;
-        position.y += speedVector.y * MOVEMENT_SPEED * delta;
+        velocity.setAngleRad(orientationInRadians);
+        position.x += velocity.x * delta;
+        position.y += velocity.y * delta;
         collisionCircle.setPosition(position.x, position.y);
     }
 
+    public void draw(SpriteBatch spriteBatch) {
+        spriteBatch.draw(texture, position.x, position.y);
+    }
+
     public void drawDebug(ShapeRenderer shapeRenderer) {
-        shapeRenderer.circle(position.x, position.y, COLLISION_RADIUS);
+        //shapeRenderer.circle(position.x, position.y, COLLISION_RADIUS);
     }
 
     @Override
