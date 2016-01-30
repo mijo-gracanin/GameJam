@@ -7,7 +7,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.SoundLoader;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -103,7 +102,6 @@ public class GameScreen extends ScreenAdapter {
         projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
         projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
 
-        player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
 
