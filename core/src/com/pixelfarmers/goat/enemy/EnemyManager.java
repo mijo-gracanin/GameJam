@@ -12,8 +12,6 @@ import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
@@ -22,7 +20,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
-import com.pixelfarmers.goat.TextureFilePaths;
 import com.pixelfarmers.goat.fx.BloodParticle;
 import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.level.Box2dRaycastCollisionDetector;
@@ -37,7 +34,7 @@ public class EnemyManager {
     }
 
     private AssetManager assetManager;
-    private DelayedRemovalArray<EnemyBat> enemyList;
+    private DelayedRemovalArray<Enemy> enemyList;
     private Array<EnemySpawner> enemySpawners;
     private Player player;
     private World world;
@@ -46,7 +43,7 @@ public class EnemyManager {
     public EnemyManager(AssetManager assetManager, Player player, World world, EnemyDeathListener enemyDeathListener) {
         this.assetManager = assetManager;
         this.player = player;
-        enemyList = new DelayedRemovalArray<EnemyBat>();
+        enemyList = new DelayedRemovalArray<Enemy>();
         this.enemySpawners = new Array<EnemySpawner>();
         this.world = world;
         this.enemyDeathListener = enemyDeathListener;
@@ -72,14 +69,14 @@ public class EnemyManager {
     }
 
     public void draw(SpriteBatch spriteBatch) {
-        for (EnemyBat enemy : enemyList) {
+        for (Enemy enemy : enemyList) {
             enemy.draw(spriteBatch);
         }
     }
 
 
     public void checkForPlayerCollisions() {
-        for (EnemyBat enemy : enemyList) {
+        for (Enemy enemy : enemyList) {
             if (!enemy.isActive) {
                 continue;
             }
@@ -94,7 +91,7 @@ public class EnemyManager {
         if(!sword.isActive()) return;
 
         enemyList.begin();
-        for (EnemyBat enemy : enemyList) {
+        for (Enemy enemy : enemyList) {
             if(!enemy.isActive) {
                 continue;
             }
@@ -116,7 +113,7 @@ public class EnemyManager {
                                              Sound hitSound) {
         projectiles.begin();
         enemyList.begin();
-        for (EnemyBat enemy : enemyList) {
+        for (Enemy enemy : enemyList) {
             if(!enemy.isActive) {
                 continue;
             }
@@ -137,13 +134,13 @@ public class EnemyManager {
         enemyList.end();
     }
 
-    private void bloodSplash(ParticleEngine particleEngine, EnemyBat enemy) {
+    private void bloodSplash(ParticleEngine particleEngine, Enemy enemy) {
         for (int i = 0; i < 4; i++) {
             particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
         }
     }
     public void drawDebug(ShapeRenderer shapeRenderer) {
-        for (EnemyBat enemy : enemyList) {
+        for (Enemy enemy : enemyList) {
             enemy.drawDebug(shapeRenderer);
         }
     }
@@ -193,7 +190,7 @@ public class EnemyManager {
 
         @Override
         public int findNeighbors(ProximityCallback<Vector2> callback) {
-            for (EnemyBat enemy : enemyList) {
+            for (Enemy enemy : enemyList) {
                 if (enemy != owner) {
                     callback.reportNeighbor(enemy);
                 }
