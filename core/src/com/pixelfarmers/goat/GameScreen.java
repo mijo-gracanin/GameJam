@@ -199,6 +199,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void setupInputProcessor() {
+        final Sound projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
         Gdx.input.setInputProcessor(new InputAdapter() {
 
             @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
@@ -206,6 +207,7 @@ public class GameScreen extends ScreenAdapter {
                     Projectile projectile = new Projectile(player.getPosition().cpy(),
                             player.getOrientation() - MathUtils.PI/2);
                     projectiles.add(projectile);
+                    projectileSound.play();
                 }
                 else if (button == Input.Buttons.RIGHT) {
                     player.castSword();
