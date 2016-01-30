@@ -18,13 +18,13 @@ import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.MockLevelGenerator;
 
-/**
- * Created by mijo on 1/27/16.
- */
 public class GameScreen extends ScreenAdapter {
 
     private static final float WORLD_WIDTH = 640;
     private static final float WORLD_HEIGHT = 480;
+
+    private static final int SCREEN_WIDTH = 800;
+    private static final int SCREEN_HEIGHT = 600;
 
     private ShapeRenderer shapeRenderer;
     private Viewport viewport;
@@ -53,6 +53,7 @@ public class GameScreen extends ScreenAdapter {
         camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
         camera.update();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+        Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
 

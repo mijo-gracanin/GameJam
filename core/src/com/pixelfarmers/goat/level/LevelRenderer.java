@@ -17,10 +17,10 @@ public class LevelRenderer {
     }
 
     public void render(SpriteBatch batch, Level level) {
-        for (int x = 0; x < level.width(); x++) {
-            for (int y = 0; y < level.height(); y++) {
-                Tile tile = level.getTile(x, y);
-                renderTile(batch, tile, TILE_SIZE * x, TILE_SIZE * y);
+        for (int col = 0; col < level.width(); col++) {
+            for (int row = 0; row < level.height(); row++) {
+                Tile tile = level.getTile(col, row);
+                renderTile(batch, tile, TILE_SIZE * col, TILE_SIZE * row);
             }
         }
     }
