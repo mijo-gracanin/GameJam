@@ -1,2 +1,2 @@
 # GameJam
-Template for LibGDX project
+Goat Rescue game.
