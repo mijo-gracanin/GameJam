@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.enemy.TextureFilePaths;
+import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.TiledMapLevelLoader;
@@ -48,6 +49,7 @@ public class GameScreen extends ScreenAdapter {
     private Level currentLevel;
     private LevelRenderer levelRenderer;
     private Array<Projectile> projectiles = new Array<Projectile>();
+    private Array<Projectile>projectilesForRemoval = new Array<Projectile>();
 
     private EnemyManager enemyManager;
 
@@ -85,6 +87,11 @@ public class GameScreen extends ScreenAdapter {
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
 
         setupInputProcessor();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
     }
 
     @Override
@@ -153,7 +160,13 @@ public class GameScreen extends ScreenAdapter {
     private void updateProjectiles(float delta) {
         for (Projectile projectile: projectiles) {
             projectile.update(delta);
+            if (CollisionDetection.isCharacterCollidingWall(projectile, currentLevel)) {
+                projectilesForRemoval.add(projectile);
+            }
         }
+
+        projectiles.removeAll(projectilesForRemoval, true);
+        projectilesForRemoval.clear();
     }
 
     private void clearScreen() {
