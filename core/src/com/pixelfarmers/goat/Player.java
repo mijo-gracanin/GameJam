@@ -7,50 +7,51 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-/**
- * Created by mijo on 29/01/16.
- */
+
 public class Player implements Location<Vector2> {
 
-    public enum Movement {
-        UP, DOWN, LEFT, RIGHT, STOP
-    }
-
-    public Movement movementDirection = Movement.STOP;
+    private Vector2 movementDirection = new Vector2();
 
     private static final float COLLISION_RADIUS = 16f;
-    private static final float MOVEMENT_SPEED = 4;
+    private static final float MOVEMENT_SPEED = 100f;
     private static final float WEAPON_WIDTH = 4;
-    private static final float WEAPON_HEIGHT = 12;
+    private static final float WEAPON_HEIGHT = 16;
+    private static final float SPEED_DECREASE_FACTOR = 0.8f;
     private final Circle collisionCircle;
     private final Rectangle weapon;
     private float orientationInRadians = 0;
-    private Vector2 position = new Vector2();
+    private Vector2 position;
 
-    public Player() {
+    public Player(int x, int y) {
+        position = new Vector2(x, y);
         collisionCircle = new Circle(position.x, position.y, COLLISION_RADIUS);
         weapon = new Rectangle(position.x, position.y, WEAPON_WIDTH, WEAPON_HEIGHT);
     }
 
     public void update(float delta) {
-        switch (movementDirection) {
-            case UP: {
-                position.y += MOVEMENT_SPEED;
-            }
-            break;
-            case DOWN: {
-                position.y -= MOVEMENT_SPEED;
-            }
-            break;
-            case LEFT: {
-                position.x -= MOVEMENT_SPEED;
-            }
-            break;
-            case RIGHT: {
-                position.x += MOVEMENT_SPEED;
-            }
-            break;
-        }
+        position.x += movementDirection.x * MOVEMENT_SPEED * delta;
+        position.y += movementDirection.y * MOVEMENT_SPEED * delta;
+        movementDirection.scl(SPEED_DECREASE_FACTOR);
+    }
+
+    public void goLeft() {
+        movementDirection.set(-1, movementDirection.y);
+        movementDirection.nor();
+    }
+
+    public void goRight() {
+        movementDirection.set(1, movementDirection.y);
+        movementDirection.nor();
+    }
+
+    public void goDown() {
+        movementDirection.set(movementDirection.x, -1);
+        movementDirection.nor();
+    }
+
+    public void goUp() {
+        movementDirection.set(movementDirection.x, 1);
+        movementDirection.nor();
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
@@ -60,6 +61,7 @@ public class Player implements Location<Vector2> {
                 WEAPON_WIDTH, WEAPON_HEIGHT,
                 1.0f, 1.0f,
                 orientationInRadians * MathUtils.radDeg);
+        //Gdx.app.log("Angle", "" + orientationInRadians * MathUtils.radDeg);
     }
 
     @Override

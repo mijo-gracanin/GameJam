@@ -5,21 +5,26 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.pixelfarmers.goat.level.Level;
+import com.pixelfarmers.goat.level.LevelRenderer;
+import com.pixelfarmers.goat.level.MockLevelGenerator;
 
-/**
- * Created by mijo on 1/27/16.
- */
 public class GameScreen extends ScreenAdapter {
 
     private static final float WORLD_WIDTH = 640;
     private static final float WORLD_HEIGHT = 480;
+
+    private static final int SCREEN_WIDTH = 800;
+    private static final int SCREEN_HEIGHT = 600;
 
     private ShapeRenderer shapeRenderer;
     private Viewport viewport;
@@ -27,6 +32,15 @@ public class GameScreen extends ScreenAdapter {
     private SpriteBatch batch;
 
     private Player player;
+    private Level currentLevel;
+    private LevelRenderer levelRenderer;
+
+    private BitmapFont bitmapFont;
+
+    public GameScreen() {
+        bitmapFont = new BitmapFont();
+        bitmapFont.setColor(Color.WHITE);
+    }
 
     @Override
     public void resize(int width, int height) {
@@ -39,10 +53,15 @@ public class GameScreen extends ScreenAdapter {
         camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
         camera.update();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+        Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
 
-        player = new Player();
+        player = new Player(32, 32);
+        levelRenderer = new LevelRenderer();
+        currentLevel = new MockLevelGenerator().generate();
+
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
     }
 
     @Override
@@ -58,8 +77,10 @@ public class GameScreen extends ScreenAdapter {
     private void draw(float delta) {
         batch.setProjectionMatrix(camera.projection);
         batch.setTransformMatrix(camera.view);
+
         batch.begin();
         // Draw sprites
+        levelRenderer.render(batch, currentLevel);
         batch.end();
     }
 
@@ -75,6 +96,8 @@ public class GameScreen extends ScreenAdapter {
 
     private void update(float delta) {
         player.update(delta);
+        camera.position.set(player.getPosition().x, player.getPosition().y, 0);
+        camera.update();
     }
 
     private void clearScreen() {
@@ -87,18 +110,24 @@ public class GameScreen extends ScreenAdapter {
         boolean rPressed = Gdx.input.isKeyPressed(Input.Keys.D);
         boolean uPressed = Gdx.input.isKeyPressed(Input.Keys.W);
         boolean dPressed = Gdx.input.isKeyPressed(Input.Keys.S);
+        boolean escPressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
 
-        if (lPressed) player.movementDirection = Player.Movement.LEFT;
-        if (rPressed) player.movementDirection = Player.Movement.RIGHT;
-        if (uPressed) player.movementDirection = Player.Movement.UP;
-        if (dPressed) player.movementDirection = Player.Movement.DOWN;
-
-        if (!lPressed && !rPressed && !uPressed && !dPressed) {
-            player.movementDirection = Player.Movement.STOP;
+        if (escPressed) {
+            Gdx.app.exit();
         }
 
+        if (lPressed) player.goLeft();
+        if (rPressed) player.goRight();
+        if (uPressed) player.goUp();
+        if (dPressed) player.goDown();
+
         Vector2 mousePosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-        float orientation = PFMathUtils.calcRotationAngleInDegrees(player.getPosition(), mousePosition);
+        if (mousePosition.x >= 0 && mousePosition.x < WORLD_WIDTH &&
+                mousePosition.y >= 0 && mousePosition.y < WORLD_HEIGHT) {
+            mousePosition.y = WORLD_HEIGHT - mousePosition.y; // Mouse origin is at TOP left
+        }
+        Gdx.app.log("Mouse", "" + mousePosition.x + " " + mousePosition.y);
+        float orientation = PFMathUtils.calcRotationAngleInRadians(player.getPosition(), mousePosition);
         player.setOrientation(orientation);
     }
 }

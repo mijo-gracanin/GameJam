@@ -22,20 +22,8 @@ public class PFMathUtils {
      * @param targetPt   Point we want to calcuate the angle to.
      * @return angle in degrees.  This is the angle from centerPt to targetPt.
      */
-    public static float calcRotationAngleInDegrees(Vector2 centerPt, Vector2 targetPt)
-    {
-        // calculate the angle theta from the deltaY and deltaX values
-        // (atan2 returns radians values from [-PI,PI])
-        // 0 currently points EAST.
-        // NOTE: By preserving Y and X param order to atan2,  we are expecting
-        // a CLOCKWISE angle direction.
-        float theta = MathUtils.atan2(targetPt.y - centerPt.y, targetPt.x - centerPt.x);
-
-        // rotate the theta angle clockwise by 90 degrees
-        // (this makes 0 point NORTH)
-        // NOTE: adding to an angle rotates it clockwise.
-        // subtracting would rotate it counter-clockwise
-        theta += MathUtils.PI / 2.0;
+    public static float calcRotationAngleInDegrees(Vector2 centerPt, Vector2 targetPt) {
+        float theta = calcRotationAngleInRadians(centerPt, targetPt);
 
         // convert from radians to degrees
         // this will give you an angle from [0->270],[-180,0]
@@ -50,5 +38,22 @@ public class PFMathUtils {
         }
 
         return angle;
+    }
+
+    public static float calcRotationAngleInRadians(Vector2 centerPt, Vector2 targetPt) {
+        // calculate the angle theta from the deltaY and deltaX values
+        // (atan2 returns radians values from [-PI,PI])
+        // 0 currently points EAST.
+        // NOTE: By preserving Y and X param order to atan2,  we are expecting
+        // a CLOCKWISE angle direction.
+        float theta = MathUtils.atan2(targetPt.y - centerPt.y, targetPt.x - centerPt.x);
+
+        // rotate the theta angle clockwise by 90 degrees
+        // (this makes 0 point NORTH)
+        // NOTE: adding to an angle rotates it clockwise.
+        // subtracting would rotate it counter-clockwise
+        theta += MathUtils.PI / 2.0;
+
+        return theta;
     }
 }
