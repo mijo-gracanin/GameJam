@@ -32,6 +32,10 @@ public class Enemies {
         enemySpawners.add(spawner);
     }
 
+    public void addSpawners(Array<EnemySpawner> spawners) {
+        enemySpawners.addAll(spawners);
+    }
+
     public void update(float delta) {
         for (int i = 0; i < enemyList.size; i++) {
             enemyList.get(i).update(delta);

@@ -3,17 +3,23 @@ package com.pixelfarmers.goat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.ai.GdxAI;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.pixelfarmers.goat.enemy.Enemies;
+import com.pixelfarmers.goat.enemy.SpawnerFactory;
+import com.pixelfarmers.goat.enemy.TextureFilePaths;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.MockLevelGenerator;
@@ -27,6 +33,7 @@ public class GameScreen extends ScreenAdapter {
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 600;
 
+    private AssetManager assetManager;
     private ShapeRenderer shapeRenderer;
     private Viewport viewport;
     private Camera camera;
@@ -35,6 +42,8 @@ public class GameScreen extends ScreenAdapter {
     private Player player;
     private Level currentLevel;
     private LevelRenderer levelRenderer;
+
+    private Enemies enemies;
 
     private BitmapFont bitmapFont;
 
@@ -55,13 +64,18 @@ public class GameScreen extends ScreenAdapter {
         camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
         camera.update();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
-
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
+
+        assetManager = new AssetManager();
+        assetManager.load(TextureFilePaths.KAMIKAZE, Texture.class);
+        assetManager.finishLoading();
+
         player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
         currentLevel = new MockLevelGenerator().generate();
-
+        enemies = new Enemies(assetManager, player);
+        enemies.addSpawners(SpawnerFactory.createSpawnersForLevel(enemies, 1));
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
     }
 
@@ -70,7 +84,6 @@ public class GameScreen extends ScreenAdapter {
         queryInput();
         update(delta);
         clearScreen();
-
         draw(delta);
         drawDebug(delta);
     }
@@ -80,8 +93,8 @@ public class GameScreen extends ScreenAdapter {
         batch.setTransformMatrix(camera.view);
 
         batch.begin();
-        // Draw sprites
         levelRenderer.render(batch, currentLevel);
+        enemies.draw(batch);
         batch.end();
     }
 
@@ -96,7 +109,9 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void update(float delta) {
+        GdxAI.getTimepiece().update(delta);
         player.update(delta);
+        enemies.update(delta);
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();
     }
@@ -130,5 +145,11 @@ public class GameScreen extends ScreenAdapter {
         Gdx.app.log("Mouse", "" + mousePosition.x + " " + mousePosition.y);
         float orientation = PFMathUtils.calcRotationAngleInRadians(player.getPosition(), mousePosition);
         player.setOrientation(orientation);
+    }
+
+    @Override
+    public void hide() {
+        assetManager.dispose();
+        super.hide();
     }
 }
