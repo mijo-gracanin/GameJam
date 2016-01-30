@@ -90,10 +90,29 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        queryKeyboardInput();
         update(delta);
         clearScreen();
         draw(delta);
         drawDebug(delta);
+    }
+
+    private void queryKeyboardInput() {
+        boolean escPressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+
+        if (escPressed) {
+            Gdx.app.exit();
+        }
+
+        boolean lPressed = Gdx.input.isKeyPressed(Input.Keys.A);
+        boolean rPressed = Gdx.input.isKeyPressed(Input.Keys.D);
+        boolean uPressed = Gdx.input.isKeyPressed(Input.Keys.W);
+        boolean dPressed = Gdx.input.isKeyPressed(Input.Keys.S);
+
+        if (lPressed) player.goLeft();
+        if (rPressed) player.goRight();
+        if (uPressed) player.goUp();
+        if (dPressed) player.goDown();
     }
 
     private void draw(float delta) {
@@ -154,25 +173,6 @@ public class GameScreen extends ScreenAdapter {
                 float orientation = PFMathUtils.calcRotationAngleInRadians(player.getPosition(),
                         new Vector2(tp.x, tp.y));
                 player.setOrientation(orientation);
-                return true;
-            }
-
-            @Override public boolean keyDown (int keycode) {
-                boolean escPressed = keycode == Input.Keys.ESCAPE;
-
-                if (escPressed) {
-                    Gdx.app.exit();
-                }
-
-                boolean lPressed = keycode == Input.Keys.A;
-                boolean rPressed = keycode == Input.Keys.D;
-                boolean uPressed = keycode == Input.Keys.W;
-                boolean dPressed = keycode == Input.Keys.S;
-
-                if (lPressed) player.goLeft();
-                if (rPressed) player.goRight();
-                if (uPressed) player.goUp();
-                if (dPressed) player.goDown();
                 return true;
             }
         });
