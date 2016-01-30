@@ -3,7 +3,6 @@ package com.pixelfarmers.goat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.assets.AssetManager;
@@ -22,7 +21,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.enemy.TextureFilePaths;
@@ -82,7 +80,7 @@ public class GameScreen extends ScreenAdapter {
         player = new Player(32, 32);
         levelRenderer = new LevelRenderer();
         currentLevel = new MockLevelGenerator().generate();
-        enemyManager = new EnemyManager(assetManager, player);
+        enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld());
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
 
