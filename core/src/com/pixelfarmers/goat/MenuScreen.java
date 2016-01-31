@@ -21,9 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-/**
- * Created by mijo on 30/01/16.
- */
+
 public class MenuScreen extends ScreenAdapter {
 
     private static final float WORLD_WIDTH = GameScreen.WORLD_WIDTH;
