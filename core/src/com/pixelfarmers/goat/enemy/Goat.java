@@ -44,9 +44,9 @@ public class Goat extends Enemy implements Telegraph {
     private TextureRegion getCurrentTexture() {
         if (isFollowingPlayer) {
             TextureRegion textureRegion = animation.getKeyFrame(stateTime, true);
-            if (linearVelocity.x < 0 && !textureRegion.isFlipX()) {
+            if (linearVelocity.x > 0 && !textureRegion.isFlipX()) {
                 textureRegion.flip(true, false);
-            } else if (linearVelocity.x > 0 && textureRegion.isFlipX()) {
+            } else if (linearVelocity.x < 0 && textureRegion.isFlipX()) {
                 textureRegion.flip(true, false);
             }
             return textureRegion;
