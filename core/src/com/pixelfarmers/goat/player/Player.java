@@ -56,7 +56,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
         this.onHitListener = onHitListener;
         position = startingPosition;
         collisionCircle = new Circle(position.x, position.y, COLLISION_RADIUS);
-        sword = new Sword(position.cpy());
+        sword = new Sword(position.cpy(), assetManager);
         setupAnimations();
     }
 
@@ -154,6 +154,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
     }
 
     public void draw(Batch batch) {
+        sword.draw(batch);
         animationStateTime += Gdx.graphics.getDeltaTime();
         if (!isInvincible || shouldShowWhileInvincible()) {
             batch.draw(getCurrentTexture(), position.x - COLLISION_RADIUS, position.y - COLLISION_RADIUS);

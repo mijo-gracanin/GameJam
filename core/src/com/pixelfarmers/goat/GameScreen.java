@@ -129,6 +129,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         assetManager.load("projectile_shoot.wav", Sound.class);
         assetManager.load("sword_hit.wav", Sound.class);
         assetManager.load("song.mp3", Music.class);
+        assetManager.load("sword.png", Texture.class);
         assetManager.finishLoading();
     }
 
