@@ -11,7 +11,6 @@ import com.badlogic.gdx.physics.box2d.World;
 public class Level {
 
     private static Vector2 PLAYER_START_POSITION = new Vector2(352, 352);
-
     private static Vector2 GOAT_START_POSITION = new Vector2(352 + 5 * Tile.TILE_SIZE, 352);//new Vector2(1120, 832);
 
     private final Tile[][] tiles;
@@ -70,12 +69,11 @@ public class Level {
     }
 
     public Vector2 getPlayerStartPosition() {
-        return PLAYER_START_POSITION;
+        return PLAYER_START_POSITION.cpy();
     }
 
-
     public Vector2 getGoatStartingPosition() {
-        return GOAT_START_POSITION;
+        return GOAT_START_POSITION.cpy();
     }
 
 }
