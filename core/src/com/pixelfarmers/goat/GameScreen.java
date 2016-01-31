@@ -133,7 +133,8 @@ public class GameScreen extends ScreenAdapter {
             }
         });
         currentLevel = new TiledMapLevelLoader("test_level.tmx").generate();
-        enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld(), currentLevel, new EnemyManager.EnemyDeathListener() {
+        currentLevel = new TiledMapLevelLoader("map.tmx").generate();
+        enemyManager = new EnemyManager(player, currentLevel.getWorld(), currentLevel, new EnemyManager.EnemyDeathListener() {
             @Override
             public void onDeath(float x, float y) {
                 if (GameSettings.getInstance().getBloodLevel() == GameSettings.BloodLevel.NORMAL) {
@@ -286,8 +287,8 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void hide() {
-        assetManager.dispose();
         music.stop();
+        assetManager.dispose();
         super.hide();
     }
 }

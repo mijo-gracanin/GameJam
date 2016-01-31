@@ -1,6 +1,6 @@
 package com.pixelfarmers.goat.enemy;
 
-import com.badlogic.gdx.ai.utils.Location;
+import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -58,7 +58,7 @@ public abstract class EnemySpawner {
                 && timeToSpawn <= 0;
     }
 
-    public Array<Enemy> spawn(Location<Vector2> player) {
+    public Array<Enemy> spawn(Steerable<Vector2> player) {
         spawnedSoFar+=numEnemiesToSpawnAtOnce;
         timeToSpawn = spawnRateSeconds;
         Array<Enemy> spawnedEnemies = new Array<Enemy>(numEnemiesToSpawnAtOnce);
@@ -71,5 +71,5 @@ public abstract class EnemySpawner {
         return spawnedEnemies;
     }
 
-    protected abstract Enemy createEnemy(EnemyManager enemyManager, Vector2 position, Location<Vector2>  player);
+    protected abstract Enemy createEnemy(EnemyManager enemyManager, Vector2 position, Steerable<Vector2> player);
 }

@@ -1,6 +1,7 @@
 package com.pixelfarmers.goat.player;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,7 +20,7 @@ import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.weapon.Sword;
 
 
-public class Player implements PhysicalEntity {
+public class Player implements PhysicalEntity, Steerable<Vector2> {
 
     public interface OnHitListener {
         void onHit(int newHitPoints);
@@ -235,5 +236,81 @@ public class Player implements PhysicalEntity {
     @Override
     public Circle getCollisionCircle() {
         return collisionCircle;
+    }
+
+
+    @Override
+    public Vector2 getLinearVelocity() {
+        return new Vector2(movementDirection.x * MOVEMENT_SPEED, movementDirection.y * MOVEMENT_SPEED);
+    }
+
+    @Override
+    public float getAngularVelocity() {
+        return 0;
+    }
+
+    @Override
+    public float getBoundingRadius() {
+        return COLLISION_RADIUS;
+    }
+
+    @Override
+    public boolean isTagged() {
+        return false;
+    }
+
+    @Override
+    public void setTagged(boolean tagged) {
+
+    }
+
+    @Override
+    public float getZeroLinearSpeedThreshold() {
+        return 0;
+    }
+
+    @Override
+    public void setZeroLinearSpeedThreshold(float value) {
+
+    }
+
+    @Override
+    public float getMaxLinearSpeed() {
+        return 0;
+    }
+
+    @Override
+    public void setMaxLinearSpeed(float maxLinearSpeed) {
+
+    }
+
+    @Override
+    public float getMaxLinearAcceleration() {
+        return 0;
+    }
+
+    @Override
+    public void setMaxLinearAcceleration(float maxLinearAcceleration) {
+
+    }
+
+    @Override
+    public float getMaxAngularSpeed() {
+        return 0;
+    }
+
+    @Override
+    public void setMaxAngularSpeed(float maxAngularSpeed) {
+
+    }
+
+    @Override
+    public float getMaxAngularAcceleration() {
+        return 0;
+    }
+
+    @Override
+    public void setMaxAngularAcceleration(float maxAngularAcceleration) {
+
     }
 }
