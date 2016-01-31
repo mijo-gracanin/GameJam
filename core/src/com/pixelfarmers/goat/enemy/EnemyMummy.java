@@ -27,12 +27,12 @@ public class EnemyMummy extends Enemy {
 
     @Override
     public float getMaxLinearSpeed() {
-        return 80;
+        return 50;
     }
 
     @Override
     public float getMaxLinearAcceleration() {
-        return 1000;
+        return 800;
     }
 
     @Override
