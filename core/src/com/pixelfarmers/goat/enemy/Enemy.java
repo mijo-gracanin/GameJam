@@ -50,7 +50,7 @@ public abstract class Enemy extends SteerableAdapter<Vector2> {
     protected abstract TextureRegion getTexture();
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
-        //shapeRenderer.circle(position.x, position.y, BOUNDING_RADIUS);
+        //shapeRenderer.circle(position.x, position.y, getBoundingRadius());
     }
 
     public Circle getCollisionCircle() {
