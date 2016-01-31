@@ -65,7 +65,7 @@ public class MenuScreen extends ScreenAdapter {
         ImageButton normalButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(normalButtonTexture)),
                 new TextureRegionDrawable(new TextureRegion(normalButtonPressTexture)));
         stage.addActor(normalButton);
-        normalButton.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2 + 20, Align.bottom);
+        normalButton.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2 - 50, Align.bottom);
 
         normalButton.addListener(new ChangeListener() {
             @Override
@@ -82,7 +82,7 @@ public class MenuScreen extends ScreenAdapter {
         ImageButton hardcoreButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(hardcoreButtonTexture)),
                 new TextureRegionDrawable(new TextureRegion(hardcoreButtonPressTexture)));
         stage.addActor(hardcoreButton);
-        hardcoreButton.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2 - 20, Align.top);
+        hardcoreButton.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2 - 70, Align.top);
 
         hardcoreButton.addListener(new ChangeListener() {
             @Override
@@ -99,7 +99,7 @@ public class MenuScreen extends ScreenAdapter {
         ImageButton creditsButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(creditsButtonTexture)),
                 new TextureRegionDrawable(new TextureRegion(creditsButtonPressTexture)));
         stage.addActor(creditsButton);
-        creditsButton.setPosition(WORLD_WIDTH / 2, 50, Align.bottom);
+        creditsButton.setPosition(WORLD_WIDTH / 2, 10, Align.bottom);
 
         creditsButton.addListener(new ChangeListener() {
             @Override
