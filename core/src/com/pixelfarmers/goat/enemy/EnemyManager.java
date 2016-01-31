@@ -56,21 +56,27 @@ public class EnemyManager implements Telegraph {
 
         cultistLocations.add(calculateCultistLocation(103, 35, 0));
         cultistLocations.add(calculateCultistLocation(95, 35, 8));
-        cultistLocations.add(calculateCultistLocation(99, 40, 8));
+        cultistLocations.add(calculateCultistLocation(103, 40, 0));
+        cultistLocations.add(calculateCultistLocation(95, 40, 8));
 
         Cultist cultist;
         cultist = new Cultist(cultistLocations.get(0));
-        addCultistSteeringBehavior(cultist, cultistLocations.get(1).cpy(), cultistLocations.get(2).cpy());
+        addCultistSteeringBehavior(cultist, cultistLocations.get(1));
         enemyList.add(cultist);
         cultists.add(cultist);
 
         cultist = new Cultist(cultistLocations.get(1));
-        addCultistSteeringBehavior(cultist, cultistLocations.get(2), cultistLocations.get(0));
+        addCultistSteeringBehavior(cultist, cultistLocations.get(3));
         enemyList.add(cultist);
         cultists.add(cultist);
 
         cultist = new Cultist(cultistLocations.get(2));
-        addCultistSteeringBehavior(cultist, cultistLocations.get(0), cultistLocations.get(1));
+        addCultistSteeringBehavior(cultist, cultistLocations.get(0));
+        enemyList.add(cultist);
+        cultists.add(cultist);
+
+        cultist = new Cultist(cultistLocations.get(3));
+        addCultistSteeringBehavior(cultist, cultistLocations.get(2));
         enemyList.add(cultist);
         cultists.add(cultist);
     }
@@ -81,10 +87,9 @@ public class EnemyManager implements Telegraph {
         return offseted;
     }
 
-    private void addCultistSteeringBehavior(Cultist cultist, Vector2 p1, Vector2 p2) {
+    private void addCultistSteeringBehavior(Cultist cultist, Vector2 p1) {
         Array<Vector2> waypoints = new Array<Vector2>();
         waypoints.add(p1);
-        waypoints.add(p2);
         waypoints.add(cultist.getPosition());
         LinePath<Vector2> path = new LinePath<Vector2>(waypoints, false);
         FollowPath<Vector2, LinePath.LinePathParam> followSb = new FollowPath<Vector2, LinePath.LinePathParam>(cultist, path, 40);
