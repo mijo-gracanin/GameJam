@@ -27,7 +27,7 @@ public class EnemyMummy extends Enemy {
 
     @Override
     public float getMaxLinearSpeed() {
-        return 50;
+        return 30;
     }
 
     @Override
@@ -42,6 +42,6 @@ public class EnemyMummy extends Enemy {
 
     @Override
     public int getDamage() {
-        return 10;
+        return 2;
     }
 }

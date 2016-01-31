@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer;
 import com.pixelfarmers.goat.PhysicalEntity;
 import com.pixelfarmers.goat.TextureFilePaths;
 import com.pixelfarmers.goat.level.CollisionDetection;
@@ -19,6 +20,10 @@ import com.pixelfarmers.goat.weapon.Sword;
 
 
 public class Player implements PhysicalEntity {
+
+    public interface OnHitListener {
+        void onHit(int newHitPoints);
+    }
 
     public final Sword sword;
 
@@ -32,16 +37,22 @@ public class Player implements PhysicalEntity {
     private float orientationInRadians = 0;
     private Vector2 movementDirection = new Vector2();
     private Vector2 position;
+    private OnHitListener onHitListener;
+
     private int hitPoints = 10;
+    private int maxHitPoints = 10;
 
     private Animation walkingAnimation;
     float animationStateTime;
     private Animation idleAnimation;
 
+    private boolean isInvincible = false;
+
     AssetManager assetManager;
 
-    public Player(AssetManager assetManager, Vector2 startingPosition) {
+    public Player(AssetManager assetManager, Vector2 startingPosition, OnHitListener onHitListener) {
         this.assetManager = assetManager;
+        this.onHitListener = onHitListener;
         position = startingPosition;
         collisionCircle = new Circle(position.x, position.y, COLLISION_RADIUS);
         sword = new Sword(position.cpy());
@@ -69,8 +80,27 @@ public class Player implements PhysicalEntity {
     }
 
     public boolean onHit(int damage) {
+        if (isInvincible) {
+            return false;
+        }
+        isInvincible = true;
+        setInvincibilityTimer();
         hitPoints -= damage;
+        onHitListener.onHit(hitPoints);
         return hitPoints <= 0;
+    }
+
+    private void setInvincibilityTimer() {
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                isInvincible = false;
+            }
+        }, 2.0f);
+    }
+
+    public int getMaxHitPoints() {
+        return maxHitPoints;
     }
 
     public boolean isAlive() {
@@ -124,9 +154,14 @@ public class Player implements PhysicalEntity {
 
     public void draw(Batch batch) {
         animationStateTime += Gdx.graphics.getDeltaTime();
-        batch.draw(getCurrentTexture(),
-                position.x - COLLISION_RADIUS,
-                position.y - COLLISION_RADIUS);
+        if (!isInvincible || shouldShowWhileInvincible()) {
+            batch.draw(getCurrentTexture(), position.x - COLLISION_RADIUS, position.y - COLLISION_RADIUS);
+        }
+    }
+
+    private boolean shouldShowWhileInvincible() {
+        float msec = animationStateTime - (int)animationStateTime;
+        return msec < 0.5f;
     }
 
     private TextureRegion getCurrentTexture() {

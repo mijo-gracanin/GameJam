@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.fx.ParticleEngine;
+import com.pixelfarmers.goat.hud.Hearts;
 import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
@@ -58,6 +59,7 @@ public class GameScreen extends ScreenAdapter {
     private BitmapFont bitmapFont;
     private Texture fogTexture;
     private Stage stage;
+    private Hearts heartsContainer;
 
     private Sound swordHitSound;
     private Sound projectileHitSound;
@@ -92,8 +94,7 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
         stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
-        Image fog = new Image(fogTexture);
-        stage.addActor(fog);
+        setupFog();
 
         assetManager = new AssetManager();
         assetManager.load(TextureFilePaths.CHARACTER, Texture.class);
@@ -119,10 +120,20 @@ public class GameScreen extends ScreenAdapter {
         init();
     }
 
+    private void setupFog() {
+        Image fog = new Image(fogTexture);
+        stage.addActor(fog);
+    }
+
     private void init() {
-        player = new Player(assetManager, new Vector2(32, 32));
+        player = new Player(assetManager, new Vector2(32, 32), new Player.OnHitListener() {
+            @Override
+            public void onHit(int newHitPoints) {
+                heartsContainer.setCount(newHitPoints);
+            }
+        });
         currentLevel = new TiledMapLevelLoader("test_level.tmx").generate();
-        enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld(), new EnemyManager.EnemyDeathListener() {
+        enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld(), currentLevel, new EnemyManager.EnemyDeathListener() {
             @Override
             public void onDeath(float x, float y) {
                 if (GameSettings.getInstance().getBloodLevel() == GameSettings.BloodLevel.NORMAL) {
@@ -131,6 +142,7 @@ public class GameScreen extends ScreenAdapter {
             }
         });
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
+        heartsContainer = new Hearts(stage, WORLD_WIDTH, player);
     }
 
     @Override

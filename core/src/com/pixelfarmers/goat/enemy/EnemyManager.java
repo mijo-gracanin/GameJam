@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.pixelfarmers.goat.fx.BloodParticle;
 import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.level.Box2dRaycastCollisionDetector;
+import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.weapon.Projectile;
 import com.pixelfarmers.goat.weapon.Sword;
@@ -40,12 +41,15 @@ public class EnemyManager {
     private World world;
     private EnemyDeathListener enemyDeathListener;
 
-    public EnemyManager(AssetManager assetManager, Player player, World world, EnemyDeathListener enemyDeathListener) {
+    private Level level;
+
+    public EnemyManager(AssetManager assetManager, Player player, World world, Level level, EnemyDeathListener enemyDeathListener) {
         this.assetManager = assetManager;
         this.player = player;
         enemyList = new DelayedRemovalArray<Enemy>();
         this.enemySpawners = new Array<EnemySpawner>();
         this.world = world;
+        this.level = level;
         this.enemyDeathListener = enemyDeathListener;
     }
 
@@ -59,6 +63,9 @@ public class EnemyManager {
         for (int i = 0; i < enemyList.size; i++) {
             enemyList.get(i).update(delta);
         }
+
+        final int innerSpawnRadius = 320;
+        final int outerSpawnRadius = 480;
 
         for (EnemySpawner spawner : enemySpawners) {
             spawner.update(delta, player);
@@ -151,7 +158,13 @@ public class EnemyManager {
         return enemy;
     }
 
-    private SteeringBehavior<Vector2> createKamikazeSteeringBehavior(EnemyBat enemy, Location<Vector2> player) {
+    public Enemy createMummy(Vector2 position, Location<Vector2> player) {
+        Enemy enemy = new EnemyMummy(position);
+        enemy.setSteeringBehavior(createKamikazeSteeringBehavior(enemy, player));
+        return enemy;
+    }
+
+    private SteeringBehavior<Vector2> createKamikazeSteeringBehavior(Enemy enemy, Location<Vector2> player) {
         BlendedSteering<Vector2> kamikazeSteering = new BlendedSteering<Vector2>(enemy);
 
         Proximity<Vector2> proximity = new KamikazeProximity();
@@ -170,7 +183,7 @@ public class EnemyManager {
         return kamikazeSteering;
     }
 
-    private RayConfiguration<Vector2> createRayConfiguration(EnemyBat enemy) {
+    private RayConfiguration<Vector2> createRayConfiguration(Enemy enemy) {
         return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.getMaxLinearSpeed() * 2, 40, 35 * MathUtils.degreesToRadians);
     }
 
