@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
 import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
+import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.audio.Sound;
@@ -37,14 +38,11 @@ public class EnemyManager {
     private World world;
     private EnemyDeathListener enemyDeathListener;
 
-    private Level level;
-
     public EnemyManager(Player player, World world, Level level, EnemyDeathListener enemyDeathListener) {
         this.player = player;
         enemyList = new DelayedRemovalArray<Enemy>();
         this.enemySpawners = new Array<EnemySpawner>();
         this.world = world;
-        this.level = level;
         this.enemyDeathListener = enemyDeathListener;
     }
 
@@ -58,9 +56,6 @@ public class EnemyManager {
         for (int i = 0; i < enemyList.size; i++) {
             enemyList.get(i).update(delta);
         }
-
-        final int innerSpawnRadius = 320;
-        final int outerSpawnRadius = 480;
 
         for (EnemySpawner spawner : enemySpawners) {
             spawner.update(delta, player);
@@ -150,7 +145,7 @@ public class EnemyManager {
     public EnemyBat createBat(Vector2 position, Steerable<Vector2> player) {
         EnemyBat enemy = new EnemyBat(position);
 
-        BlendedSteering<Vector2> steering = createStandardSteeringBehaviors(enemy, player);
+        BlendedSteering<Vector2> steering = createStandardSteeringBehaviors(enemy);
         Pursue<Vector2> pursue = new Pursue<Vector2>(enemy, player);
         steering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(pursue, 1));
         enemy.setSteeringBehavior(steering);
@@ -158,12 +153,16 @@ public class EnemyManager {
     }
 
     public Enemy createMummy(Vector2 position, Steerable<Vector2> player) {
-        Enemy enemy = new EnemyMummy(position);
-        enemy.setSteeringBehavior(createStandardSteeringBehaviors(enemy, player));
+        Enemy enemy = new Mummy(position);
+        BlendedSteering<Vector2> steering = createStandardSteeringBehaviors(enemy);
+        Seek<Vector2> seek = new Seek<Vector2>(enemy, player);
+        steering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(seek, 1));
+        enemy.setSteeringBehavior(steering);
+        enemy.setSteeringBehavior(steering);
         return enemy;
     }
 
-    private BlendedSteering<Vector2> createStandardSteeringBehaviors(Enemy enemy, Steerable<Vector2> player) {
+    private BlendedSteering<Vector2> createStandardSteeringBehaviors(Enemy enemy) {
         BlendedSteering<Vector2> kamikazeSteering = new BlendedSteering<Vector2>(enemy);
 
         Proximity<Vector2> proximity = new KamikazeProximity();
