@@ -28,10 +28,9 @@ public class GameOverScreen extends ScreenAdapter {
 
     public GameOverScreen(Game game) {
         this.game = game;
-        bitmapFont = new BitmapFont();
+        bitmapFont = new BitmapFont(Gdx.files.internal("ui/Xeliard.fnt"));
         glyphLayout = new GlyphLayout();
         bitmapFont.setColor(Color.WHITE);
-        bitmapFont.getData().scale(1);
         spriteBatch = new SpriteBatch();
     }
 
