@@ -2,12 +2,12 @@ package com.pixelfarmers.goat;
 
 
 public class GameSettings {
-    enum Difficulty {
+    public enum Difficulty {
         NORMAL,
         HARDCORE
     }
 
-    enum BloodLevel {
+    public enum BloodLevel {
         NO_BLOOD,
         NORMAL
     }

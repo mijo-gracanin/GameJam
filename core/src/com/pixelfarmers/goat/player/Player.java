@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
+import com.pixelfarmers.goat.GameSettings;
 import com.pixelfarmers.goat.PhysicalEntity;
 import com.pixelfarmers.goat.TextureFilePaths;
 import com.pixelfarmers.goat.level.CollisionDetection;
@@ -33,6 +34,8 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
     private static final float WEAPON_WIDTH = 4;
     private static final float WEAPON_HEIGHT = 16;
     private static final float SPEED_DECREASE_FACTOR = 0.8f;
+    private static float INVINCIBILITY_DURATION = 1.2f;
+    private static float STUN_DURATION = INVINCIBILITY_DURATION * 0.5f;
     private final Circle collisionCircle;
 
     private float orientationInRadians = 0;
@@ -40,14 +43,15 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
     private Vector2 position;
     private OnHitListener onHitListener;
 
-    private int hitPoints = 10;
-    private int maxHitPoints = 10;
+    private int maxHitPoints;
+    private int hitPoints;
 
     private Animation walkingAnimation;
     float animationStateTime;
     private Animation idleAnimation;
 
     private boolean isInvincible = false;
+    private boolean isStunned = false;
 
     AssetManager assetManager;
 
@@ -58,6 +62,9 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
         collisionCircle = new Circle(position.x, position.y, COLLISION_RADIUS);
         sword = new Sword(position.cpy());
         setupAnimations();
+
+        maxHitPoints = GameSettings.getInstance().getDifficulty() == GameSettings.Difficulty.NORMAL ? 10 : 6;
+        hitPoints = maxHitPoints;
     }
 
     private void setupAnimations() {
@@ -80,12 +87,18 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
         collisionCircle.setPosition(position.x, position.y);
     }
 
-    public boolean onHit(int damage) {
+    public boolean onHit(int damage, Vector2 forceDirection) {
         if (isInvincible) {
             return false;
         }
+
         isInvincible = true;
+        isStunned = true;
+        movementDirection.set(forceDirection.x, forceDirection.y).nor();
+
         setInvincibilityTimer();
+        setStunTimer();
+
         hitPoints -= damage;
         onHitListener.onHit(hitPoints);
         return hitPoints <= 0;
@@ -97,7 +110,16 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
             public void run() {
                 isInvincible = false;
             }
-        }, 2.0f);
+        }, INVINCIBILITY_DURATION);
+    }
+
+    private void setStunTimer() {
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                isStunned = false;
+            }
+        }, STUN_DURATION);
     }
 
     public int getMaxHitPoints() {
@@ -129,28 +151,37 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
     }
 
     public void castSword() {
-        if (!sword.isActive())
+        if (!sword.isActive()) {
             sword.castSword(position);
+        }
     }
 
     public void goLeft() {
-        movementDirection.set(-1, movementDirection.y);
-        movementDirection.nor();
+        if (!isStunned) {
+            movementDirection.set(-1, movementDirection.y);
+            movementDirection.nor();
+        }
     }
 
     public void goRight() {
-        movementDirection.set(1, movementDirection.y);
-        movementDirection.nor();
+        if (!isStunned) {
+            movementDirection.set(1, movementDirection.y);
+            movementDirection.nor();
+        }
     }
 
     public void goDown() {
-        movementDirection.set(movementDirection.x, -1);
-        movementDirection.nor();
+        if (!isStunned) {
+            movementDirection.set(movementDirection.x, -1);
+            movementDirection.nor();
+        }
     }
 
     public void goUp() {
-        movementDirection.set(movementDirection.x, 1);
-        movementDirection.nor();
+        if (!isStunned) {
+            movementDirection.set(movementDirection.x, 1);
+            movementDirection.nor();
+        }
     }
 
     public void draw(Batch batch) {
