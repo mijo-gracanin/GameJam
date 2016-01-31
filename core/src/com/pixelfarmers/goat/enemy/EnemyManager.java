@@ -79,7 +79,7 @@ public class EnemyManager {
         }
     }
 
-    public void checkForSwordCollisions(Sword sword, ParticleEngine particleEngine, Sound hitSound) {
+    public void checkForSwordCollisions(Sword sword, Sound hitSound) {
         if(!sword.isActive()) return;
 
         enemyList.begin();
@@ -91,7 +91,6 @@ public class EnemyManager {
                 hitSound.play();
                 boolean isDead = enemy.onHit(sword.getDamage());
                 if (isDead) {
-                    particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
                     enemyList.removeValue(enemy, true);
                     MessageManager.getInstance().dispatchMessage(MessageCode.ENEMY_DIED, enemy.getPosition());
                 }

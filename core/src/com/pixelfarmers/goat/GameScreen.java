@@ -223,7 +223,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         updateGoat(delta);
         updateProjectiles(delta);
         enemyManager.checkForProjectileCollisions(projectiles, particleEngine, projectileHitSound);
-        enemyManager.checkForSwordCollisions(player.sword, particleEngine, swordHitSound);
+        enemyManager.checkForSwordCollisions(player.sword, swordHitSound);
         enemyManager.update(delta);
         particleEngine.update(delta);
 
@@ -303,7 +303,6 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     public void hide() {
         music.stop();
         assetManager.dispose();
-        super.hide();
     }
 
     @Override

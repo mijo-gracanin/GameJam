@@ -1,16 +1,22 @@
 package com.pixelfarmers.goat.fx;
 
 
+import com.badlogic.gdx.ai.msg.MessageManager;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.pixelfarmers.goat.MessageCode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParticleEngine {
+public class ParticleEngine implements Telegraph {
     private List<Particle> particles;
 
     public ParticleEngine() {
         particles = new ArrayList<Particle>();
+        MessageManager.getInstance().addListener(this, MessageCode.ENEMY_DIED);
     }
 
     public void update(float delta) {
@@ -47,4 +53,15 @@ public class ParticleEngine {
             list.remove(indexOfLast);
         }
     }
+
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        if(msg.message == MessageCode.ENEMY_DIED) {
+            Vector2 pos = (Vector2) msg.extraInfo;
+            addParticle(new BloodParticle(pos.x, pos.y));
+            return true;
+        }
+        return false;
+    }
+
 }
