@@ -220,7 +220,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
                 enemyManager.resume();
             }
         });
-        
+
         powerupHandler = new PowerupHandler(assetManager);
     }
 
