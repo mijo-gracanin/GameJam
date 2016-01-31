@@ -5,11 +5,10 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
 import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
+import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
-import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
-import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -145,20 +144,20 @@ public class EnemyManager {
         }
     }
 
-    public EnemyBat createBat(Vector2 position, Location<Vector2> player) {
+    public EnemyBat createBat(Vector2 position, Steerable<Vector2> player) {
         EnemyBat enemy = new EnemyBat(position);
         enemy.setSteeringBehavior(createKamikazeSteeringBehavior(enemy, player));
         return enemy;
     }
 
-    private SteeringBehavior<Vector2> createKamikazeSteeringBehavior(EnemyBat enemy, Location<Vector2> player) {
+    private SteeringBehavior<Vector2> createKamikazeSteeringBehavior(EnemyBat enemy, Steerable<Vector2> player) {
         BlendedSteering<Vector2> kamikazeSteering = new BlendedSteering<Vector2>(enemy);
 
         Proximity<Vector2> proximity = new KamikazeProximity();
         proximity.setOwner(enemy);
         CollisionAvoidance<Vector2> separationSb = new CollisionAvoidance<Vector2>(enemy, proximity);
 
-        Seek<Vector2> seekSb = new Seek<Vector2>(enemy, player);
+        Pursue<Vector2> seekSb = new Pursue<Vector2>(enemy, player);
 
         Box2dRaycastCollisionDetector raycastCollisionDetector = new Box2dRaycastCollisionDetector(world);
         RaycastObstacleAvoidance<Vector2> raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<Vector2>(enemy, createRayConfiguration(enemy));
