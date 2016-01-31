@@ -10,9 +10,9 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Level {
 
-    private static Vector2 PLAYER_START_POSITION = new Vector2(38*Tile.TILE_SIZE, 36*Tile.TILE_SIZE);
+    public static Vector2 PLAYER_START_POSITION = new Vector2(38*Tile.TILE_SIZE, 36*Tile.TILE_SIZE);
 //    private static Vector2 PLAYER_START_POSITION = new Vector2(96*Tile.TILE_SIZE, 38*Tile.TILE_SIZE);
-    private static Vector2 GOAT_START_POSITION = new Vector2(8 + 99*Tile.TILE_SIZE, 37*Tile.TILE_SIZE);
+    public static Vector2 GOAT_START_POSITION = new Vector2(8 + 99*Tile.TILE_SIZE, 37*Tile.TILE_SIZE);
 
     private final Tile[][] tiles;
     private static final Tile nullTile = new Tile(1, true, 0, 0);

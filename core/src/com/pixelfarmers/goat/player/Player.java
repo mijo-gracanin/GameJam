@@ -52,6 +52,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
 
     private boolean isInvincible = false;
     private boolean isStunned = false;
+    private boolean shouldDraw = true;
 
     AssetManager assetManager;
 
@@ -65,6 +66,14 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
 
         maxHitPoints = GameSettings.getInstance().getDifficulty() == GameSettings.Difficulty.NORMAL ? 10 : 6;
         hitPoints = maxHitPoints;
+    }
+
+    public void hide() {
+        shouldDraw = false;
+    }
+
+    public void show() {
+        shouldDraw = true;
     }
 
     private void setupAnimations() {
@@ -185,6 +194,9 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
     }
 
     public void draw(Batch batch) {
+        if (!shouldDraw) {
+            return;
+        }
         sword.draw(batch);
         animationStateTime += Gdx.graphics.getDeltaTime();
         if (!isInvincible || shouldShowWhileInvincible()) {

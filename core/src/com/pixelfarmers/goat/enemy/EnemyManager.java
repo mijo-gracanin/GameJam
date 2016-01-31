@@ -33,6 +33,7 @@ public class EnemyManager {
     private Array<EnemySpawner> enemySpawners;
     private Player player;
     private World world;
+    private boolean paused = false;
 
     public EnemyManager(Player player, World world) {
         this.player = player;
@@ -41,11 +42,23 @@ public class EnemyManager {
         this.world = world;
     }
 
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        paused = false;
+    }
+
     public void addSpawners(Array<EnemySpawner> spawners) {
         enemySpawners.addAll(spawners);
     }
 
     public void update(float delta) {
+        if (paused) {
+            return;
+        }
+
         checkForPlayerCollisions();
 
         for (int i = 0; i < enemyList.size; i++) {
