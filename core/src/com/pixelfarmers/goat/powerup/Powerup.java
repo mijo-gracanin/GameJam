@@ -26,7 +26,8 @@ public class Powerup {
     private final Vector2 position;
     private Circle collisionCircle;
     private final Texture texture;
-    private final TYPE type;
+    public final TYPE type;
+    public final float duration = 10;
 
     public Powerup(Vector2 position, Texture texture, TYPE type) {
         this.position = position;
