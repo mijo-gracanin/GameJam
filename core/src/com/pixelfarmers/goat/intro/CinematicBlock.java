@@ -39,4 +39,9 @@ public class CinematicBlock {
     private boolean isFinished() {
         return currentCinematicIndex == cinematicList.size();
     }
+
+    public void skipAll() {
+        currentCinematicIndex = cinematicList.size();
+        cameraControl.returnCameraControl();
+    }
 }

@@ -22,6 +22,8 @@ public class TiledMapLevelLoader implements LevelGenerator {
         tilePassabilityMap.put(3, false);
         tilePassabilityMap.put(4, false);
         tilePassabilityMap.put(5, false);
+        tilePassabilityMap.put(6, true);
+
         tilePassabilityMap.put(9, true);
 
         tilePassabilityMap.put(10, true);
