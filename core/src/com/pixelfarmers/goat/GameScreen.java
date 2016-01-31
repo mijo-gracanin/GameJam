@@ -25,8 +25,12 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -35,6 +39,13 @@ import com.pixelfarmers.goat.enemy.Goat;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.hud.Hearts;
+import com.pixelfarmers.goat.intro.CameraFocus;
+import com.pixelfarmers.goat.intro.CameraPan;
+import com.pixelfarmers.goat.intro.Cinematic;
+import com.pixelfarmers.goat.intro.CinematicBlock;
+import com.pixelfarmers.goat.intro.CompoundCinematic;
+import com.pixelfarmers.goat.intro.TextCinematic;
+import com.pixelfarmers.goat.intro.TextDrawer;
 import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
@@ -42,6 +53,9 @@ import com.pixelfarmers.goat.level.TiledMapLevelLoader;
 import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.powerup.PowerupHandler;
 import com.pixelfarmers.goat.weapon.Projectile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameScreen extends ScreenAdapter implements Telegraph {
 
@@ -74,6 +88,8 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private Sound projectileHitSound;
     private Sound projectileSound;
     private Texture projectileTexture;
+
+    private CinematicBlock introCinematic;
 
     Game game;
 
@@ -162,6 +178,49 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
         heartsContainer = new Hearts(stage, WORLD_WIDTH, player);
 
+        final Skin uiSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        final Group subtitlesContainer = new Group();
+        stage.addActor(subtitlesContainer);
+
+        TextDrawer textDrawer = new TextDrawer() {
+            @Override
+            public void drawText(String text) {
+                final Actor subtitles = new Label(text, uiSkin);
+                subtitlesContainer.clear();
+                subtitlesContainer.setPosition(32, 32);
+                subtitlesContainer.addActor(subtitles);
+            }
+
+            @Override
+            public void clear() {
+                subtitlesContainer.clear();
+            }
+        };
+
+        List<Cinematic> cinematicList = new ArrayList<Cinematic>();
+
+        Cinematic cameraFocus1 = new CameraFocus(3.0f, Level.GOAT_START_POSITION.x, Level.GOAT_START_POSITION.y);
+        Cinematic cameraFocus2 = new CameraFocus(3.0f, Level.GOAT_START_POSITION.x, Level.GOAT_START_POSITION.y);
+        Cinematic text1 = new TextCinematic(3.0f, 0.5f, "Evil cultists have kidnapped your goat ...", textDrawer);
+        Cinematic text2 = new TextCinematic(3.0f, 0.5f, "... and are planning to do a ritual sacrifice.", textDrawer);
+        Cinematic text3 = new TextCinematic(3.0f, 1.0f, "Save your goat.", textDrawer);
+        Cinematic cameraPan = new CameraPan(3.0f, Level.GOAT_START_POSITION, Level.PLAYER_START_POSITION, 0.1f, 1.5f);
+
+        cinematicList.add(new CompoundCinematic(cameraFocus1, text1));
+        cinematicList.add(new CompoundCinematic(cameraFocus2, text2));
+        cinematicList.add(new CompoundCinematic(cameraPan, text3));
+        cinematicList.add(cameraPan);
+
+        enemyManager.pause();
+        introCinematic = new CinematicBlock(cinematicList, new CinematicBlock.CameraControl() {
+            @Override
+            public void returnCameraControl() {
+                camera.position.set(player.getPosition().x, player.getPosition().y, 0);
+                subtitlesContainer.clear();
+                enemyManager.resume();
+            }
+        });
+
         powerupHandler = new PowerupHandler(assetManager);
     }
 
@@ -247,6 +306,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         particleEngine.update(delta);
 
         updateCamera();
+        introCinematic.update(delta, camera);
     }
 
     private void updateGoat(float delta) {
@@ -300,23 +360,24 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private void setupInputProcessor() {
         Gdx.input.setInputProcessor(new InputAdapter() {
 
-            @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 if (button == Input.Buttons.LEFT) {
                     Projectile projectile =
                             new Projectile(projectileTexture,
                                     player.getPosition().cpy(),
                                     player.getLinearVelocity(),
-                                    player.getOrientation() - MathUtils.PI/2);
+                                    player.getOrientation() - MathUtils.PI / 2);
                     projectiles.add(projectile);
                     projectileSound.play();
-                }
-                else if (button == Input.Buttons.RIGHT) {
+                } else if (button == Input.Buttons.RIGHT) {
                     player.castSword();
                 }
                 return true;
             }
 
-            @Override public boolean mouseMoved (int screenX, int screenY) {
+            @Override
+            public boolean mouseMoved(int screenX, int screenY) {
                 // we can also handle mouse movement without anything pressed
                 Vector3 tp = new Vector3();
                 camera.unproject(tp.set(screenX, screenY, 0));

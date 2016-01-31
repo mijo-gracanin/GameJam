@@ -57,6 +57,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     private boolean isInvincible = false;
     private boolean isStunned = false;
+    private boolean shouldDraw = true;
 
     AssetManager assetManager;
 
@@ -241,6 +242,9 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
     }
 
     public void draw(Batch batch) {
+        if (!shouldDraw) {
+            return;
+        }
         sword.draw(batch);
         animationStateTime += Gdx.graphics.getDeltaTime();
         if (!isInvincible || shouldShowWhileInvincible()) {
