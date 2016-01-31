@@ -1,8 +1,13 @@
 package com.pixelfarmers.goat.level;
 
 
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.utils.Array;
+import com.pixelfarmers.goat.MessageCode;
 import com.pixelfarmers.goat.PhysicalEntity;
+import com.pixelfarmers.goat.player.Player;
+import com.pixelfarmers.goat.powerup.Powerup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +15,8 @@ import java.util.List;
 public class CollisionDetection {
     private static int[] dx = {1, -1, 0,  0};
     private static int[] dy = {0,  0, 1, -1};
+
+    private static Array<Powerup> collidingPowerups = new Array<Powerup>();
 
     public static boolean isCharacterCollidingWall(PhysicalEntity character, Level level) {
         List<Tile> overlappingTiles = findOverlappingTiles(character, level);
@@ -45,4 +52,19 @@ public class CollisionDetection {
             }
         }
     }
+
+    public static void checkPlayerPowerupCollisions(Player player, Array<Powerup>powerups) {
+        for(Powerup powerup : powerups) {
+            if(Intersector.overlaps(powerup.getCollisionCircle(), player.getCollisionCircle())) {
+                collidingPowerups.add(powerup);
+            }
+        }
+
+        for(Powerup powerup : collidingPowerups) {
+            MessageManager.getInstance().dispatchMessage(0, MessageCode.POWERUP_PICKUP, powerup);
+        }
+
+        collidingPowerups.clear();
+    }
+
 }

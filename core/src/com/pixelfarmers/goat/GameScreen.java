@@ -40,6 +40,7 @@ import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.TiledMapLevelLoader;
 import com.pixelfarmers.goat.player.Player;
+import com.pixelfarmers.goat.powerup.PowerupHandler;
 import com.pixelfarmers.goat.weapon.Projectile;
 
 public class GameScreen extends ScreenAdapter implements Telegraph {
@@ -62,6 +63,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private DelayedRemovalArray<Projectile> projectiles = new DelayedRemovalArray<Projectile>();
 
     private EnemyManager enemyManager;
+    private PowerupHandler powerupHandler;
 
     private BitmapFont bitmapFont;
     private Texture fogTexture;
@@ -125,6 +127,9 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         assetManager = new AssetManager();
         assetManager.load(TextureFilePaths.CHARACTER, Texture.class);
         assetManager.load(TextureFilePaths.PROJECTILE, Texture.class);
+        assetManager.load(TextureFilePaths.HEALTH_POWERUP, Texture.class);
+        assetManager.load(TextureFilePaths.DAMAGE_POWERUP, Texture.class);
+        assetManager.load(TextureFilePaths.SPEED_POWERUP, Texture.class);
         assetManager.load("goat.wav", Sound.class);
         assetManager.load("projectile_shoot.wav", Sound.class);
         assetManager.load("sword_hit.wav", Sound.class);
@@ -155,6 +160,8 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         goat.setSteeringBehavior(enemyManager.createGoatSteeringBehavior(goat));
 
         heartsContainer = new Hearts(stage, WORLD_WIDTH, player);
+
+        powerupHandler = new PowerupHandler(assetManager);
     }
 
     @Override
@@ -230,8 +237,11 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         player.update(delta, currentLevel);
         updateGoat(delta);
         updateProjectiles(delta);
+
+        CollisionDetection.checkPlayerPowerupCollisions(player, levelRenderer.powerups);
         enemyManager.checkForProjectileCollisions(projectiles, particleEngine, projectileHitSound);
         enemyManager.checkForSwordCollisions(player.sword, swordHitSound);
+
         enemyManager.update(delta);
         particleEngine.update(delta);
 

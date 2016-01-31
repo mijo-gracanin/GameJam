@@ -8,19 +8,23 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.pixelfarmers.goat.GameSettings;
 import com.pixelfarmers.goat.MessageCode;
 import com.pixelfarmers.goat.fx.BloodStain;
+import com.pixelfarmers.goat.powerup.Powerup;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LevelRenderer implements Telegraph {
+
     private TextureRegion[] textures;
     private List<BloodStain> bloodStains;
+    public Array<Powerup> powerups;
 
     public LevelRenderer() {
-        MessageManager.getInstance().addListener(this, MessageCode.ENEMY_DIED);
+        MessageManager.getInstance().addListeners(this, MessageCode.ENEMY_DIED, MessageCode.POWERUP_ADDED, MessageCode.POWERUP_PICKUP);
         Texture tileset = new Texture("tileset.png");
         int heightInTiles = tileset.getHeight() / Tile.TILE_SIZE;
         int widthInTiles = tileset.getWidth() / Tile.TILE_SIZE;
@@ -33,6 +37,7 @@ public class LevelRenderer implements Telegraph {
         }
 
         bloodStains = new ArrayList<BloodStain>();
+        powerups = new Array<Powerup>();
     }
 
     public void render(SpriteBatch batch, Level level) {
@@ -45,10 +50,16 @@ public class LevelRenderer implements Telegraph {
         for (BloodStain bloodStain : bloodStains) {
             bloodStain.render(batch);
         }
+
+        for(Powerup powerup : powerups) {
+            powerup.render(batch);
+        }
     }
 
-    public void addBloodStain(float x, float y) {
-        bloodStains.add(new BloodStain(x, y));
+    public void addBloodStain(Vector2 pos) {
+        if (GameSettings.getInstance().getBloodLevel() == GameSettings.BloodLevel.NORMAL) {
+            bloodStains.add(new BloodStain(pos.x, pos.y));
+        }
     }
 
     public void renderTile(SpriteBatch batch, Tile tile, float x, float y) {
@@ -59,10 +70,14 @@ public class LevelRenderer implements Telegraph {
     public boolean handleMessage(Telegram msg) {
         if(msg.message == MessageCode.ENEMY_DIED) {
             Vector2 pos = (Vector2) msg.extraInfo;
-            if (GameSettings.getInstance().getBloodLevel() == GameSettings.BloodLevel.NORMAL) {
-                addBloodStain(pos.x, pos.y);
-            }
+            addBloodStain(pos);
             return true;
+        } else if(msg.message == MessageCode.POWERUP_ADDED) {
+            Powerup powerup = (Powerup) msg.extraInfo;
+            powerups.add(powerup);
+        } else if(msg.message == MessageCode.POWERUP_PICKUP) {
+            Powerup powerup = (Powerup) msg.extraInfo;
+            powerups.removeValue(powerup, true);
         }
         return false;
     }
