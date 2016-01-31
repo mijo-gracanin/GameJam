@@ -61,7 +61,7 @@ public class EnemyManager {
         }
 
         for (EnemySpawner spawner : enemySpawners) {
-            spawner.update(delta);
+            spawner.update(delta, player);
             if (spawner.isReadyToSpawn()) {
                 enemyList.addAll(spawner.spawn(player));
             }
