@@ -12,7 +12,7 @@ public class Mummy extends Enemy {
 
     public Mummy(Vector2 startingPosition) {
         super(startingPosition);
-        this.animation = AnimationLoader.getInstance().getAnimation("mummy", 16, 32);
+        this.animation = AnimationLoader.getInstance().getAnimation("mummy", 16, 32, 0);
     }
 
     @Override

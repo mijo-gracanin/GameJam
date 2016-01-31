@@ -15,7 +15,7 @@ public class Goat extends Enemy implements Telegraph {
 
     public Goat(Vector2 startingPosition) {
         super(startingPosition);
-        this.animation = AnimationLoader.getInstance().getAnimation("priest", 16, 32);
+        this.animation = AnimationLoader.getInstance().getAnimation("priest", 16, 32, 1);
         MessageManager.getInstance().addListener(this, MessageCode.GOAT_START_FOLLOW);
     }
 

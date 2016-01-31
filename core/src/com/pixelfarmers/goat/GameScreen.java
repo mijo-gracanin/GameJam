@@ -140,11 +140,14 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
                 heartsContainer.setCount(newHitPoints);
             }
         });
-        goat = new Goat(new Vector2(352, 352));
         currentLevel = new TiledMapLevelLoader("map.tmx").generate();
         enemyManager = new EnemyManager(player, currentLevel.getWorld());
         SpawnerFactory.Parameters spawnParameters = new SpawnerFactory.Parameters(256, 10);
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, currentLevel, spawnParameters));
+
+        goat = new Goat(new Vector2(352, 384));
+        goat.setSteeringBehavior(enemyManager.createGoatSteeringBehavior(goat));
+
         heartsContainer = new Hearts(stage, WORLD_WIDTH, player);
     }
 

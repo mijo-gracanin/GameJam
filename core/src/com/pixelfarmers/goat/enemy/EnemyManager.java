@@ -173,8 +173,28 @@ public class EnemyManager {
         return kamikazeSteering;
     }
 
+    public BlendedSteering<Vector2> createGoatSteeringBehavior(Goat goat) {
+        BlendedSteering<Vector2> steering = new BlendedSteering<Vector2>(goat);
+
+        Proximity<Vector2> proximity = new KamikazeProximity();
+        proximity.setOwner(goat);
+
+        Box2dRaycastCollisionDetector raycastCollisionDetector = new Box2dRaycastCollisionDetector(world);
+        RaycastObstacleAvoidance<Vector2> raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<Vector2>(goat, createGoatRayConfiguration(goat));
+        raycastObstacleAvoidanceSB.setRaycastCollisionDetector(raycastCollisionDetector);
+
+        Seek<Vector2> seek = new Seek<Vector2>(goat, player);
+        steering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(seek, 1));
+        steering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(raycastObstacleAvoidanceSB, 2));
+        return steering;
+    }
+
+    private RayConfiguration<Vector2> createGoatRayConfiguration(Enemy enemy) {
+        return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.getMaxLinearSpeed(), 40, 20 * MathUtils.degreesToRadians);
+    }
+
     private RayConfiguration<Vector2> createRayConfiguration(Enemy enemy) {
-        return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.getMaxLinearSpeed() * 2, 40, 35 * MathUtils.degreesToRadians);
+        return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.getMaxLinearSpeed(), 40, 35 * MathUtils.degreesToRadians);
     }
 
     private class KamikazeProximity implements Proximity<Vector2> {

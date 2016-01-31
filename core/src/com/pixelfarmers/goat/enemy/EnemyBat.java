@@ -11,7 +11,7 @@ public class EnemyBat extends Enemy {
 
     public EnemyBat(Vector2 startingPosition) {
         super(startingPosition);
-        this.animation = AnimationLoader.getInstance().getAnimation("bat", 32, 16);
+        this.animation = AnimationLoader.getInstance().getAnimation("bat", 32, 16, 0);
     }
 
     @Override

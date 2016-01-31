@@ -25,11 +25,11 @@ public class AnimationLoader {
         this.loadedAnimations = new HashMap<String, Animation>();
     }
 
-    public Animation getAnimation(String baseFilename, int width, int height) {
+    public Animation getAnimation(String baseFilename, int width, int height, int row) {
         Animation animation = loadedAnimations.get(baseFilename);
         if (animation == null) {
             TextureRegion[][] textureRegions = TextureRegion.split(new Texture(baseFilename + ".png"), width, height);
-            animation = new Animation(0.1f, textureRegions[0]);
+            animation = new Animation(0.1f, textureRegions[row]);
             loadedAnimations.put(baseFilename, animation);
         }
         return animation;
