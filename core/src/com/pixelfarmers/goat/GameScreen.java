@@ -126,13 +126,12 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void init() {
-        player = new Player(assetManager, new Vector2(32, 32), new Player.OnHitListener() {
+        player = new Player(assetManager, new Vector2(352, 352), new Player.OnHitListener() {
             @Override
             public void onHit(int newHitPoints) {
                 heartsContainer.setCount(newHitPoints);
             }
         });
-        currentLevel = new TiledMapLevelLoader("test_level.tmx").generate();
         currentLevel = new TiledMapLevelLoader("map.tmx").generate();
         enemyManager = new EnemyManager(player, currentLevel.getWorld(), currentLevel, new EnemyManager.EnemyDeathListener() {
             @Override
