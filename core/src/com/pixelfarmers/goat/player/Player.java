@@ -50,8 +50,8 @@ public class Player implements PhysicalEntity {
 
     private void setupAnimations() {
         TextureRegion[][] textureRegions = TextureRegion.split(assetManager.get(TextureFilePaths.CHARACTER, Texture.class), 16, 32);
-        walkingAnimation = new Animation(0.1f, textureRegions[0]);
-        idleAnimation = new Animation(0.8f, textureRegions[1]);
+        walkingAnimation = new Animation(0.1f, textureRegions[1]);
+        idleAnimation = new Animation(0.8f, textureRegions[0]);
         animationStateTime = 0;
     }
 
