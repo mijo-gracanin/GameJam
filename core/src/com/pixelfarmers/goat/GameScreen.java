@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -65,6 +66,8 @@ public class GameScreen extends ScreenAdapter {
 
     Game game;
 
+    private Music music;
+
     public GameScreen(Game game) {
         this.game = game;
         bitmapFont = new BitmapFont();
@@ -102,6 +105,7 @@ public class GameScreen extends ScreenAdapter {
         assetManager.load("goat.wav", Sound.class);
         assetManager.load("projectile_shoot.wav", Sound.class);
         assetManager.load("sword_hit.wav", Sound.class);
+        assetManager.load("song.mp3", Music.class);
         assetManager.finishLoading();
 
         swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
@@ -111,6 +115,9 @@ public class GameScreen extends ScreenAdapter {
         levelRenderer = new LevelRenderer();
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
 
+        music = assetManager.get("song.mp3", Music.class);
+        music.setLooping(true);
+        music.play();
         setupInputProcessor();
 
         init();
@@ -272,6 +279,8 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void hide() {
         assetManager.dispose();
+        music.stop();
+        music.dispose();
         super.hide();
     }
 }
