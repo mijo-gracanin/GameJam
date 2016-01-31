@@ -2,7 +2,7 @@ package com.pixelfarmers.goat;
 
 
 public class GameSettings {
-    enum Difficulty {
+    public enum Difficulty {
         NORMAL,
         HARDCORE
     }

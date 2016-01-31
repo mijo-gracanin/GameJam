@@ -74,7 +74,7 @@ public class EnemyManager {
             }
 
             if(Intersector.overlaps(enemy.getCollisionCircle(), player.getCollisionCircle())) {
-                player.onHit(enemy.getDamage());
+                player.onHit(enemy.getDamage(), enemy.getLinearVelocity());
             }
         }
     }

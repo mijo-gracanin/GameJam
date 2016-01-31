@@ -2,8 +2,12 @@ package com.pixelfarmers.goat.weapon;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.utils.Location;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.pixelfarmers.goat.PhysicalEntity;
 
@@ -13,16 +17,21 @@ import com.pixelfarmers.goat.PhysicalEntity;
 public class Sword implements PhysicalEntity {
 
     private boolean isActive = false;
-    private static final float STRETCHING_SPEED = 60f;
-    private static final float MAX_SWORD_LENGTH = 16;
+    private static final float STRETCHING_SPEED = 90f;
+    private static final float MAX_SWORD_LENGTH = 20;
     private static final float COLLISION_RADIUS = 3f;
+    private static final int SWORD_TEXTURE_WIDTH = 5;
     private Vector2 position = new Vector2();
-    private Circle collisionCircle = new Circle(position, COLLISION_RADIUS);;
+    private Circle collisionCircle = new Circle(position, COLLISION_RADIUS);
     private boolean isGrowing = true;
     private float swordLength = 0;
+    private float orientation = 0;
+    private Texture swordTexture;
 
-    public Sword(Vector2 position) {
+
+    public Sword(Vector2 position, AssetManager assetManager) {
         this.position = position.cpy();
+        swordTexture = assetManager.get("sword.png", Texture.class);
     }
 
     public void update(Vector2 playerPosition, float playerOrientation, float delta) {
@@ -30,10 +39,15 @@ public class Sword implements PhysicalEntity {
 
         Vector2 speedVector = new Vector2(1, 1);
         speedVector.setAngleRad(playerOrientation);
+        position = playerPosition.cpy();
+        position.y += 8;
+        orientation = playerOrientation;
+
         float direction = isGrowing ? 1 : -1;
         swordLength += STRETCHING_SPEED * delta * direction;
-        position.x = speedVector.x * swordLength + playerPosition.x ;
-        position.y = speedVector.y * swordLength + playerPosition.y;
+        float pointyEndX = speedVector.x * swordLength + position.x ;
+        float pointyEndY = speedVector.y * swordLength + position.y;
+        collisionCircle.setPosition(pointyEndX, pointyEndY);
 
         if (swordLength > MAX_SWORD_LENGTH) {
             isGrowing = false;
@@ -41,14 +55,21 @@ public class Sword implements PhysicalEntity {
         else if (swordLength < 0.1 && !isGrowing) {
             hideSword();
         }
+    }
 
-        //Gdx.app.log("Distance", "" + swordLength);
-        collisionCircle.setPosition(position.x, position.y);
+    public void draw(Batch batch) {
+        batch.draw(swordTexture, position.x, position.y,
+                0, 0,
+                SWORD_TEXTURE_WIDTH, swordLength,
+                1, 1,
+                (orientation - (MathUtils.PI / 2)) * MathUtils.radDeg,
+                0, MathUtils.ceil(MAX_SWORD_LENGTH - swordLength),
+                SWORD_TEXTURE_WIDTH, (int)swordLength, false, false);
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
         if (!isActive()) return;
-        shapeRenderer.circle(position.x, position.y, COLLISION_RADIUS);
+        //shapeRenderer.circle(collisionCircle.x, collisionCircle.y, COLLISION_RADIUS);
     }
 
     @Override
@@ -78,7 +99,7 @@ public class Sword implements PhysicalEntity {
 
     @Override
     public Vector2 getPosition() {
-        return position;
+        return new Vector2(collisionCircle.x, collisionCircle.y);
     }
 
     @Override
