@@ -33,8 +33,10 @@ public abstract class Enemy extends SteerableAdapter<Vector2> {
     }
 
     public void update(float delta) {
-        steeringBehavior.calculateSteering(steeringOutput);
-        applySteering(steeringOutput, delta);
+        if(steeringBehavior != null) {
+            steeringBehavior.calculateSteering(steeringOutput);
+            applySteering(steeringOutput, delta);
+        }
         collisionCircle.setPosition(position.x, position.y);
         stateTime += delta;
     }
@@ -42,10 +44,10 @@ public abstract class Enemy extends SteerableAdapter<Vector2> {
     public abstract boolean onHit(int damage);
 
     public void draw(Batch batch) {
-        batch.draw(getTexure(), position.x - getBoundingRadius(), position.y - getBoundingRadius());
+        batch.draw(getTexture(), position.x - getBoundingRadius(), position.y - getBoundingRadius());
     }
 
-    protected abstract TextureRegion getTexure();
+    protected abstract TextureRegion getTexture();
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
         //shapeRenderer.circle(position.x, position.y, BOUNDING_RADIUS);

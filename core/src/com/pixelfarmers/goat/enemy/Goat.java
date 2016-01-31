@@ -4,14 +4,18 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-public class EnemyBat extends Enemy {
+public class Goat extends Enemy {
 
-    protected Animation animation;
-    private int hitPoints = 4;
+    private final Animation animation;
 
-    public EnemyBat(Vector2 startingPosition) {
+    public Goat(Vector2 startingPosition) {
         super(startingPosition);
-        this.animation = AnimationLoader.getInstance().getAnimation("bat", 32, 16);
+        this.animation = AnimationLoader.getInstance().getAnimation("priest", 16, 32);
+    }
+
+    @Override
+    public boolean onHit(int damage) {
+        return false;
     }
 
     @Override
@@ -20,29 +24,23 @@ public class EnemyBat extends Enemy {
     }
 
     @Override
-    public boolean onHit(int damage) {
-        hitPoints -= damage;
-        return hitPoints <= 0;
+    public int getDamage() {
+        return 0;
     }
 
     @Override
     public float getMaxLinearSpeed() {
-        return 80;
+        return 40;
     }
 
     @Override
     public float getMaxLinearAcceleration() {
-        return 1000;
+        return 800;
     }
 
     @Override
     public float getBoundingRadius() {
         return 8;
-    }
-
-    @Override
-    public int getDamage() {
-        return 1;
     }
 
 }

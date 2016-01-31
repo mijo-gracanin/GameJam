@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.enemy.EnemyManager;
+import com.pixelfarmers.goat.enemy.Goat;
 import com.pixelfarmers.goat.enemy.SpawnerFactory;
 import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.hud.Hearts;
@@ -49,6 +50,8 @@ public class GameScreen extends ScreenAdapter {
     private SpriteBatch batch;
 
     private Player player;
+    private Goat goat;
+
     private Level currentLevel;
     private LevelRenderer levelRenderer;
     private ParticleEngine particleEngine;
@@ -132,6 +135,7 @@ public class GameScreen extends ScreenAdapter {
                 heartsContainer.setCount(newHitPoints);
             }
         });
+        goat = new Goat(new Vector2(352, 352));
         currentLevel = new TiledMapLevelLoader("map.tmx").generate();
         enemyManager = new EnemyManager(player, currentLevel.getWorld(), currentLevel, new EnemyManager.EnemyDeathListener() {
             @Override
@@ -181,6 +185,7 @@ public class GameScreen extends ScreenAdapter {
         levelRenderer.render(batch, currentLevel);
         enemyManager.draw(batch);
         player.draw(batch);
+        goat.draw(batch);
         particleEngine.draw(batch);
 
         for (Projectile projectile: projectiles) {
@@ -214,6 +219,7 @@ public class GameScreen extends ScreenAdapter {
         GdxAI.getTimepiece().update(delta);
 
         player.update(delta, currentLevel);
+        goat.update(delta);
         updateProjectiles(delta);
         enemyManager.checkForProjectileCollisions(projectiles, particleEngine, projectileHitSound);
         enemyManager.checkForSwordCollisions(player.sword, particleEngine, swordHitSound);
