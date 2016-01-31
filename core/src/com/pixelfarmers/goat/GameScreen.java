@@ -62,6 +62,7 @@ public class GameScreen extends ScreenAdapter {
     private Sound swordHitSound;
     private Sound projectileHitSound;
     private Sound projectileSound;
+    private Texture projectileTexture;
 
     Game game;
 
@@ -73,6 +74,7 @@ public class GameScreen extends ScreenAdapter {
         particleEngine = new ParticleEngine();
         bitmapFont.setColor(Color.WHITE);
         fogTexture = new Texture("fog.png");
+        projectileTexture = new Texture("magic.png");
     }
 
     @Override
@@ -250,7 +252,7 @@ public class GameScreen extends ScreenAdapter {
             @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 if (button == Input.Buttons.LEFT) {
                     Projectile projectile =
-                            new Projectile(assetManager.get(TextureFilePaths.PROJECTILE, Texture.class),
+                            new Projectile(projectileTexture,
                                     player.getPosition().cpy(),
                                     player.getOrientation() - MathUtils.PI/2);
                     projectiles.add(projectile);
