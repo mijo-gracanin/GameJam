@@ -250,6 +250,10 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
             Gdx.app.exit();
         }
 
+        if (!introCinematic.isFinished()) {
+            return;
+        }
+
         if (Gdx.input.isKeyPressed(Input.Keys.A)) player.goLeft();
         if (Gdx.input.isKeyPressed(Input.Keys.D)) player.goRight();
         if (Gdx.input.isKeyPressed(Input.Keys.W)) player.goUp();
@@ -367,6 +371,11 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                if (!introCinematic.isFinished()) {
+                    introCinematic.skipAll();
+                    return true;
+                }
+
                 if (button == Input.Buttons.LEFT) {
                     Projectile projectile =
                             new Projectile(projectileTexture,

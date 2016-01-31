@@ -36,7 +36,7 @@ public class CinematicBlock {
         }
     }
 
-    private boolean isFinished() {
+    public boolean isFinished() {
         return currentCinematicIndex == cinematicList.size();
     }
 
