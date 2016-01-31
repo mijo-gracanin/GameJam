@@ -49,17 +49,10 @@ public class Player implements PhysicalEntity {
     }
 
     private void setupAnimations() {
-        TextureRegion[] frames = new TextureRegion[3];
-        frames[0] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_WALKING_1, Texture.class));
-        frames[1] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_WALKING_2, Texture.class));
-        frames[2] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_WALKING_3, Texture.class));
-        walkingAnimation = new Animation(0.1f, frames);
+        TextureRegion[][] textureRegions = TextureRegion.split(assetManager.get(TextureFilePaths.CHARACTER, Texture.class), 16, 32);
+        walkingAnimation = new Animation(0.1f, textureRegions[0]);
+        idleAnimation = new Animation(0.8f, textureRegions[1]);
         animationStateTime = 0;
-
-        frames = new TextureRegion[2];
-        frames[0] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_STANDING_1, Texture.class));
-        frames[1] = new TextureRegion(assetManager.get(TextureFilePaths.CHARACTER_STANDING_2, Texture.class));
-        idleAnimation = new Animation(0.8f, frames);
     }
 
     public void update(float delta, Level currentLevel) {
