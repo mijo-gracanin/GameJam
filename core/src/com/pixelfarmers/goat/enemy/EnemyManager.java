@@ -5,10 +5,12 @@ import com.badlogic.gdx.ai.steer.Proximity;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
 import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
+import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
+import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,6 +25,7 @@ import com.pixelfarmers.goat.MessageCode;
 import com.pixelfarmers.goat.fx.BloodParticle;
 import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.level.Box2dRaycastCollisionDetector;
+import com.pixelfarmers.goat.level.Tile;
 import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.weapon.Projectile;
 import com.pixelfarmers.goat.weapon.Sword;
@@ -39,6 +42,42 @@ public class EnemyManager {
         enemyList = new DelayedRemovalArray<Enemy>();
         this.enemySpawners = new Array<EnemySpawner>();
         this.world = world;
+        addCultists();
+    }
+
+    private void addCultists() {
+        Array<Vector2> cultistLocations = new Array<Vector2>();
+
+        cultistLocations.add(calculateCultistLocation(103, 35, 0));
+        cultistLocations.add(calculateCultistLocation(95, 35, 8));
+        cultistLocations.add(calculateCultistLocation(99, 40, 8));
+
+        Cultist cultist;
+        cultist = new Cultist(cultistLocations.get(0));
+        addCultistSteeringBehavior(cultist, cultistLocations.get(1), cultistLocations.get(2));
+        enemyList.add(cultist);
+        cultist = new Cultist(cultistLocations.get(1));
+        addCultistSteeringBehavior(cultist, cultistLocations.get(0), cultistLocations.get(2));
+        enemyList.add(cultist);
+        cultist = new Cultist(cultistLocations.get(2));
+        addCultistSteeringBehavior(cultist, cultistLocations.get(0), cultistLocations.get(1));
+        enemyList.add(cultist);
+    }
+
+    private Vector2 calculateCultistLocation(int x, int y, int xOffset) {
+        Vector2 position = Tile.tileToPosition(x, y);
+        Vector2 offseted = new Vector2(position.x + xOffset, position.y);
+        return offseted;
+    }
+
+    private void addCultistSteeringBehavior(Cultist cultist, Vector2 p1, Vector2 p2) {
+        Array<Vector2> waypoints = new Array<Vector2>();
+        waypoints.add(cultist.getPosition());
+        waypoints.add(p1);
+        waypoints.add(p2);
+        LinePath<Vector2> path = new LinePath<Vector2>(waypoints, true);
+        FollowPath<Vector2, LinePath.LinePathParam> followSb = new FollowPath<Vector2, LinePath.LinePathParam>(cultist, path);
+        cultist.setSteeringBehavior(followSb);
     }
 
     public void addSpawners(Array<EnemySpawner> spawners) {
