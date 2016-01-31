@@ -1,6 +1,5 @@
 package com.pixelfarmers.goat.weapon;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,7 +17,7 @@ public class Sword implements PhysicalEntity {
 
     private boolean isActive = false;
     private static final float STRETCHING_SPEED = 90f;
-    private static final float MAX_SWORD_LENGTH = 20;
+    private static final float MAX_SWORD_LENGTH = 22;
     private static final float COLLISION_RADIUS = 3f;
     private static final int SWORD_TEXTURE_WIDTH = 5;
     private Vector2 position = new Vector2();
@@ -58,12 +57,13 @@ public class Sword implements PhysicalEntity {
     }
 
     public void draw(Batch batch) {
+        if (!isActive()) return;
         batch.draw(swordTexture, position.x, position.y,
                 0, 0,
                 SWORD_TEXTURE_WIDTH, swordLength,
-                1, 1,
+                0.8f, 1.3f,
                 (orientation - (MathUtils.PI / 2)) * MathUtils.radDeg,
-                0, MathUtils.ceil(MAX_SWORD_LENGTH - swordLength),
+                0, (int)(MAX_SWORD_LENGTH - swordLength),
                 SWORD_TEXTURE_WIDTH, (int)swordLength, false, false);
     }
 
