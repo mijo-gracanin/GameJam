@@ -4,7 +4,9 @@ package com.pixelfarmers.goat.enemy;
 import com.badlogic.gdx.ai.steer.SteerableAdapter;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
@@ -40,7 +42,11 @@ public abstract class Enemy extends SteerableAdapter<Vector2> {
 
     public abstract boolean onHit(int damage);
 
-    public abstract void draw(Batch batch);
+    public void draw(Batch batch) {
+        batch.draw(getTexure(), position.x - getBoundingRadius(), position.y - getBoundingRadius());
+    }
+
+    protected abstract TextureRegion getTexure();
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
         //shapeRenderer.circle(position.x, position.y, BOUNDING_RADIUS);

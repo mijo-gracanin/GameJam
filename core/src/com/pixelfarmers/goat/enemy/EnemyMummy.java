@@ -1,17 +1,17 @@
 package com.pixelfarmers.goat.enemy;
 
+
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-public class EnemyBat extends Enemy {
-
+public class EnemyMummy extends Enemy {
     protected Animation animation;
     private int hitPoints = 4;
 
-    public EnemyBat(Vector2 startingPosition) {
+    public EnemyMummy(Vector2 startingPosition) {
         super(startingPosition);
-        this.animation = AnimationLoader.getInstance().getAnimation("bat", 32, 16);
+        this.animation = AnimationLoader.getInstance().getAnimation("mummy", 16, 32);
     }
 
     @Override
@@ -44,5 +44,4 @@ public class EnemyBat extends Enemy {
     public int getDamage() {
         return 10;
     }
-
 }

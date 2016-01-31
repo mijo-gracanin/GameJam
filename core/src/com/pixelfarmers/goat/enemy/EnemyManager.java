@@ -171,7 +171,7 @@ public class EnemyManager {
     }
 
     private RayConfiguration<Vector2> createRayConfiguration(EnemyBat enemy) {
-        return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.maxSpeed * 2, 40, 35 * MathUtils.degreesToRadians);
+        return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.getMaxLinearSpeed() * 2, 40, 35 * MathUtils.degreesToRadians);
     }
 
     private class KamikazeProximity implements Proximity<Vector2> {
