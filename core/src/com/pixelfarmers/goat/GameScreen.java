@@ -96,11 +96,7 @@ public class GameScreen extends ScreenAdapter {
         stage.addActor(fog);
 
         assetManager = new AssetManager();
-        assetManager.load(TextureFilePaths.CHARACTER_STANDING_1, Texture.class);
-        assetManager.load(TextureFilePaths.CHARACTER_STANDING_2, Texture.class);
-        assetManager.load(TextureFilePaths.CHARACTER_WALKING_1, Texture.class);
-        assetManager.load(TextureFilePaths.CHARACTER_WALKING_2, Texture.class);
-        assetManager.load(TextureFilePaths.CHARACTER_WALKING_3, Texture.class);
+        assetManager.load(TextureFilePaths.CHARACTER, Texture.class);
         assetManager.load(TextureFilePaths.PROJECTILE, Texture.class);
         assetManager.load("goat.wav", Sound.class);
         assetManager.load("projectile_shoot.wav", Sound.class);
@@ -280,7 +276,6 @@ public class GameScreen extends ScreenAdapter {
     public void hide() {
         assetManager.dispose();
         music.stop();
-        music.dispose();
         super.hide();
     }
 }
