@@ -55,20 +55,18 @@ public class EnemyManager {
     }
 
     public void update(float delta) {
-        if (paused) {
-            return;
-        }
-
         checkForPlayerCollisions();
 
         for (int i = 0; i < enemyList.size; i++) {
             enemyList.get(i).update(delta);
         }
 
-        for (EnemySpawner spawner : enemySpawners) {
-            spawner.update(delta, player);
-            if (spawner.isReadyToSpawn()) {
-                enemyList.addAll(spawner.spawn(player));
+        if (!paused) {
+            for (EnemySpawner spawner : enemySpawners) {
+                spawner.update(delta, player);
+                if (spawner.isReadyToSpawn()) {
+                    enemyList.addAll(spawner.spawn(player));
+                }
             }
         }
     }
