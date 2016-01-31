@@ -22,4 +22,8 @@ public class Tile {
         this.boundingBox = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
         this.boundingBox.getCenter(center);
     }
+
+    public static Vector2 tileToPosition(int x, int y) {
+        return new Vector2(x * TILE_SIZE, y * TILE_SIZE);
+    }
 }
