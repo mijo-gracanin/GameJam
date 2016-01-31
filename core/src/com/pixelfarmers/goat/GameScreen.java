@@ -130,7 +130,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         loadAssets();
 
         swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
-        projectileHitSound = assetManager.get("goat.wav", Sound.class);
+        projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
         projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
         painSound = assetManager.get("pain_1.wav", Sound.class);
         fadeoutNoise = assetManager.get("fadeout_noise.wav", Sound.class);
@@ -156,7 +156,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         assetManager.load(TextureFilePaths.HEALTH_POWERUP, Texture.class);
         assetManager.load(TextureFilePaths.DAMAGE_POWERUP, Texture.class);
         assetManager.load(TextureFilePaths.SPEED_POWERUP, Texture.class);
-        assetManager.load("goat.wav", Sound.class);
+        assetManager.load("projectile_hit.wav", Sound.class);
         assetManager.load("projectile_shoot.wav", Sound.class);
         assetManager.load("sword_hit.wav", Sound.class);
         assetManager.load("pain_1.wav", Sound.class);
