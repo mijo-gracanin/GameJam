@@ -6,13 +6,15 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Cultist extends Enemy {
 
-    private final Animation animation;
+    private final Animation walkingAnimation;
+    private final TextureRegion idleTexture;
 
     private int hitPoints = 2;
 
     public Cultist(Vector2 startingPosition) {
         super(startingPosition);
-        this.animation = AnimationLoader.getInstance().getAnimation("priest", 16, 32, 1);
+        this.walkingAnimation = AnimationLoader.getInstance().getAnimation("priest", 16, 32, 1);
+        this.idleTexture = AnimationLoader.getInstance().getSingleTexture("priest", 16, 32, 0, 0);
     }
 
     @Override
@@ -23,7 +25,11 @@ public class Cultist extends Enemy {
 
     @Override
     protected TextureRegion getTexture() {
-        return animation.getKeyFrame(stateTime, true);
+        if(steeringBehavior != null) {
+            return walkingAnimation.getKeyFrame(stateTime, true);
+        } else {
+            return idleTexture;
+        }
     }
 
     @Override
@@ -33,7 +39,7 @@ public class Cultist extends Enemy {
 
     @Override
     public float getMaxLinearSpeed() {
-        return 60;
+        return 12;
     }
 
     @Override
