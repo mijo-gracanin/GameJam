@@ -1,7 +1,6 @@
 package com.pixelfarmers.goat.enemy;
 
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.SteerableAdapter;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
@@ -36,7 +35,6 @@ public abstract class Enemy extends SteerableAdapter<Vector2> {
     public void update(float delta) {
         if(steeringBehavior != null) {
             steeringBehavior.calculateSteering(steeringOutput);
-            Gdx.app.log("DISI", steeringOutput.linear.toString());
             applySteering(steeringOutput, delta);
         }
         collisionCircle.setPosition(position.x, position.y);
