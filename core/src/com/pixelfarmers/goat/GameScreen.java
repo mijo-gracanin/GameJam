@@ -122,7 +122,7 @@ public class GameScreen extends ScreenAdapter {
     private void init() {
         player = new Player(assetManager, new Vector2(352, 352));
         currentLevel = new TiledMapLevelLoader("map.tmx").generate();
-        enemyManager = new EnemyManager(assetManager, player, currentLevel.getWorld(), new EnemyManager.EnemyDeathListener() {
+        enemyManager = new EnemyManager(player, currentLevel.getWorld(), new EnemyManager.EnemyDeathListener() {
             @Override
             public void onDeath(float x, float y) {
                 if (GameSettings.getInstance().getBloodLevel() == GameSettings.BloodLevel.NORMAL) {
