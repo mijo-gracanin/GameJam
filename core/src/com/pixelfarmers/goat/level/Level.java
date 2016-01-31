@@ -21,8 +21,8 @@ public class Level {
     public Level(Tile[][] tiles) {
         safeZone = new Rectangle(PLAYER_START_POSITION.x,
                 PLAYER_START_POSITION.y,
-                Tile.TILE_SIZE * 4,
-                Tile.TILE_SIZE * 4);
+                Tile.TILE_SIZE,
+                Tile.TILE_SIZE);
 
         this.tiles = tiles;
 

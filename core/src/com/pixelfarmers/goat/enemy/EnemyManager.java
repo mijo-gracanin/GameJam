@@ -1,6 +1,8 @@
 package com.pixelfarmers.goat.enemy;
 
 import com.badlogic.gdx.ai.msg.MessageManager;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.steer.Proximity;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
@@ -30,17 +32,20 @@ import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.weapon.Projectile;
 import com.pixelfarmers.goat.weapon.Sword;
 
-public class EnemyManager {
+public class EnemyManager implements Telegraph {
 
     private DelayedRemovalArray<Enemy> enemyList;
     private Array<EnemySpawner> enemySpawners;
+    private Array<Cultist> cultists;
     private Player player;
     private World world;
     private boolean paused = false;
 
     public EnemyManager(Player player, World world) {
+        MessageManager.getInstance().addListener(this, MessageCode.CINEMATIC_OVER);
         this.player = player;
         enemyList = new DelayedRemovalArray<Enemy>();
+        cultists = new Array<Cultist>();
         this.enemySpawners = new Array<EnemySpawner>();
         this.world = world;
         addCultists();
@@ -51,18 +56,29 @@ public class EnemyManager {
 
         cultistLocations.add(calculateCultistLocation(103, 35, 0));
         cultistLocations.add(calculateCultistLocation(95, 35, 8));
-        cultistLocations.add(calculateCultistLocation(99, 40, 8));
+        cultistLocations.add(calculateCultistLocation(103, 40, 0));
+        cultistLocations.add(calculateCultistLocation(95, 40, 8));
 
         Cultist cultist;
         cultist = new Cultist(cultistLocations.get(0));
-        addCultistSteeringBehavior(cultist, cultistLocations.get(1), cultistLocations.get(2));
+        addCultistSteeringBehavior(cultist, cultistLocations.get(1));
         enemyList.add(cultist);
+        cultists.add(cultist);
+
         cultist = new Cultist(cultistLocations.get(1));
-        addCultistSteeringBehavior(cultist, cultistLocations.get(0), cultistLocations.get(2));
+        addCultistSteeringBehavior(cultist, cultistLocations.get(3));
         enemyList.add(cultist);
+        cultists.add(cultist);
+
         cultist = new Cultist(cultistLocations.get(2));
-        addCultistSteeringBehavior(cultist, cultistLocations.get(0), cultistLocations.get(1));
+        addCultistSteeringBehavior(cultist, cultistLocations.get(0));
         enemyList.add(cultist);
+        cultists.add(cultist);
+
+        cultist = new Cultist(cultistLocations.get(3));
+        addCultistSteeringBehavior(cultist, cultistLocations.get(2));
+        enemyList.add(cultist);
+        cultists.add(cultist);
     }
 
     private Vector2 calculateCultistLocation(int x, int y, int xOffset) {
@@ -71,13 +87,15 @@ public class EnemyManager {
         return offseted;
     }
 
-    private void addCultistSteeringBehavior(Cultist cultist, Vector2 p1, Vector2 p2) {
+    private void addCultistSteeringBehavior(Cultist cultist, Vector2 p1) {
         Array<Vector2> waypoints = new Array<Vector2>();
-        waypoints.add(cultist.getPosition());
         waypoints.add(p1);
-        waypoints.add(p2);
-        LinePath<Vector2> path = new LinePath<Vector2>(waypoints, true);
-        FollowPath<Vector2, LinePath.LinePathParam> followSb = new FollowPath<Vector2, LinePath.LinePathParam>(cultist, path);
+        waypoints.add(cultist.getPosition());
+        LinePath<Vector2> path = new LinePath<Vector2>(waypoints, false);
+        FollowPath<Vector2, LinePath.LinePathParam> followSb = new FollowPath<Vector2, LinePath.LinePathParam>(cultist, path, 40);
+        followSb.setArrivalTolerance(20);
+        followSb.setDecelerationRadius(60);
+
         cultist.setSteeringBehavior(followSb);
     }
 
@@ -222,7 +240,7 @@ public class EnemyManager {
         return kamikazeSteering;
     }
 
-    public BlendedSteering<Vector2> createGoatSteeringBehavior(Goat goat) {
+    public BlendedSteering<Vector2> createGoatSteeringBehavior(Enemy goat) {
         BlendedSteering<Vector2> steering = new BlendedSteering<Vector2>(goat);
 
         Proximity<Vector2> proximity = new KamikazeProximity();
@@ -244,6 +262,17 @@ public class EnemyManager {
 
     private RayConfiguration<Vector2> createRayConfiguration(Enemy enemy) {
         return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.getMaxLinearSpeed(), 40, 35 * MathUtils.degreesToRadians);
+    }
+
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        if(msg.message == MessageCode.CINEMATIC_OVER) {
+            for(Cultist cultist : cultists) {
+                cultist.setSteeringBehavior(null);
+            }
+            return true;
+        }
+        return false;
     }
 
     private class KamikazeProximity implements Proximity<Vector2> {

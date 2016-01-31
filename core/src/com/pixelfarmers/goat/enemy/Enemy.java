@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class Enemy extends SteerableAdapter<Vector2> {
 
-    private static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
+    protected static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
 
     Vector2 position;
     float orientation;

@@ -220,6 +220,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         introCinematic = new CinematicBlock(cinematicList, new CinematicBlock.CameraControl() {
             @Override
             public void returnCameraControl() {
+                MessageManager.getInstance().dispatchMessage(0, MessageCode.CINEMATIC_OVER);
                 camera.position.set(player.getPosition().x, player.getPosition().y, 0);
                 subtitlesContainer.clear();
                 enemyManager.resume();
