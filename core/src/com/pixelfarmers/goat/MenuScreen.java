@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -36,10 +37,10 @@ public class MenuScreen extends ScreenAdapter {
     stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
     Gdx.input.setInputProcessor(stage);
 
-      //backgroundTexture = new Texture(Gdx.files.internal("menu_bg.png"));
-      //Image background = new Image(backgroundTexture);
-      //stage.addActor(background);
-      //background.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, Align.center);
+      backgroundTexture = new Texture(Gdx.files.internal("menu_bg.png"));
+      Image background = new Image(backgroundTexture);
+      stage.addActor(background);
+      background.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, Align.center);
 
       normalButtonTexture = new Texture(Gdx.files.internal("normal_button.png"));
       normalButtonPressTexture = new Texture(Gdx.files.internal("normal_button_press.png"));
