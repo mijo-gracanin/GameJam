@@ -1,6 +1,7 @@
 package com.pixelfarmers.goat.enemy;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -12,6 +13,11 @@ public class EnemyBat extends Enemy {
     public EnemyBat(Vector2 startingPosition) {
         super(startingPosition);
         this.animation = AnimationLoader.getInstance().getAnimation("bat", 32, 16, 0);
+    }
+
+    @Override
+    public void draw(Batch batch) {
+        batch.draw(getTexture(), position.x - (getBoundingRadius() * 2), position.y - getBoundingRadius());
     }
 
     @Override

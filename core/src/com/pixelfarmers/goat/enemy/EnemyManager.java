@@ -102,7 +102,7 @@ public class EnemyManager {
             }
             if (Intersector.overlaps(enemy.getCollisionCircle(), sword.getCollisionCircle())) {
                 hitSound.play();
-                boolean isDead = enemy.onHit(sword.getDamage());
+                boolean isDead = enemy.onHit(sword.getDamage() * player.getDamageModifier());
                 if (isDead) {
                     enemyList.removeValue(enemy, true);
                     MessageManager.getInstance().dispatchMessage(MessageCode.ENEMY_DIED, enemy.getPosition());
@@ -124,7 +124,7 @@ public class EnemyManager {
             for (Projectile projectile : projectiles) {
                 if (Intersector.overlaps(enemy.getCollisionCircle(), projectile.getCollisionCircle())) {
                     hitSound.play();
-                    boolean isDead = enemy.onHit(projectile.getDamage());
+                    boolean isDead = enemy.onHit(projectile.getDamage() * player.getDamageModifier());
                     bloodSplash(particleEngine, enemy);
                     if (isDead) {
                         enemyList.removeValue(enemy, true);

@@ -1,6 +1,9 @@
 package com.pixelfarmers.goat.player;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.msg.MessageManager;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
@@ -14,14 +17,16 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.pixelfarmers.goat.GameSettings;
+import com.pixelfarmers.goat.MessageCode;
 import com.pixelfarmers.goat.PhysicalEntity;
 import com.pixelfarmers.goat.TextureFilePaths;
 import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
+import com.pixelfarmers.goat.powerup.Powerup;
 import com.pixelfarmers.goat.weapon.Sword;
 
 
-public class Player implements PhysicalEntity, Steerable<Vector2> {
+public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     public interface OnHitListener {
         void onHit(int newHitPoints);
@@ -56,7 +61,13 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
 
     AssetManager assetManager;
 
+    private int damageModifier = 1;
+    private float speedModifier = 1;
+    private float damagePowerupTimeLeft = 0;
+    private float speedPowerupTimeLeft = 0;
+
     public Player(AssetManager assetManager, Vector2 startingPosition, OnHitListener onHitListener) {
+        MessageManager.getInstance().addListener(this, MessageCode.POWERUP_PICKUP);
         this.assetManager = assetManager;
         this.onHitListener = onHitListener;
         position = startingPosition;
@@ -68,12 +79,33 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
         hitPoints = maxHitPoints;
     }
 
-    public void hide() {
-        shouldDraw = false;
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        if(msg.message == MessageCode.POWERUP_PICKUP) {
+            Powerup powerup = (Powerup) msg.extraInfo;
+            onPowerup(powerup);
+            return true;
+        }
+        return false;
     }
 
-    public void show() {
-        shouldDraw = true;
+    private void onPowerup(Powerup powerup) {
+        switch (powerup.type) {
+            case HEALTH:
+                if(hitPoints < maxHitPoints) {
+                    hitPoints++;
+                    onHitListener.onHit(hitPoints);
+                }
+                break;
+            case DAMAGE:
+                damagePowerupTimeLeft = powerup.duration;
+                damageModifier = 2;
+                break;
+            case SPEED:
+                speedPowerupTimeLeft = powerup.duration;
+                speedModifier = 1.25f;
+                break;
+        }
     }
 
     private void setupAnimations() {
@@ -84,8 +116,9 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
     }
 
     public void update(float delta, Level currentLevel) {
-        float dx = movementDirection.x * MOVEMENT_SPEED * delta;
-        float dy = movementDirection.y * MOVEMENT_SPEED * delta;
+        updatePowerups(delta);
+        float dx = movementDirection.x * MOVEMENT_SPEED * speedModifier * delta;
+        float dy = movementDirection.y * MOVEMENT_SPEED * speedModifier * delta;
 
         tryMovingHorizontally(currentLevel, dx);
         tryMovingVertically(currentLevel, dy);
@@ -94,6 +127,17 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
 
         movementDirection.scl(SPEED_DECREASE_FACTOR);
         collisionCircle.setPosition(position.x, position.y);
+    }
+
+    private void updatePowerups(float delta) {
+        damagePowerupTimeLeft -= delta;
+        if(damagePowerupTimeLeft < 0) {
+            damageModifier = 1;
+        }
+        speedPowerupTimeLeft -= delta;
+        if(speedPowerupTimeLeft < 0) {
+            speedModifier = 1;
+        }
     }
 
     public boolean onHit(int damage, Vector2 forceDirection) {
@@ -111,6 +155,10 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
         hitPoints -= damage;
         onHitListener.onHit(hitPoints);
         return hitPoints <= 0;
+    }
+
+    public int getDamageModifier() {
+        return damageModifier;
     }
 
     private void setInvincibilityTimer() {
@@ -285,7 +333,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
 
     @Override
     public Vector2 getLinearVelocity() {
-        return new Vector2(movementDirection.x * MOVEMENT_SPEED, movementDirection.y * MOVEMENT_SPEED);
+        return new Vector2(movementDirection.x * MOVEMENT_SPEED * speedModifier, movementDirection.y * MOVEMENT_SPEED * speedModifier);
     }
 
     @Override
