@@ -20,10 +20,11 @@ public class Projectile implements PhysicalEntity {
 
     private int damage = 2;
 
-    public Projectile(Texture texture, Vector2 position, float orientationInRadians) {
+    public Projectile(Texture texture, Vector2 position, Vector2 shooterVelocity, float orientationInRadians) {
         this.texture = texture;
         this.position = position.cpy();
         this.orientationInRadians = orientationInRadians;
+        velocity.add(new Vector2(Math.abs(shooterVelocity.x), Math.abs(shooterVelocity.y)));
     }
 
     public void update(float delta) {

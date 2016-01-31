@@ -294,6 +294,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
                     Projectile projectile =
                             new Projectile(projectileTexture,
                                     player.getPosition().cpy(),
+                                    player.getLinearVelocity(),
                                     player.getOrientation() - MathUtils.PI/2);
                     projectiles.add(projectile);
                     projectileSound.play();
