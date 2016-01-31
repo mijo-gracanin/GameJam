@@ -1,5 +1,6 @@
 package com.pixelfarmers.goat.enemy;
 
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.steer.Proximity;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
@@ -18,32 +19,26 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
+import com.pixelfarmers.goat.MessageCode;
 import com.pixelfarmers.goat.fx.BloodParticle;
 import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.level.Box2dRaycastCollisionDetector;
-import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.weapon.Projectile;
 import com.pixelfarmers.goat.weapon.Sword;
 
 public class EnemyManager {
 
-    public interface EnemyDeathListener {
-        void onDeath(float x, float y);
-    }
-
     private DelayedRemovalArray<Enemy> enemyList;
     private Array<EnemySpawner> enemySpawners;
     private Player player;
     private World world;
-    private EnemyDeathListener enemyDeathListener;
 
-    public EnemyManager(Player player, World world, Level level, EnemyDeathListener enemyDeathListener) {
+    public EnemyManager(Player player, World world) {
         this.player = player;
         enemyList = new DelayedRemovalArray<Enemy>();
         this.enemySpawners = new Array<EnemySpawner>();
         this.world = world;
-        this.enemyDeathListener = enemyDeathListener;
     }
 
     public void addSpawners(Array<EnemySpawner> spawners) {
@@ -98,7 +93,7 @@ public class EnemyManager {
                 if (isDead) {
                     particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
                     enemyList.removeValue(enemy, true);
-                    enemyDeathListener.onDeath(enemy.getPosition().x, enemy.getPosition().y);
+                    MessageManager.getInstance().dispatchMessage(MessageCode.ENEMY_DIED, enemy.getPosition());
                 }
             }
         }
@@ -121,7 +116,7 @@ public class EnemyManager {
                     bloodSplash(particleEngine, enemy);
                     if (isDead) {
                         enemyList.removeValue(enemy, true);
-                        enemyDeathListener.onDeath(enemy.getPosition().x, enemy.getPosition().y);
+                        MessageManager.getInstance().dispatchMessage(MessageCode.ENEMY_DIED, enemy.getPosition());
                     }
                     projectiles.removeValue(projectile, true);
                 }

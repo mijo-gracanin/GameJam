@@ -6,6 +6,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.ai.GdxAI;
+import com.badlogic.gdx.ai.msg.MessageManager;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -18,6 +21,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -38,7 +42,7 @@ import com.pixelfarmers.goat.level.TiledMapLevelLoader;
 import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.weapon.Projectile;
 
-public class GameScreen extends ScreenAdapter {
+public class GameScreen extends ScreenAdapter implements Telegraph {
 
     public static final float WORLD_WIDTH = 480;
     public static final float WORLD_HEIGHT = 360;
@@ -90,6 +94,7 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void show() {
+        MessageManager.getInstance().addListener(this, MessageCode.ENEMY_DIED);
         camera = new OrthographicCamera();
         camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
         camera.update();
@@ -137,14 +142,7 @@ public class GameScreen extends ScreenAdapter {
         });
         goat = new Goat(new Vector2(352, 352));
         currentLevel = new TiledMapLevelLoader("map.tmx").generate();
-        enemyManager = new EnemyManager(player, currentLevel.getWorld(), currentLevel, new EnemyManager.EnemyDeathListener() {
-            @Override
-            public void onDeath(float x, float y) {
-                if (GameSettings.getInstance().getBloodLevel() == GameSettings.BloodLevel.NORMAL) {
-                    levelRenderer.addBloodStain(x, y);
-                }
-            }
-        });
+        enemyManager = new EnemyManager(player, currentLevel.getWorld());
         SpawnerFactory.Parameters spawnParameters = new SpawnerFactory.Parameters(256, 10);
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, currentLevel, spawnParameters));
         heartsContainer = new Hearts(stage, WORLD_WIDTH, player);
@@ -219,7 +217,7 @@ public class GameScreen extends ScreenAdapter {
         GdxAI.getTimepiece().update(delta);
 
         player.update(delta, currentLevel);
-        goat.update(delta);
+        updateGoat(delta);
         updateProjectiles(delta);
         enemyManager.checkForProjectileCollisions(projectiles, particleEngine, projectileHitSound);
         enemyManager.checkForSwordCollisions(player.sword, particleEngine, swordHitSound);
@@ -227,6 +225,13 @@ public class GameScreen extends ScreenAdapter {
         particleEngine.update(delta);
 
         updateCamera();
+    }
+
+    private void updateGoat(float delta) {
+        if(Intersector.overlaps(goat.getCollisionCircle(), player.getCollisionCircle())) {
+            MessageManager.getInstance().dispatchMessage(0, MessageCode.GOAT_START_FOLLOW);
+        }
+        goat.update(delta);
     }
 
     private void updateCamera() {
@@ -296,5 +301,17 @@ public class GameScreen extends ScreenAdapter {
         music.stop();
         assetManager.dispose();
         super.hide();
+    }
+
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        if(msg.message == MessageCode.ENEMY_DIED) {
+            Vector2 pos = (Vector2) msg.extraInfo;
+            if (GameSettings.getInstance().getBloodLevel() == GameSettings.BloodLevel.NORMAL) {
+                levelRenderer.addBloodStain(pos.x, pos.y);
+            }
+            return true;
+        }
+        return false;
     }
 }
