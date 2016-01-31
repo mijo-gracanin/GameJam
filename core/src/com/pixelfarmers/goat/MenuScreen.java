@@ -24,8 +24,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
  */
 public class MenuScreen extends ScreenAdapter {
 
-    private static final float WORLD_WIDTH = 640;
-    private static final float WORLD_HEIGHT = 480;
+    private static final float WORLD_WIDTH = GameScreen.WORLD_WIDTH;
+    private static final float WORLD_HEIGHT = GameScreen.WORLD_HEIGHT;
     private Stage stage;
     private Texture backgroundTexture;
     private Texture normalButtonTexture;
@@ -42,7 +42,7 @@ public class MenuScreen extends ScreenAdapter {
     stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
     Gdx.input.setInputProcessor(stage);
 
-      backgroundTexture = new Texture(Gdx.files.internal("PixelFarmers.jpg"));
+      backgroundTexture = new Texture(Gdx.files.internal("menu_bg.png"));
       Image background = new Image(backgroundTexture);
       stage.addActor(background);
       background.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, Align.center);
@@ -52,14 +52,14 @@ public class MenuScreen extends ScreenAdapter {
       ImageButton normalButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(normalButtonTexture)),
               new TextureRegionDrawable(new TextureRegion(normalButtonPressTexture)));
       stage.addActor(normalButton);
-      normalButton.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2 + 20, Align.bottom);
+      normalButton.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2 - 90, Align.bottom);
 
       hardcoreButtonTexture = new Texture(Gdx.files.internal("hardcore_button.png"));
       hardcoreButtonPressTexture = new Texture(Gdx.files.internal("hardcore_button_press.png"));
       ImageButton hardcoreButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(hardcoreButtonTexture)),
               new TextureRegionDrawable(new TextureRegion(hardcoreButtonPressTexture)));
       stage.addActor(hardcoreButton);
-      hardcoreButton.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2 - 20, Align.top);
+      hardcoreButton.setPosition(WORLD_WIDTH / 2, WORLD_HEIGHT / 2 - 110, Align.top);
 
       normalButton.addListener(new ChangeListener() {
           @Override

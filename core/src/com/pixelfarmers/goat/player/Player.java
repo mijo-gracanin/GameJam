@@ -74,7 +74,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
         tryMovingHorizontally(currentLevel, dx);
         tryMovingVertically(currentLevel, dy);
 
-        sword.update(position.cpy(), orientationInRadians - (MathUtils.PI/2), delta);
+        sword.update(position.cpy(), orientationInRadians - (MathUtils.PI / 2), delta);
 
         movementDirection.scl(SPEED_DECREASE_FACTOR);
         collisionCircle.setPosition(position.x, position.y);
@@ -161,8 +161,8 @@ public class Player implements PhysicalEntity, Steerable<Vector2> {
     }
 
     private boolean shouldShowWhileInvincible() {
-        float msec = animationStateTime - (int)animationStateTime;
-        return msec < 0.5f;
+        float msec = animationStateTime - (int) animationStateTime;
+        return msec < 0.25f || msec >= 0.5f && msec < 0.75f;
     }
 
     private TextureRegion getCurrentTexture() {

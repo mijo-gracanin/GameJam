@@ -8,8 +8,8 @@ import com.pixelfarmers.goat.player.Player;
 
 public abstract class EnemySpawner {
 
-    private static final float INNER_SPAWN_RADIUS_2 = 280 * 280;
-    private static final float OUTER_SPAWN_RADIUS_2 = 350 * 350;
+    private static final float INNER_SPAWN_RADIUS_2 = 222 * 222;
+    private static final float OUTER_SPAWN_RADIUS_2 = 512 * 512;
 
     EnemyManager enemyManager;
 
@@ -44,12 +44,14 @@ public abstract class EnemySpawner {
 
     public void update(float delta, Player player) {
         float distanceToPlayer = position.dst2(player.getPosition());
-        if(!isActive && distanceToPlayer > INNER_SPAWN_RADIUS_2 && distanceToPlayer < OUTER_SPAWN_RADIUS_2) {
+        if (!isActive && distanceToPlayer > INNER_SPAWN_RADIUS_2 && distanceToPlayer < OUTER_SPAWN_RADIUS_2) {
             activate();
+        } else {
+            deactivate();
         }
 
-        if(isActive) {
-            timeToSpawn-=delta;
+        if (isActive) {
+            timeToSpawn -= delta;
         }
     }
 

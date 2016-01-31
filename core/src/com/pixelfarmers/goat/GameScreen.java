@@ -39,8 +39,8 @@ import com.pixelfarmers.goat.weapon.Projectile;
 
 public class GameScreen extends ScreenAdapter {
 
-    private static final float WORLD_WIDTH = 640;
-    private static final float WORLD_HEIGHT = 480;
+    public static final float WORLD_WIDTH = 480;
+    public static final float WORLD_HEIGHT = 360;
 
     private AssetManager assetManager;
     private ShapeRenderer shapeRenderer;
@@ -141,7 +141,8 @@ public class GameScreen extends ScreenAdapter {
                 }
             }
         });
-        enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, 1));
+        SpawnerFactory.Parameters spawnParameters = new SpawnerFactory.Parameters(256, 10);
+        enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, currentLevel, spawnParameters));
         heartsContainer = new Hearts(stage, WORLD_WIDTH, player);
     }
 
