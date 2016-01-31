@@ -92,6 +92,9 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private Texture projectileTexture;
 
     private CinematicBlock introCinematic;
+    private boolean isFadingOut = false;
+    private Texture whiteTexture;
+    private Image whiteImage;
 
     Game game;
 
@@ -131,6 +134,8 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
         painSound = assetManager.get("pain_1.wav", Sound.class);
         fadeoutNoise = assetManager.get("fadeout_noise.wav", Sound.class);
+        whiteTexture = assetManager.get("white.png", Texture.class);
+        whiteImage = new Image(whiteTexture);
 
         levelRenderer = new LevelRenderer();
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
@@ -158,6 +163,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         assetManager.load("song.mp3", Music.class);
         assetManager.load("sword.png", Texture.class);
         assetManager.load("fadeout_noise.wav", Sound.class);
+        assetManager.load("white.png", Texture.class);
         assetManager.finishLoading();
     }
 
@@ -300,7 +306,17 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         }
     }
 
+    float alpha = 0.0f;
+
     private void update(float delta) {
+        if (isFadingOut) {
+            whiteImage.setColor(Color.WHITE.r, Color.WHITE.g, Color.WHITE.b, alpha);
+            alpha += delta;
+            if (alpha > 2.0f) {
+                game.setScreen(new FinishScreen(assetManager));
+            }
+        }
+
         MessageManager.getInstance().update();
 
         checkForGameOver();
@@ -333,8 +349,9 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     }
 
     private void onWin() {
-        fadeoutNoise.play();
-        game.setScreen(new GameOverScreen(game));
+        fadeoutNoise.play(0.5f);
+        stage.addActor(whiteImage);
+        isFadingOut = true;
     }
 
     private void updateCamera() {
