@@ -11,11 +11,14 @@ import com.pixelfarmers.goat.MessageCode;
 public class Goat extends Enemy implements Telegraph {
 
     private final Animation animation;
+    private final TextureRegion idleTexture;
+
     private boolean isFollowingPlayer = false;
 
     public Goat(Vector2 startingPosition) {
         super(startingPosition);
         this.animation = AnimationLoader.getInstance().getAnimation("goat", 32, 32, 0);
+        this.idleTexture = AnimationLoader.getInstance().getSingleTexture("goat_sitting", 32, 32, 0, 0);
         MessageManager.getInstance().addListener(this, MessageCode.GOAT_START_FOLLOW);
     }
 
@@ -35,7 +38,21 @@ public class Goat extends Enemy implements Telegraph {
 
     @Override
     protected TextureRegion getTexture() {
-        return animation.getKeyFrame(stateTime, true);
+        return getCurrentTexture();
+    }
+
+    private TextureRegion getCurrentTexture() {
+        if (isFollowingPlayer) {
+            TextureRegion textureRegion = animation.getKeyFrame(stateTime, true);
+            if (linearVelocity.x > 0 && !textureRegion.isFlipX()) {
+                textureRegion.flip(true, false);
+            } else if (linearVelocity.x < 0 && textureRegion.isFlipX()) {
+                textureRegion.flip(true, false);
+            }
+            return textureRegion;
+        } else {
+            return idleTexture;
+        }
     }
 
     @Override
