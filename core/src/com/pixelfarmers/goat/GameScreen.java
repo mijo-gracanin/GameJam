@@ -88,6 +88,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private Sound projectileHitSound;
     private Sound projectileSound;
     private Sound painSound;
+    private Sound fadeoutNoise;
     private Texture projectileTexture;
 
     private CinematicBlock introCinematic;
@@ -129,6 +130,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         projectileHitSound = assetManager.get("goat.wav", Sound.class);
         projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
         painSound = assetManager.get("pain_1.wav", Sound.class);
+        fadeoutNoise = assetManager.get("fadeout_noise.wav", Sound.class);
 
         levelRenderer = new LevelRenderer();
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
@@ -155,6 +157,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         assetManager.load("pain_1.wav", Sound.class);
         assetManager.load("song.mp3", Music.class);
         assetManager.load("sword.png", Texture.class);
+        assetManager.load("fadeout_noise.wav", Sound.class);
         assetManager.finishLoading();
     }
 
@@ -330,8 +333,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     }
 
     private void onWin() {
-        //TODO
-        Gdx.app.log("DISI", "WIN");
+        fadeoutNoise.play();
         game.setScreen(new GameOverScreen(game));
     }
 
