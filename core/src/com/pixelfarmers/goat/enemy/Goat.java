@@ -45,12 +45,12 @@ public class Goat extends Enemy implements Telegraph {
 
     @Override
     public float getMaxLinearSpeed() {
-        return 40;
+        return 60;
     }
 
     @Override
     public float getMaxLinearAcceleration() {
-        return 800;
+        return 1000;
     }
 
     @Override

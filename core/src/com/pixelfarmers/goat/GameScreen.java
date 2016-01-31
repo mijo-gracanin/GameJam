@@ -104,14 +104,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
         setupFog();
 
-        assetManager = new AssetManager();
-        assetManager.load(TextureFilePaths.CHARACTER, Texture.class);
-        assetManager.load(TextureFilePaths.PROJECTILE, Texture.class);
-        assetManager.load("goat.wav", Sound.class);
-        assetManager.load("projectile_shoot.wav", Sound.class);
-        assetManager.load("sword_hit.wav", Sound.class);
-        assetManager.load("song.mp3", Music.class);
-        assetManager.finishLoading();
+        loadAssets();
 
         swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
         projectileHitSound = assetManager.get("goat.wav", Sound.class);
@@ -128,24 +121,37 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         init();
     }
 
+    private void loadAssets() {
+        assetManager = new AssetManager();
+        assetManager.load(TextureFilePaths.CHARACTER, Texture.class);
+        assetManager.load(TextureFilePaths.PROJECTILE, Texture.class);
+        assetManager.load("goat.wav", Sound.class);
+        assetManager.load("projectile_shoot.wav", Sound.class);
+        assetManager.load("sword_hit.wav", Sound.class);
+        assetManager.load("song.mp3", Music.class);
+        assetManager.finishLoading();
+    }
+
     private void setupFog() {
         Image fog = new Image(fogTexture);
         stage.addActor(fog);
     }
 
     private void init() {
-        player = new Player(assetManager, new Vector2(352, 352), new Player.OnHitListener() {
+        currentLevel = new TiledMapLevelLoader("map.tmx").generate();
+
+        player = new Player(assetManager, currentLevel.getPlayerStartPosition(), new Player.OnHitListener() {
             @Override
             public void onHit(int newHitPoints) {
                 heartsContainer.setCount(newHitPoints);
             }
         });
-        currentLevel = new TiledMapLevelLoader("map.tmx").generate();
+
         enemyManager = new EnemyManager(player, currentLevel.getWorld());
         SpawnerFactory.Parameters spawnParameters = new SpawnerFactory.Parameters(256, 10);
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, currentLevel, spawnParameters));
 
-        goat = new Goat(new Vector2(352, 384));
+        goat = new Goat(currentLevel.getGoatStartingPosition());
         goat.setSteeringBehavior(enemyManager.createGoatSteeringBehavior(goat));
 
         heartsContainer = new Hearts(stage, WORLD_WIDTH, player);
@@ -215,6 +221,8 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     }
 
     private void update(float delta) {
+        MessageManager.getInstance().update();
+
         checkForGameOver();
 
         GdxAI.getTimepiece().update(delta);
@@ -234,7 +242,16 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         if(Intersector.overlaps(goat.getCollisionCircle(), player.getCollisionCircle())) {
             MessageManager.getInstance().dispatchMessage(0, MessageCode.GOAT_START_FOLLOW);
         }
+        if(Intersector.overlaps(goat.getCollisionCircle(), currentLevel.getSafeZoneRect())) {
+            onWin();
+        }
         goat.update(delta);
+    }
+
+    private void onWin() {
+        //TODO
+        Gdx.app.log("DISI", "WIN");
+        game.setScreen(new GameOverScreen(game));
     }
 
     private void updateCamera() {
