@@ -87,6 +87,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private Sound swordHitSound;
     private Sound projectileHitSound;
     private Sound projectileSound;
+    private Sound painSound;
     private Texture projectileTexture;
 
     private CinematicBlock introCinematic;
@@ -127,12 +128,14 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
         projectileHitSound = assetManager.get("goat.wav", Sound.class);
         projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
+        painSound = assetManager.get("pain_1.wav", Sound.class);
 
         levelRenderer = new LevelRenderer();
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
 
         music = assetManager.get("song.mp3", Music.class);
         music.setLooping(true);
+        music.setVolume(0.5f);
         music.play();
         setupInputProcessor();
 
@@ -149,6 +152,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         assetManager.load("goat.wav", Sound.class);
         assetManager.load("projectile_shoot.wav", Sound.class);
         assetManager.load("sword_hit.wav", Sound.class);
+        assetManager.load("pain_1.wav", Sound.class);
         assetManager.load("song.mp3", Music.class);
         assetManager.load("sword.png", Texture.class);
         assetManager.finishLoading();
@@ -166,6 +170,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
             @Override
             public void onHit(int newHitPoints) {
                 heartsContainer.setCount(newHitPoints);
+                painSound.play();
             }
         });
 
@@ -244,6 +249,10 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private void queryKeyboardInput() {
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
+        }
+
+        if (!introCinematic.isFinished()) {
+            return;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.A)) player.goLeft();
@@ -363,6 +372,11 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                if (!introCinematic.isFinished()) {
+                    introCinematic.skipAll();
+                    return true;
+                }
+
                 if (button == Input.Buttons.LEFT) {
                     Projectile projectile =
                             new Projectile(projectileTexture,

@@ -112,7 +112,9 @@ public class MenuScreen extends ScreenAdapter {
     private void showCredits() {
         Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE);
         Label label1 = new Label("Game creators:\n\nMatej Vidakovic\nDario Sikirica\nMijo Gracanin\n\n" +
-                "Thanks to Alex Glukhov (glukhov.me) for creating\nXeliard Font", style);
+                "Thanks to Alex Glukhov (glukhov.me) for creating\nXeliard Font\n" +
+                "Thanks to barker852 from freesound.org for \nPain_1.wav \n" +
+                "Thanks to Trash-Man-1 from newgrounds.com for \nDeamon Car Takedown track", style);
         label1.setAlignment(Align.center);
         label1.setFontScale(0.7f);
         label1.setWrap(true);
@@ -127,12 +129,12 @@ public class MenuScreen extends ScreenAdapter {
         final Dialog dialog = new Dialog("Created for Global Game Jam 2016", gameUISkin) {
             @Override
             public float getPrefWidth() {
-                return WORLD_WIDTH - 100;
+                return WORLD_WIDTH - 80;
             }
 
             @Override
             public float getPrefHeight() {
-                return WORLD_HEIGHT - 100;
+                return WORLD_HEIGHT - 80;
             }
         };
         dialog.setModal(true);
@@ -154,7 +156,7 @@ public class MenuScreen extends ScreenAdapter {
         Table t = new Table();
         // t.debug();
 
-        dialog.getContentTable().add(label1).padTop(50f);
+        dialog.getContentTable().add(label1).padTop(30f);
 
         t.add(okButton).width(btnSize).height(btnSize);
 
