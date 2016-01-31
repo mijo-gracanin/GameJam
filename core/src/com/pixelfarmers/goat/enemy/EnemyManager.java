@@ -145,7 +145,7 @@ public class EnemyManager {
         }
     }
 
-    public EnemyBat createKamikaze(Vector2 position, Location<Vector2> player) {
+    public EnemyBat createBat(Vector2 position, Location<Vector2> player) {
         EnemyBat enemy = new EnemyBat(position);
         enemy.setSteeringBehavior(createKamikazeSteeringBehavior(enemy, player));
         return enemy;

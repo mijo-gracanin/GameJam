@@ -1,13 +1,12 @@
 package com.pixelfarmers.goat.enemy;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.pixelfarmers.goat.player.Player;
 
-public class EnemySpawner {
+public abstract class EnemySpawner {
 
     private static final float MIN_DIST_TO_ACTIVATE = 200;
     EnemyManager enemyManager;
@@ -34,7 +33,6 @@ public class EnemySpawner {
     }
 
     public void activate() {
-        Gdx.app.log("DISI", "ACTIVATING");
         isActive = true;
     }
 
@@ -57,17 +55,18 @@ public class EnemySpawner {
                 && timeToSpawn <= 0;
     }
 
-    public Array<EnemyBat> spawn(Location<Vector2> player) {
+    public Array<Enemy> spawn(Location<Vector2> player) {
         spawnedSoFar+=numEnemiesToSpawnAtOnce;
         timeToSpawn = spawnRateSeconds;
-        Array<EnemyBat> spawnedEnemies = new Array<EnemyBat>(numEnemiesToSpawnAtOnce);
+        Array<Enemy> spawnedEnemies = new Array<Enemy>(numEnemiesToSpawnAtOnce);
         for(int i = 0; i < numEnemiesToSpawnAtOnce; i++) {
             float xOffset = MathUtils.random(0, 0);
             float yOffset = MathUtils.random(0, 0);
             Vector2 spawnPosition = new Vector2(position.x + xOffset, position.y + yOffset);
-            spawnedEnemies.add(enemyManager.createKamikaze(spawnPosition, player));
+            spawnedEnemies.add(createEnemy(enemyManager, spawnPosition, player));
         }
         return spawnedEnemies;
     }
 
+    protected abstract Enemy createEnemy(EnemyManager enemyManager, Vector2 position, Location<Vector2>  player);
 }
