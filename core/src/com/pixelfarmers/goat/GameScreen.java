@@ -325,13 +325,6 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     @Override
     public boolean handleMessage(Telegram msg) {
-        if(msg.message == MessageCode.ENEMY_DIED) {
-            Vector2 pos = (Vector2) msg.extraInfo;
-            if (GameSettings.getInstance().getBloodLevel() == GameSettings.BloodLevel.NORMAL) {
-                levelRenderer.addBloodStain(pos.x, pos.y);
-            }
-            return true;
-        }
         return false;
     }
 }

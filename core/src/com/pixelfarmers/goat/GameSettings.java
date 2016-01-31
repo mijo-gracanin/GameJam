@@ -7,7 +7,7 @@ public class GameSettings {
         HARDCORE
     }
 
-    enum BloodLevel {
+    public enum BloodLevel {
         NO_BLOOD,
         NORMAL
     }
