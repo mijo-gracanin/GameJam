@@ -274,8 +274,8 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void hide() {
-        assetManager.dispose();
         music.stop();
+        assetManager.dispose();
         super.hide();
     }
 }
