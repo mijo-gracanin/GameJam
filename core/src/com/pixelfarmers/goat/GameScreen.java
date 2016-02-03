@@ -264,6 +264,10 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
             return;
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            player.castSword();
+        }
+
         if (Gdx.input.isKeyPressed(Input.Keys.A)) player.goLeft();
         if (Gdx.input.isKeyPressed(Input.Keys.D)) player.goRight();
         if (Gdx.input.isKeyPressed(Input.Keys.W)) player.goUp();
@@ -397,6 +401,10 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
                 }
 
                 if (button == Input.Buttons.LEFT) {
+                    if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                        player.castSword();
+                        return true;
+                    }
                     Projectile projectile =
                             new Projectile(projectileTexture,
                                     player.getPosition().cpy(),
