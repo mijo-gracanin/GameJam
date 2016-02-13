@@ -1,8 +1,9 @@
-package com.pixelfarmers.goat.enemy;
+package com.pixelfarmers.goat.enemy.spawner;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.Tile;
 

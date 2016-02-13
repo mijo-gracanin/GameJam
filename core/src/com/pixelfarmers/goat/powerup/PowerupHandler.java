@@ -7,7 +7,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.pixelfarmers.goat.MessageCode;
+import com.pixelfarmers.goat.constants.MessageCode;
 
 public class PowerupHandler implements Telegraph {
 

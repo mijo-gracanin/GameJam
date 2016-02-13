@@ -1,4 +1,4 @@
-package com.pixelfarmers.goat;
+package com.pixelfarmers.goat.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -20,9 +20,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.pixelfarmers.goat.GameSettings;
 
 
-public class MenuScreen extends ScreenAdapter {
+public class MainMenuScreen extends ScreenAdapter {
 
     private static final float WORLD_WIDTH = GameScreen.WORLD_WIDTH;
     private static final float WORLD_HEIGHT = GameScreen.WORLD_HEIGHT;
@@ -38,7 +39,7 @@ public class MenuScreen extends ScreenAdapter {
     private BitmapFont font;
     private final Game game;
 
-    public MenuScreen(Game game) {
+    public MainMenuScreen(Game game) {
         this.game = game;
     }
 

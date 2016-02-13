@@ -1,4 +1,4 @@
-package com.pixelfarmers.goat.enemy;
+package com.pixelfarmers.goat.util;
 
 
 import com.badlogic.gdx.graphics.Texture;

@@ -23,14 +23,15 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
-import com.pixelfarmers.goat.MessageCode;
+import com.pixelfarmers.goat.constants.MessageCode;
+import com.pixelfarmers.goat.enemy.spawner.EnemySpawner;
 import com.pixelfarmers.goat.fx.BloodParticle;
 import com.pixelfarmers.goat.fx.ParticleEngine;
-import com.pixelfarmers.goat.level.Box2dRaycastCollisionDetector;
+import com.pixelfarmers.goat.util.Box2dRaycastCollisionDetector;
 import com.pixelfarmers.goat.level.Tile;
 import com.pixelfarmers.goat.player.Player;
-import com.pixelfarmers.goat.weapon.Projectile;
-import com.pixelfarmers.goat.weapon.Sword;
+import com.pixelfarmers.goat.player.Projectile;
+import com.pixelfarmers.goat.player.Sword;
 
 public class EnemyManager implements Telegraph {
 
@@ -204,8 +205,8 @@ public class EnemyManager implements Telegraph {
         }
     }
 
-    public EnemyBat createBat(Vector2 position, Steerable<Vector2> player) {
-        EnemyBat enemy = new EnemyBat(position);
+    public Bat createBat(Vector2 position, Steerable<Vector2> player) {
+        Bat enemy = new Bat(position);
 
         BlendedSteering<Vector2> steering = createStandardSteeringBehaviors(enemy);
         Pursue<Vector2> pursue = new Pursue<Vector2>(enemy, player);

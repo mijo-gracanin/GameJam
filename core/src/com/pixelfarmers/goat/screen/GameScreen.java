@@ -1,4 +1,4 @@
-package com.pixelfarmers.goat;
+package com.pixelfarmers.goat.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -34,9 +34,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.pixelfarmers.goat.constants.MessageCode;
+import com.pixelfarmers.goat.constants.TextureFilePaths;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.Goat;
-import com.pixelfarmers.goat.enemy.SpawnerFactory;
+import com.pixelfarmers.goat.enemy.spawner.SpawnerFactory;
 import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.hud.Hearts;
 import com.pixelfarmers.goat.intro.CameraFocus;
@@ -52,7 +54,8 @@ import com.pixelfarmers.goat.level.LevelRenderer;
 import com.pixelfarmers.goat.level.TiledMapLevelLoader;
 import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.powerup.PowerupHandler;
-import com.pixelfarmers.goat.weapon.Projectile;
+import com.pixelfarmers.goat.util.PFMathUtils;
+import com.pixelfarmers.goat.player.Projectile;
 
 import java.util.ArrayList;
 import java.util.List;

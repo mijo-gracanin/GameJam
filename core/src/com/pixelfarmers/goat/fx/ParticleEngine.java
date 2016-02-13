@@ -6,7 +6,7 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.pixelfarmers.goat.MessageCode;
+import com.pixelfarmers.goat.constants.MessageCode;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.pixelfarmers.goat.GameSettings;
-import com.pixelfarmers.goat.MessageCode;
+import com.pixelfarmers.goat.constants.MessageCode;
 import com.pixelfarmers.goat.fx.BloodStain;
 import com.pixelfarmers.goat.powerup.Powerup;
 

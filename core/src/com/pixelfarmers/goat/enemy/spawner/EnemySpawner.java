@@ -1,9 +1,11 @@
-package com.pixelfarmers.goat.enemy;
+package com.pixelfarmers.goat.enemy.spawner;
 
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.pixelfarmers.goat.enemy.Enemy;
+import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.player.Player;
 
 public abstract class EnemySpawner {

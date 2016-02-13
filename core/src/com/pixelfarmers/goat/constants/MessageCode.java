@@ -1,4 +1,4 @@
-package com.pixelfarmers.goat;
+package com.pixelfarmers.goat.constants;
 
 public class MessageCode {
 

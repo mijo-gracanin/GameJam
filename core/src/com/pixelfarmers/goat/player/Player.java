@@ -17,13 +17,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.pixelfarmers.goat.GameSettings;
-import com.pixelfarmers.goat.MessageCode;
-import com.pixelfarmers.goat.PhysicalEntity;
-import com.pixelfarmers.goat.TextureFilePaths;
+import com.pixelfarmers.goat.constants.MessageCode;
+import com.pixelfarmers.goat.constants.TextureFilePaths;
 import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.powerup.Powerup;
-import com.pixelfarmers.goat.weapon.Sword;
 
 
 public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
@@ -36,8 +34,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     private static final float COLLISION_RADIUS = 8f;
     private static final float MOVEMENT_SPEED = 100f;
-    private static final float WEAPON_WIDTH = 4;
-    private static final float WEAPON_HEIGHT = 16;
     private static final float SPEED_DECREASE_FACTOR = 0.8f;
     private static float INVINCIBILITY_DURATION = 1.2f;
     private static float STUN_DURATION = INVINCIBILITY_DURATION * 0.5f;
@@ -313,16 +309,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
     @Override
     public Vector2 getPosition() {
         return position;
-    }
-
-    @Override
-    public float getHorizontalSpeed() {
-        return movementDirection.x;
-    }
-
-    @Override
-    public float getVerticalSpeed() {
-        return movementDirection.y;
     }
 
     @Override

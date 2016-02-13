@@ -4,8 +4,8 @@ package com.pixelfarmers.goat.level;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.utils.Array;
-import com.pixelfarmers.goat.MessageCode;
-import com.pixelfarmers.goat.PhysicalEntity;
+import com.pixelfarmers.goat.constants.MessageCode;
+import com.pixelfarmers.goat.player.PhysicalEntity;
 import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.powerup.Powerup;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.pixelfarmers.goat.level;
+package com.pixelfarmers.goat.util;
 
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;

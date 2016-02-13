@@ -1,4 +1,4 @@
-package com.pixelfarmers.goat.weapon;
+package com.pixelfarmers.goat.player;
 
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
-import com.pixelfarmers.goat.PhysicalEntity;
 
 public class Projectile implements PhysicalEntity {
 
@@ -75,16 +74,6 @@ public class Projectile implements PhysicalEntity {
     @Override
     public Circle getCollisionCircle() {
         return collisionCircle;
-    }
-
-    @Override
-    public float getHorizontalSpeed() {
-        return 0;
-    }
-
-    @Override
-    public float getVerticalSpeed() {
-        return 0;
     }
 
     public int getDamage() {
