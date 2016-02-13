@@ -141,6 +141,8 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
             return false;
         }
 
+        MessageManager.getInstance().dispatchMessage(MessageCode.ENEMY_HIT_PLAYER);
+
         isInvincible = true;
         isStunned = true;
         movementDirection.set(forceDirection.x, forceDirection.y).nor();

@@ -14,7 +14,6 @@ import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
@@ -148,7 +147,7 @@ public class EnemyManager implements Telegraph {
         }
     }
 
-    public void checkForSwordCollisions(Sword sword, Sound hitSound) {
+    public void checkForSwordCollisions(Sword sword) {
         if(!sword.isActive()) return;
 
         enemyList.begin();
@@ -157,7 +156,7 @@ public class EnemyManager implements Telegraph {
                 continue;
             }
             if (Intersector.overlaps(enemy.getCollisionCircle(), sword.getCollisionCircle())) {
-                hitSound.play();
+                MessageManager.getInstance().dispatchMessage(MessageCode.SWORD_HIT_ENEMY);
                 boolean isDead = enemy.onHit(sword.getDamage() * player.getDamageModifier());
                 if (isDead) {
                     enemyList.removeValue(enemy, true);
@@ -169,8 +168,7 @@ public class EnemyManager implements Telegraph {
     }
 
     public void checkForProjectileCollisions(DelayedRemovalArray<Projectile> projectiles,
-                                             ParticleEngine particleEngine,
-                                             Sound hitSound) {
+                                             ParticleEngine particleEngine) {
         projectiles.begin();
         enemyList.begin();
         for (Enemy enemy : enemyList) {
@@ -179,7 +177,7 @@ public class EnemyManager implements Telegraph {
             }
             for (Projectile projectile : projectiles) {
                 if (Intersector.overlaps(enemy.getCollisionCircle(), projectile.getCollisionCircle())) {
-                    hitSound.play();
+                    MessageManager.getInstance().dispatchMessage(MessageCode.PROJECTILE_HIT_ENEMY);
                     boolean isDead = enemy.onHit(projectile.getDamage() * player.getDamageModifier());
                     bloodSplash(particleEngine, enemy);
                     if (isDead) {

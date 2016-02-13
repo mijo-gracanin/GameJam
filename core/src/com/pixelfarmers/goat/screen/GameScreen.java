@@ -34,7 +34,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.pixelfarmers.goat.SoundPlayer;
 import com.pixelfarmers.goat.constants.MessageCode;
+import com.pixelfarmers.goat.constants.Sounds;
 import com.pixelfarmers.goat.constants.Textures;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.Goat;
@@ -80,17 +82,11 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private DelayedRemovalArray<Projectile> projectiles = new DelayedRemovalArray<Projectile>();
 
     private EnemyManager enemyManager;
-    private PowerupHandler powerupHandler;
 
     private BitmapFont bitmapFont;
     private Stage stage;
     private Hearts heartsContainer;
 
-    private Sound swordHitSound;
-    private Sound projectileHitSound;
-    private Sound projectileSound;
-    private Sound painSound;
-    private Sound fadeoutNoise;
     private Texture projectileTexture;
 
     private CinematicBlock introCinematic;
@@ -131,11 +127,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
         setupFog();
 
-        swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
-        projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
-        projectileSound = assetManager.get("projectile_shoot.wav", Sound.class);
-        painSound = assetManager.get("pain_1.wav", Sound.class);
-        fadeoutNoise = assetManager.get("fadeout_noise.wav", Sound.class);
+        new SoundPlayer(assetManager);
         whiteTexture = assetManager.get("white.png", Texture.class);
         whiteImage = new Image(whiteTexture);
 
@@ -162,11 +154,11 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         assetManager.load(Textures.WHITE, Texture.class);
         assetManager.load(Textures.SWORD, Texture.class);
 
-        assetManager.load("projectile_hit.wav", Sound.class);
-        assetManager.load("projectile_shoot.wav", Sound.class);
-        assetManager.load("sword_hit.wav", Sound.class);
-        assetManager.load("pain_1.wav", Sound.class);
-        assetManager.load("fadeout_noise.wav", Sound.class);
+        assetManager.load(Sounds.PROJECTILE_HIT, Sound.class);
+        assetManager.load(Sounds.PROJECTILE_SHOOT, Sound.class);
+        assetManager.load(Sounds.SWORD_HIT, Sound.class);
+        assetManager.load(Sounds.PAIN, Sound.class);
+        assetManager.load(Sounds.FADEOUT_NOISE, Sound.class);
 
         assetManager.load("song.mp3", Music.class);
 
@@ -185,7 +177,6 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
             @Override
             public void onHit(int newHitPoints) {
                 heartsContainer.setCount(newHitPoints);
-                painSound.play();
             }
         });
 
@@ -242,7 +233,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
             }
         });
 
-        powerupHandler = new PowerupHandler(assetManager);
+        new PowerupHandler(assetManager);
     }
 
     @Override
@@ -338,8 +329,8 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         updateProjectiles(delta);
 
         CollisionDetection.checkPlayerPowerupCollisions(player, levelRenderer.powerups);
-        enemyManager.checkForProjectileCollisions(projectiles, particleEngine, projectileHitSound);
-        enemyManager.checkForSwordCollisions(player.sword, swordHitSound);
+        enemyManager.checkForProjectileCollisions(projectiles, particleEngine);
+        enemyManager.checkForSwordCollisions(player.sword);
 
         enemyManager.update(delta);
         particleEngine.update(delta);
@@ -359,7 +350,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     }
 
     private void onWin() {
-        fadeoutNoise.play(0.5f);
+        MessageManager.getInstance().dispatchMessage(MessageCode.ON_WIN);
         stage.addActor(whiteImage);
         isFadingOut = true;
     }
@@ -417,7 +408,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
                                     player.getLinearVelocity(),
                                     player.getOrientation() - MathUtils.PI / 2);
                     projectiles.add(projectile);
-                    projectileSound.play();
+                    MessageManager.getInstance().dispatchMessage(MessageCode.PROJECTILE_SHOOT);
                 } else if (button == Input.Buttons.RIGHT) {
                     player.castSword();
                 }
