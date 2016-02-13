@@ -18,7 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.pixelfarmers.goat.GameSettings;
 import com.pixelfarmers.goat.constants.MessageCode;
-import com.pixelfarmers.goat.constants.TextureFilePaths;
+import com.pixelfarmers.goat.constants.Textures;
 import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.powerup.Powerup;
@@ -105,7 +105,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
     }
 
     private void setupAnimations() {
-        TextureRegion[][] textureRegions = TextureRegion.split(assetManager.get(TextureFilePaths.CHARACTER, Texture.class), 16, 32);
+        TextureRegion[][] textureRegions = TextureRegion.split(assetManager.get(Textures.CHARACTER, Texture.class), 16, 32);
         walkingAnimation = new Animation(0.1f, textureRegions[1]);
         idleAnimation = new Animation(0.8f, textureRegions[0]);
         animationStateTime = 0;

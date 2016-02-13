@@ -35,7 +35,7 @@ import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pixelfarmers.goat.constants.MessageCode;
-import com.pixelfarmers.goat.constants.TextureFilePaths;
+import com.pixelfarmers.goat.constants.Textures;
 import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.Goat;
 import com.pixelfarmers.goat.enemy.spawner.SpawnerFactory;
@@ -83,7 +83,6 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private PowerupHandler powerupHandler;
 
     private BitmapFont bitmapFont;
-    private Texture fogTexture;
     private Stage stage;
     private Hearts heartsContainer;
 
@@ -108,7 +107,6 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         bitmapFont = new BitmapFont();
         particleEngine = new ParticleEngine();
         bitmapFont.setColor(Color.WHITE);
-        fogTexture = new Texture("fog.png");
         projectileTexture = new Texture("magic.png");
     }
 
@@ -120,17 +118,18 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     @Override
     public void show() {
-        MessageManager.getInstance().addListener(this, MessageCode.ENEMY_DIED);
+
+        loadAssets();
+
         camera = new OrthographicCamera();
         camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
         camera.update();
+
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
         stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
         setupFog();
-
-        loadAssets();
 
         swordHitSound = assetManager.get("sword_hit.wav", Sound.class);
         projectileHitSound = assetManager.get("projectile_hit.wav", Sound.class);
@@ -154,24 +153,28 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     private void loadAssets() {
         assetManager = new AssetManager();
-        assetManager.load(TextureFilePaths.CHARACTER, Texture.class);
-        assetManager.load(TextureFilePaths.PROJECTILE, Texture.class);
-        assetManager.load(TextureFilePaths.HEALTH_POWERUP, Texture.class);
-        assetManager.load(TextureFilePaths.DAMAGE_POWERUP, Texture.class);
-        assetManager.load(TextureFilePaths.SPEED_POWERUP, Texture.class);
+        assetManager.load(Textures.CHARACTER, Texture.class);
+        assetManager.load(Textures.PROJECTILE, Texture.class);
+        assetManager.load(Textures.HEALTH_POWERUP, Texture.class);
+        assetManager.load(Textures.DAMAGE_POWERUP, Texture.class);
+        assetManager.load(Textures.SPEED_POWERUP, Texture.class);
+        assetManager.load(Textures.FOG, Texture.class);
+        assetManager.load(Textures.WHITE, Texture.class);
+        assetManager.load(Textures.SWORD, Texture.class);
+
         assetManager.load("projectile_hit.wav", Sound.class);
         assetManager.load("projectile_shoot.wav", Sound.class);
         assetManager.load("sword_hit.wav", Sound.class);
         assetManager.load("pain_1.wav", Sound.class);
-        assetManager.load("song.mp3", Music.class);
-        assetManager.load("sword.png", Texture.class);
         assetManager.load("fadeout_noise.wav", Sound.class);
-        assetManager.load("white.png", Texture.class);
+
+        assetManager.load("song.mp3", Music.class);
+
         assetManager.finishLoading();
     }
 
     private void setupFog() {
-        Image fog = new Image(fogTexture);
+        Image fog = new Image(assetManager.get(Textures.FOG, Texture.class));
         stage.addActor(fog);
     }
 

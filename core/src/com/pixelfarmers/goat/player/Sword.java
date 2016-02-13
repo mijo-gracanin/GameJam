@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.pixelfarmers.goat.constants.Textures;
 
 /**
  * Created by mijo on 30/01/16.
@@ -29,7 +30,7 @@ public class Sword implements PhysicalEntity {
 
     public Sword(Vector2 position, AssetManager assetManager) {
         this.position = position.cpy();
-        swordTexture = assetManager.get("sword.png", Texture.class);
+        swordTexture = assetManager.get(Textures.SWORD, Texture.class);
     }
 
     public void update(Vector2 playerPosition, float playerOrientation, float delta) {

@@ -9,17 +9,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.pixelfarmers.goat.constants.Textures;
 
 public class FinishScreen extends ScreenAdapter {
-    private AssetManager assetManager;
+
     private Stage stage;
     private Image background, white;
 
     public FinishScreen(AssetManager assetManager) {
-        this.assetManager = assetManager;
         Texture backgroundTexture = new Texture(Gdx.files.internal("win_bg.png"));
         background = new Image(backgroundTexture);
-        white = new Image(new Texture("white.png"));
+        white = new Image(assetManager.get(Textures.WHITE, Texture.class));
     }
 
     @Override

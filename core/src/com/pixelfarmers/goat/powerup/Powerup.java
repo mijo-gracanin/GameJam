@@ -5,16 +5,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
-import com.pixelfarmers.goat.constants.TextureFilePaths;
+import com.pixelfarmers.goat.constants.Textures;
 import com.pixelfarmers.goat.level.Tile;
 
 public class Powerup {
 
     public enum TYPE {
 
-        HEALTH(TextureFilePaths.HEALTH_POWERUP),
-        SPEED(TextureFilePaths.SPEED_POWERUP),
-        DAMAGE(TextureFilePaths.DAMAGE_POWERUP);
+        HEALTH(Textures.HEALTH_POWERUP),
+        SPEED(Textures.SPEED_POWERUP),
+        DAMAGE(Textures.DAMAGE_POWERUP);
 
         public final String textureName;
 
