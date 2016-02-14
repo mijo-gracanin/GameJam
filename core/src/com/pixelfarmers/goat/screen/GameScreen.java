@@ -128,7 +128,8 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         setupFog();
 
         new SoundPlayer(assetManager);
-        whiteTexture = assetManager.get("white.png", Texture.class);
+
+        whiteTexture = assetManager.get(Textures.WHITE, Texture.class);
         whiteImage = new Image(whiteTexture);
 
         levelRenderer = new LevelRenderer();
@@ -329,7 +330,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         updateProjectiles(delta);
 
         CollisionDetection.checkPlayerPowerupCollisions(player, levelRenderer.powerups);
-        enemyManager.checkForProjectileCollisions(projectiles, particleEngine);
+        enemyManager.checkForProjectileCollisions(projectiles);
         enemyManager.checkForSwordCollisions(player.sword);
 
         enemyManager.update(delta);

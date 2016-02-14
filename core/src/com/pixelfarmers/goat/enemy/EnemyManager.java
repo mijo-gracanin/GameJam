@@ -156,7 +156,7 @@ public class EnemyManager implements Telegraph {
                 continue;
             }
             if (Intersector.overlaps(enemy.getCollisionCircle(), sword.getCollisionCircle())) {
-                MessageManager.getInstance().dispatchMessage(MessageCode.SWORD_HIT_ENEMY);
+                MessageManager.getInstance().dispatchMessage(MessageCode.SWORD_HIT_ENEMY, enemy.getPosition());
                 boolean isDead = enemy.onHit(sword.getDamage() * player.getDamageModifier());
                 if (isDead) {
                     enemyList.removeValue(enemy, true);
@@ -167,8 +167,7 @@ public class EnemyManager implements Telegraph {
         enemyList.end();
     }
 
-    public void checkForProjectileCollisions(DelayedRemovalArray<Projectile> projectiles,
-                                             ParticleEngine particleEngine) {
+    public void checkForProjectileCollisions(DelayedRemovalArray<Projectile> projectiles) {
         projectiles.begin();
         enemyList.begin();
         for (Enemy enemy : enemyList) {
@@ -177,9 +176,8 @@ public class EnemyManager implements Telegraph {
             }
             for (Projectile projectile : projectiles) {
                 if (Intersector.overlaps(enemy.getCollisionCircle(), projectile.getCollisionCircle())) {
-                    MessageManager.getInstance().dispatchMessage(MessageCode.PROJECTILE_HIT_ENEMY);
+                    MessageManager.getInstance().dispatchMessage(MessageCode.PROJECTILE_HIT_ENEMY, enemy.getPosition());
                     boolean isDead = enemy.onHit(projectile.getDamage() * player.getDamageModifier());
-                    bloodSplash(particleEngine, enemy);
                     if (isDead) {
                         enemyList.removeValue(enemy, true);
                         MessageManager.getInstance().dispatchMessage(MessageCode.ENEMY_DIED, enemy.getPosition());
@@ -192,11 +190,6 @@ public class EnemyManager implements Telegraph {
         enemyList.end();
     }
 
-    private void bloodSplash(ParticleEngine particleEngine, Enemy enemy) {
-        for (int i = 0; i < 4; i++) {
-            particleEngine.addParticle(new BloodParticle(enemy.position.x, enemy.position.y));
-        }
-    }
     public void drawDebug(ShapeRenderer shapeRenderer) {
         for (Enemy enemy : enemyList) {
             enemy.drawDebug(shapeRenderer);

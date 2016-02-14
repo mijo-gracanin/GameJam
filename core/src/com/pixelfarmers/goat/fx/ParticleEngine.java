@@ -16,7 +16,10 @@ public class ParticleEngine implements Telegraph {
 
     public ParticleEngine() {
         particles = new ArrayList<Particle>();
-        MessageManager.getInstance().addListener(this, MessageCode.ENEMY_DIED);
+        MessageManager.getInstance().addListeners(this,
+                MessageCode.ENEMY_DIED,
+                MessageCode.PROJECTILE_HIT_ENEMY,
+                MessageCode.SWORD_HIT_ENEMY);
     }
 
     public void update(float delta) {
@@ -56,9 +59,15 @@ public class ParticleEngine implements Telegraph {
 
     @Override
     public boolean handleMessage(Telegram msg) {
-        if(msg.message == MessageCode.ENEMY_DIED) {
-            Vector2 pos = (Vector2) msg.extraInfo;
-            addParticle(new BloodParticle(pos.x, pos.y));
+        int code = msg.message;
+        Vector2 position = (Vector2) msg.extraInfo;
+        if (code == MessageCode.ENEMY_DIED) {
+            addParticle(new BloodParticle(position.x, position.y));
+            return true;
+        } else if (code == MessageCode.SWORD_HIT_ENEMY || code == MessageCode.PROJECTILE_HIT_ENEMY) {
+            for (int i = 0; i < 4; i++) {
+                addParticle(new BloodParticle(position.x, position.y));
+            }
             return true;
         }
         return false;
