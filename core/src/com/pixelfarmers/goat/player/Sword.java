@@ -74,7 +74,6 @@ public class Sword implements PhysicalEntity {
 
     @Override
     public void setOrientation(float orientation) {
-        return;
     }
 
     @Override

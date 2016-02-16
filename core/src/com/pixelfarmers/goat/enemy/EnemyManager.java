@@ -81,8 +81,7 @@ public class EnemyManager implements Telegraph {
 
     private Vector2 calculateCultistLocation(int x, int y, int xOffset) {
         Vector2 position = Tile.tileToPosition(x, y);
-        Vector2 offseted = new Vector2(position.x + xOffset, position.y);
-        return offseted;
+        return new Vector2(position.x + xOffset, position.y);
     }
 
     private void addCultistSteeringBehavior(Cultist cultist, Vector2 p1) {

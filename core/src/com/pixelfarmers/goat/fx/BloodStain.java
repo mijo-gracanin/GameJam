@@ -20,10 +20,6 @@ public class BloodStain {
         this.texture = textures[MathUtils.random(1)];
     }
 
-    public void update(float delta) {
-
-    }
-
     public void render(SpriteBatch batch) {
         batch.draw(texture, x, y);
     }

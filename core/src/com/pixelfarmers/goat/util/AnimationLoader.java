@@ -37,8 +37,7 @@ public class AnimationLoader {
 
     public TextureRegion getSingleTexture(String baseFilename, int width, int height, int col, int row) {
         TextureRegion[][] textureRegions = TextureRegion.split(new Texture(baseFilename + ".png"), width, height);
-        TextureRegion textureRegion = textureRegions[row][col];
-        return textureRegion;
+        return textureRegions[row][col];
     }
 
 }

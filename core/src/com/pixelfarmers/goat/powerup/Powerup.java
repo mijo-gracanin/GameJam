@@ -36,9 +36,6 @@ public class Powerup {
         this.collisionCircle = new Circle(position, Tile.TILE_SIZE);
     }
 
-    public void update(float delta) {
-    }
-
     public void render(SpriteBatch batch) {
         batch.draw(texture, position.x, position.y);
     }
