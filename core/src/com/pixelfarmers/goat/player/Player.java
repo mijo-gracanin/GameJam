@@ -27,45 +27,38 @@ import com.pixelfarmers.goat.powerup.Powerup;
 
 public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
-    public interface OnHitListener {
-        void onHit(int newHitPoints);
-    }
-
-    public final Sword sword;
-
     private static final float COLLISION_RADIUS = 8f;
     private static final float MOVEMENT_SPEED = 100f;
     private static final float SPEED_DECREASE_FACTOR = 0.8f;
     private static float INVINCIBILITY_DURATION = 1.2f;
     private static float STUN_DURATION = INVINCIBILITY_DURATION * 0.5f;
-    private final Circle collisionCircle;
 
+    AssetManager assetManager;
+
+    public final Sword sword;
+
+    private final Circle collisionCircle;
     private float orientationInRadians = 0;
     private Vector2 movementDirection = new Vector2();
     private Vector2 position;
-    private OnHitListener onHitListener;
-
-    private int maxHitPoints;
-    private int hitPoints;
 
     private Animation walkingAnimation;
     float animationStateTime;
     private Animation idleAnimation;
 
+    private int maxHitPoints;
+    private Integer hitPoints;
     private boolean isInvincible = false;
     private boolean isStunned = false;
-
-    AssetManager assetManager;
 
     private int damageModifier = 1;
     private float speedModifier = 1;
     private float damagePowerupTimeLeft = 0;
     private float speedPowerupTimeLeft = 0;
 
-    public Player(AssetManager assetManager, Vector2 startingPosition, OnHitListener onHitListener) {
+    public Player(AssetManager assetManager, Vector2 startingPosition) {
         MessageManager.getInstance().addListener(this, MessageCode.POWERUP_PICKUP);
         this.assetManager = assetManager;
-        this.onHitListener = onHitListener;
         position = startingPosition;
         collisionCircle = new Circle(position.x, position.y, COLLISION_RADIUS);
         sword = new Sword(position.cpy(), assetManager);
@@ -90,7 +83,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
             case HEALTH:
                 if(hitPoints < maxHitPoints) {
                     hitPoints++;
-                    onHitListener.onHit(hitPoints);
+                    MessageManager.getInstance().dispatchMessage(MessageCode.PLAYER_HEALTH_UPDATE, hitPoints);
                 }
                 break;
             case DAMAGE:
@@ -161,7 +154,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
         setStunTimer();
 
         hitPoints -= damage;
-        onHitListener.onHit(hitPoints);
+        MessageManager.getInstance().dispatchMessage(MessageCode.PLAYER_HEALTH_UPDATE, hitPoints);
         return hitPoints <= 0;
     }
 

@@ -111,7 +111,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     @Override
     public void show() {
-
+        MessageManager.getInstance().addListeners(this, MessageCode.PLAYER_HEALTH_UPDATE);
         loadAssets();
 
         camera = new OrthographicCamera();
@@ -171,12 +171,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private void init() {
         currentLevel = new TiledMapLevelLoader("map.tmx").generate();
 
-        player = new Player(assetManager, currentLevel.getPlayerStartPosition(), new Player.OnHitListener() {
-            @Override
-            public void onHit(int newHitPoints) {
-                heartsContainer.setCount(newHitPoints);
-            }
-        });
+        player = new Player(assetManager, currentLevel.getPlayerStartPosition());
 
         enemyManager = new EnemyManager(player, currentLevel.getWorld());
         SpawnerFactory.Parameters spawnParameters = new SpawnerFactory.Parameters(256, 10);
@@ -244,8 +239,8 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         queryKeyboardInput();
         clearScreen();
         update(delta);
-        draw(delta);
-        drawDebug(delta);
+        draw();
+        drawDebug();
         stage.act(delta);
         stage.draw();
     }
@@ -260,7 +255,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         }
     }
 
-    private void draw(float delta) {
+    private void draw() {
         batch.setProjectionMatrix(camera.projection);
         batch.setTransformMatrix(camera.view);
 
@@ -278,7 +273,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         batch.end();
     }
 
-    private void drawDebug(float delta) {
+    private void drawDebug() {
         shapeRenderer.setProjectionMatrix(camera.projection);
         shapeRenderer.setTransformMatrix(camera.view);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -425,6 +420,12 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     @Override
     public boolean handleMessage(Telegram msg) {
+        Gdx.app.log("DISI", "got msg");
+        if(msg.message == MessageCode.PLAYER_HEALTH_UPDATE) {
+            Integer newHitPoints = (Integer) msg.extraInfo;
+            Gdx.app.log("DISI", newHitPoints+"");
+            heartsContainer.setCount(newHitPoints);
+        }
         return false;
     }
 }
