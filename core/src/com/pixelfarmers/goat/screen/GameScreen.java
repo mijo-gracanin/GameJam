@@ -14,7 +14,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -25,12 +24,6 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -42,14 +35,8 @@ import com.pixelfarmers.goat.enemy.EnemyManager;
 import com.pixelfarmers.goat.enemy.Goat;
 import com.pixelfarmers.goat.enemy.spawner.SpawnerFactory;
 import com.pixelfarmers.goat.fx.ParticleEngine;
-import com.pixelfarmers.goat.hud.Hearts;
-import com.pixelfarmers.goat.intro.CameraFocus;
-import com.pixelfarmers.goat.intro.CameraPan;
-import com.pixelfarmers.goat.intro.Cinematic;
+import com.pixelfarmers.goat.hud.Hud;
 import com.pixelfarmers.goat.intro.CinematicBlock;
-import com.pixelfarmers.goat.intro.CompoundCinematic;
-import com.pixelfarmers.goat.intro.TextCinematic;
-import com.pixelfarmers.goat.intro.TextDrawer;
 import com.pixelfarmers.goat.level.CollisionDetection;
 import com.pixelfarmers.goat.level.Level;
 import com.pixelfarmers.goat.level.LevelRenderer;
@@ -58,9 +45,6 @@ import com.pixelfarmers.goat.player.Player;
 import com.pixelfarmers.goat.powerup.PowerupHandler;
 import com.pixelfarmers.goat.util.PFMathUtils;
 import com.pixelfarmers.goat.player.Projectile;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameScreen extends ScreenAdapter implements Telegraph {
 
@@ -84,17 +68,14 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private EnemyManager enemyManager;
 
     private BitmapFont bitmapFont;
-    private Stage stage;
-    private Hearts heartsContainer;
 
     private CinematicBlock introCinematic;
-    private boolean isFadingOut = false;
-    private Texture whiteTexture;
-    private Image whiteImage;
 
     Game game;
 
     private Music music;
+
+    Hud hud;
 
     public GameScreen(Game game) {
         this.game = game;
@@ -106,13 +87,15 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
-        stage.getViewport().update(width, height, true);
+        hud.resize(width, height);
     }
 
     @Override
     public void show() {
-        MessageManager.getInstance().addListeners(this, MessageCode.PLAYER_HEALTH_UPDATE);
+        MessageManager.getInstance().addListeners(this, MessageCode.OPEN_WIN_SCREEN, MessageCode.CINEMATIC_OVER);
         loadAssets();
+
+        hud = new Hud(WORLD_WIDTH, WORLD_HEIGHT);
 
         camera = new OrthographicCamera();
         camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
@@ -121,16 +104,10 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
-        stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
-        setupFog();
 
         new SoundPlayer(assetManager);
 
-        whiteTexture = assetManager.get(Textures.WHITE, Texture.class);
-        whiteImage = new Image(whiteTexture);
-
         levelRenderer = new LevelRenderer();
-        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Crosshair);
 
         music = assetManager.get("song.mp3", Music.class);
         music.setLooping(true);
@@ -163,11 +140,6 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         assetManager.finishLoading();
     }
 
-    private void setupFog() {
-        Image fog = new Image(assetManager.get(Textures.FOG, Texture.class));
-        stage.addActor(fog);
-    }
-
     private void init() {
         currentLevel = new TiledMapLevelLoader("map.tmx").generate();
 
@@ -180,53 +152,12 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         goat = new Goat(currentLevel.getGoatStartingPosition());
         goat.setSteeringBehavior(enemyManager.createGoatSteeringBehavior(goat));
 
-        heartsContainer = new Hearts(stage, WORLD_WIDTH, player);
-
-        final Skin uiSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-        final Group subtitlesContainer = new Group();
-        stage.addActor(subtitlesContainer);
-
-        TextDrawer textDrawer = new TextDrawer() {
-            @Override
-            public void drawText(String text) {
-                final Actor subtitles = new Label(text, uiSkin);
-                subtitlesContainer.clear();
-                subtitlesContainer.setPosition(32, 32);
-                subtitlesContainer.addActor(subtitles);
-            }
-
-            @Override
-            public void clear() {
-                subtitlesContainer.clear();
-            }
-        };
-
-        List<Cinematic> cinematicList = new ArrayList<Cinematic>();
-
-        Cinematic cameraFocus1 = new CameraFocus(3.0f, Level.GOAT_START_POSITION.x, Level.GOAT_START_POSITION.y);
-        Cinematic cameraFocus2 = new CameraFocus(3.0f, Level.GOAT_START_POSITION.x, Level.GOAT_START_POSITION.y);
-        Cinematic text1 = new TextCinematic(3.0f, 0.5f, "Evil cultists have kidnapped your goat ...", textDrawer);
-        Cinematic text2 = new TextCinematic(3.0f, 0.5f, "... and are planning to do a ritual sacrifice.", textDrawer);
-        Cinematic text3 = new TextCinematic(3.0f, 1.0f, "Save your goat.", textDrawer);
-        Cinematic cameraPan = new CameraPan(3.0f, Level.GOAT_START_POSITION, Level.PLAYER_START_POSITION, 0.1f, 1.5f);
-
-        cinematicList.add(new CompoundCinematic(cameraFocus1, text1));
-        cinematicList.add(new CompoundCinematic(cameraFocus2, text2));
-        cinematicList.add(new CompoundCinematic(cameraPan, text3));
-        cinematicList.add(cameraPan);
-
         enemyManager.pause();
-        introCinematic = new CinematicBlock(cinematicList, new CinematicBlock.CameraControl() {
-            @Override
-            public void returnCameraControl() {
-                MessageManager.getInstance().dispatchMessage(0, MessageCode.CINEMATIC_OVER);
-                camera.position.set(player.getPosition().x, player.getPosition().y, 0);
-                subtitlesContainer.clear();
-                enemyManager.resume();
-            }
-        });
+        introCinematic = hud.buildIntroCinematic();
 
         new PowerupHandler(assetManager);
+
+        hud.setup(assetManager);
     }
 
     @Override
@@ -241,8 +172,8 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         update(delta);
         draw();
         drawDebug();
-        stage.act(delta);
-        stage.draw();
+        hud.update(delta);
+        hud.draw();
     }
 
     private void queryKeyboardInput() {
@@ -291,17 +222,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         }
     }
 
-    float alpha = 0.0f;
-
     private void update(float delta) {
-        if (isFadingOut) {
-            whiteImage.setColor(Color.WHITE.r, Color.WHITE.g, Color.WHITE.b, alpha);
-            alpha += delta;
-            if (alpha > 2.0f) {
-                game.setScreen(new FinishScreen(assetManager));
-            }
-        }
-
         MessageManager.getInstance().update();
 
         checkForGameOver();
@@ -335,8 +256,6 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     private void onWin() {
         MessageManager.getInstance().dispatchMessage(MessageCode.ON_WIN);
-        stage.addActor(whiteImage);
-        isFadingOut = true;
     }
 
     private void updateCamera() {
@@ -420,12 +339,15 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     @Override
     public boolean handleMessage(Telegram msg) {
-        Gdx.app.log("DISI", "got msg");
-        if(msg.message == MessageCode.PLAYER_HEALTH_UPDATE) {
-            Integer newHitPoints = (Integer) msg.extraInfo;
-            Gdx.app.log("DISI", newHitPoints+"");
-            heartsContainer.setCount(newHitPoints);
+        if(msg.message == MessageCode.OPEN_WIN_SCREEN) {
+            game.setScreen(new FinishScreen(assetManager));
+            return true;
+        }
+        if(msg.message == MessageCode.CINEMATIC_OVER) {
+            camera.position.set(player.getPosition().x, player.getPosition().y, 0);
+            return true;
         }
         return false;
     }
+
 }

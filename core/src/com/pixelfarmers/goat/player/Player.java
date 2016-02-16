@@ -46,7 +46,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
     float animationStateTime;
     private Animation idleAnimation;
 
-    private int maxHitPoints;
+    private static int maxHitPoints;
     private Integer hitPoints;
     private boolean isInvincible = false;
     private boolean isStunned = false;
@@ -180,7 +180,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
         }, STUN_DURATION);
     }
 
-    public int getMaxHitPoints() {
+    public static int getMaxHitPoints() {
         return maxHitPoints;
     }
 

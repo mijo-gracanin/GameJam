@@ -259,6 +259,7 @@ public class EnemyManager implements Telegraph {
     @Override
     public boolean handleMessage(Telegram msg) {
         if(msg.message == MessageCode.CINEMATIC_OVER) {
+            resume();
             for(Cultist cultist : cultists) {
                 cultist.setSteeringBehavior(null);
             }

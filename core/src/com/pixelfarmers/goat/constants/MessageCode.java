@@ -14,5 +14,6 @@ public class MessageCode {
     public static final int PROJECTILE_SHOOT = 10;
     public static final int ON_WIN = 11;
     public static final int PLAYER_HEALTH_UPDATE = 12;
+    public static final int OPEN_WIN_SCREEN = 13;
 
 }
