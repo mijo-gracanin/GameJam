@@ -1,6 +1,7 @@
 package com.pixelfarmers.goat.player;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
@@ -53,7 +54,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     private boolean isInvincible = false;
     private boolean isStunned = false;
-    private boolean shouldDraw = true;
 
     AssetManager assetManager;
 
@@ -112,15 +112,25 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
     }
 
     public void update(float delta, Level currentLevel) {
+        handleInput();
+        updatePosition(delta, currentLevel);
         updatePowerups(delta);
+        sword.update(position.cpy(), orientationInRadians - (MathUtils.PI / 2), delta);
+    }
+
+    private void handleInput() {
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) castSword();
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) goLeft();
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) goRight();
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) goUp();
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) goDown();
+    }
+
+    private void updatePosition(float delta, Level currentLevel) {
         float dx = movementDirection.x * MOVEMENT_SPEED * speedModifier * delta;
         float dy = movementDirection.y * MOVEMENT_SPEED * speedModifier * delta;
-
         tryMovingHorizontally(currentLevel, dx);
         tryMovingVertically(currentLevel, dy);
-
-        sword.update(position.cpy(), orientationInRadians - (MathUtils.PI / 2), delta);
-
         movementDirection.scl(SPEED_DECREASE_FACTOR);
         collisionCircle.setPosition(position.x, position.y);
     }
@@ -207,7 +217,7 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     public void castSword() {
         if (!sword.isActive()) {
-            sword.castSword(position);
+            sword.cast(position);
         }
     }
 
@@ -240,9 +250,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
     }
 
     public void draw(Batch batch) {
-        if (!shouldDraw) {
-            return;
-        }
         sword.draw(batch);
         animationStateTime += Gdx.graphics.getDeltaTime();
         if (!isInvincible || shouldShowWhileInvincible()) {
@@ -274,12 +281,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
     }
 
     public void drawDebug(ShapeRenderer shapeRenderer) {
-        /*shapeRenderer.circle(position.x, position.y, collisionCircle.radius);
-        shapeRenderer.rect(position.x - WEAPON_WIDTH / 2, position.y - WEAPON_HEIGHT / 2,
-                WEAPON_WIDTH / 2, WEAPON_HEIGHT / 2,
-                WEAPON_WIDTH, WEAPON_HEIGHT,
-                1.0f, 1.0f,
-                orientationInRadians * MathUtils.radDeg);*/
         sword.drawDebug(shapeRenderer);
     }
 
@@ -341,7 +342,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     @Override
     public void setTagged(boolean tagged) {
-
     }
 
     @Override
@@ -351,7 +351,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     @Override
     public void setZeroLinearSpeedThreshold(float value) {
-
     }
 
     @Override
@@ -361,7 +360,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     @Override
     public void setMaxLinearSpeed(float maxLinearSpeed) {
-
     }
 
     @Override
@@ -371,7 +369,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     @Override
     public void setMaxLinearAcceleration(float maxLinearAcceleration) {
-
     }
 
     @Override
@@ -381,7 +378,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     @Override
     public void setMaxAngularSpeed(float maxAngularSpeed) {
-
     }
 
     @Override
@@ -391,6 +387,6 @@ public class Player implements PhysicalEntity, Steerable<Vector2>, Telegraph {
 
     @Override
     public void setMaxAngularAcceleration(float maxAngularAcceleration) {
-
     }
+
 }

@@ -117,7 +117,7 @@ public class Sword implements PhysicalEntity {
         swordLength = 0;
     }
 
-    public void castSword(Vector2 startPosition) {
+    public void cast(Vector2 startPosition) {
         position = startPosition.cpy();
         isActive = true;
         isGrowing = true;

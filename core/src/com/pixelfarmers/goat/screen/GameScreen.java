@@ -87,8 +87,6 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private Stage stage;
     private Hearts heartsContainer;
 
-    private Texture projectileTexture;
-
     private CinematicBlock introCinematic;
     private boolean isFadingOut = false;
     private Texture whiteTexture;
@@ -103,7 +101,6 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         bitmapFont = new BitmapFont();
         particleEngine = new ParticleEngine();
         bitmapFont.setColor(Color.WHITE);
-        projectileTexture = new Texture("magic.png");
     }
 
     @Override
@@ -261,15 +258,6 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         if (!introCinematic.isFinished()) {
             return;
         }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            player.castSword();
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) player.goLeft();
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) player.goRight();
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) player.goUp();
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) player.goDown();
     }
 
     private void draw(float delta) {
@@ -404,7 +392,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
                         return true;
                     }
                     Projectile projectile =
-                            new Projectile(projectileTexture,
+                            new Projectile(assetManager.get(Textures.PROJECTILE, Texture.class),
                                     player.getPosition().cpy(),
                                     player.getLinearVelocity(),
                                     player.getOrientation() - MathUtils.PI / 2);
