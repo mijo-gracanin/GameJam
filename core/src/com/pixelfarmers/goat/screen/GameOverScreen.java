@@ -1,9 +1,9 @@
 package com.pixelfarmers.goat.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.pixelfarmers.goat.constants.MessageCode;
 
 public class GameOverScreen extends ScreenAdapter {
 
@@ -18,7 +19,6 @@ public class GameOverScreen extends ScreenAdapter {
     private static final int WORLD_HEIGHT = 480;
     private static String GAME_OVER_MESSAGE = "Game over. Tap R to restart";
 
-    Game game;
     private BitmapFont bitmapFont;
     private SpriteBatch spriteBatch;
     private GlyphLayout glyphLayout;
@@ -26,8 +26,7 @@ public class GameOverScreen extends ScreenAdapter {
     private OrthographicCamera camera;
     private FitViewport viewport;
 
-    public GameOverScreen(Game game) {
-        this.game = game;
+    public GameOverScreen() {
         bitmapFont = new BitmapFont(Gdx.files.internal("ui/Xeliard.fnt"));
         glyphLayout = new GlyphLayout();
         bitmapFont.setColor(Color.WHITE);
@@ -60,7 +59,7 @@ public class GameOverScreen extends ScreenAdapter {
         }
 
         if(Gdx.input.isKeyPressed(Input.Keys.R)) {
-            game.setScreen(new GameScreen(game));
+            MessageManager.getInstance().dispatchMessage(MessageCode.OPEN_GAME_SCREEN);
         }
     }
 

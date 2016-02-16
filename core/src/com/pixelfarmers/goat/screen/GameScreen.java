@@ -1,6 +1,5 @@
 package com.pixelfarmers.goat.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -52,10 +51,11 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     public static final float WORLD_HEIGHT = 360;
 
     private AssetManager assetManager;
-    private ShapeRenderer shapeRenderer;
     private Viewport viewport;
     private Camera camera;
+    private ShapeRenderer shapeRenderer;
     private SpriteBatch batch;
+
     private Player player;
     private Goat goat;
     private Level currentLevel;
@@ -63,15 +63,10 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private ParticleEngine particleEngine;
     private DelayedRemovalArray<Projectile> projectiles = new DelayedRemovalArray<Projectile>();
     private EnemyManager enemyManager;
+
     private CinematicBlock introCinematic;
-    private Game game;
     private Hud hud;
     private MusicPlayer musicPlayer;
-
-    public GameScreen(Game game) {
-        this.game = game;
-        particleEngine = new ParticleEngine();
-    }
 
     @Override
     public void resize(int width, int height) {
@@ -81,25 +76,29 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     @Override
     public void show() {
-        MessageManager.getInstance().addListeners(this, MessageCode.OPEN_WIN_SCREEN, MessageCode.CINEMATIC_END);
+        MessageManager.getInstance().addListeners(this, MessageCode.CINEMATIC_END);
         loadAssets();
+        particleEngine = new ParticleEngine();
         hud = new Hud(WORLD_WIDTH, WORLD_HEIGHT);
         setupCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
         new SoundPlayer(assetManager);
-        levelRenderer = new LevelRenderer();
         musicPlayer = new MusicPlayer(assetManager);
         musicPlayer.play();
         setupInputProcessor();
-        init();
-    }
-
-    private void setupCamera() {
-        camera = new OrthographicCamera();
-        camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
-        camera.update();
+        currentLevel = new TiledMapLevelLoader("map.tmx").generate();
+        levelRenderer = new LevelRenderer(currentLevel);
+        player = new Player(assetManager, currentLevel.getPlayerStartPosition());
+        enemyManager = new EnemyManager(player, currentLevel.getWorld());
+        SpawnerFactory.Parameters spawnParameters = new SpawnerFactory.Parameters(256, 10);
+        enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, currentLevel, spawnParameters));
+        goat = new Goat(currentLevel.getGoatStartingPosition());
+        goat.setSteeringBehavior(enemyManager.createGoatSteeringBehavior(goat));
+        introCinematic = hud.buildIntroCinematic();
+        new PowerupHandler(assetManager);
+        hud.setup(assetManager);
     }
 
     private void loadAssets() {
@@ -124,22 +123,10 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         assetManager.finishLoading();
     }
 
-    private void init() {
-        currentLevel = new TiledMapLevelLoader("map.tmx").generate();
-        player = new Player(assetManager, currentLevel.getPlayerStartPosition());
-        enemyManager = new EnemyManager(player, currentLevel.getWorld());
-        SpawnerFactory.Parameters spawnParameters = new SpawnerFactory.Parameters(256, 10);
-        enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, currentLevel, spawnParameters));
-        goat = new Goat(currentLevel.getGoatStartingPosition());
-        goat.setSteeringBehavior(enemyManager.createGoatSteeringBehavior(goat));
-        introCinematic = hud.buildIntroCinematic();
-        new PowerupHandler(assetManager);
-        hud.setup(assetManager);
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
+    private void setupCamera() {
+        camera = new OrthographicCamera();
+        camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
+        camera.update();
     }
 
     @Override
@@ -157,6 +144,14 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.HOME)) {
+            onWin();
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.END)) {
+            onGameOver();
+        }
     }
 
     private void draw() {
@@ -164,7 +159,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         batch.setTransformMatrix(camera.view);
         batch.begin();
 
-        levelRenderer.render(batch, currentLevel);
+        levelRenderer.render(batch);
         enemyManager.draw(batch);
         player.draw(batch);
         goat.draw(batch);
@@ -183,15 +178,11 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
         player.drawDebug(shapeRenderer);
         enemyManager.drawDebug(shapeRenderer);
-        drawDebugProjectiles(shapeRenderer);
-
-        shapeRenderer.end();
-    }
-
-    private void drawDebugProjectiles(ShapeRenderer shapeRenderer) {
         for (Projectile projectile: projectiles) {
             projectile.drawDebug(shapeRenderer);
         }
+
+        shapeRenderer.end();
     }
 
     private void update(float delta) {
@@ -210,6 +201,20 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         introCinematic.update(delta, camera);
     }
 
+    private void checkForGameOver() {
+        if(!player.isAlive()) {
+            onGameOver();
+        }
+    }
+
+    private void onGameOver() {
+        MessageManager.getInstance().dispatchMessage(MessageCode.OPEN_GAMEOVER_SCREEN);
+    }
+
+    private void onWin() {
+        MessageManager.getInstance().dispatchMessage(MessageCode.ON_WIN);
+    }
+
     private void updateGoat(float delta) {
         if(Intersector.overlaps(goat.getCollisionCircle(), player.getCollisionCircle())) {
             MessageManager.getInstance().dispatchMessage(0, MessageCode.GOAT_START_FOLLOW);
@@ -220,23 +225,9 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         goat.update(delta);
     }
 
-    private void onWin() {
-        MessageManager.getInstance().dispatchMessage(MessageCode.ON_WIN);
-    }
-
     private void updateCamera() {
         camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();
-    }
-
-    private void checkForGameOver() {
-        if(!player.isAlive()) {
-            onGameOver();
-        }
-    }
-
-    private void onGameOver() {
-        game.setScreen(new GameOverScreen(game));
     }
 
     private void updateProjectiles(float delta) {
@@ -298,22 +289,18 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     }
 
     @Override
-    public void hide() {
-        musicPlayer.stop();
-        assetManager.dispose();
-    }
-
-    @Override
     public boolean handleMessage(Telegram msg) {
-        if(msg.message == MessageCode.OPEN_WIN_SCREEN) {
-            game.setScreen(new FinishScreen(assetManager));
-            return true;
-        }
         if(msg.message == MessageCode.CINEMATIC_END) {
             camera.position.set(player.getPosition().x, player.getPosition().y, 0);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void hide() {
+        musicPlayer.stop();
+        assetManager.dispose();
     }
 
 }

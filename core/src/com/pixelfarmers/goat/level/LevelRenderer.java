@@ -22,9 +22,11 @@ public class LevelRenderer implements Telegraph {
     private TextureRegion[] textures;
     private List<BloodStain> bloodStains;
     public Array<Powerup> powerups;
+    Level level;
 
-    public LevelRenderer() {
+    public LevelRenderer(Level level) {
         MessageManager.getInstance().addListeners(this, MessageCode.ENEMY_DIED, MessageCode.POWERUP_ADDED, MessageCode.POWERUP_PICKUP);
+        this.level = level;
         Texture tileset = new Texture("tileset.png");
         int heightInTiles = tileset.getHeight() / Tile.TILE_SIZE;
         int widthInTiles = tileset.getWidth() / Tile.TILE_SIZE;
@@ -40,7 +42,7 @@ public class LevelRenderer implements Telegraph {
         powerups = new Array<Powerup>();
     }
 
-    public void render(SpriteBatch batch, Level level) {
+    public void render(SpriteBatch batch) {
         for (int col = 0; col < level.width(); col++) {
             for (int row = 0; row < level.height(); row++) {
                 Tile tile = level.getTile(col, row);

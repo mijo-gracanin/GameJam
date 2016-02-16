@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.pixelfarmers.goat.GameSettings;
+import com.pixelfarmers.goat.constants.MessageCode;
 
 
 public class MainMenuScreen extends ScreenAdapter {
@@ -37,11 +39,6 @@ public class MainMenuScreen extends ScreenAdapter {
     private Texture creditsButtonPressTexture;
     private Skin gameUISkin;
     private BitmapFont font;
-    private final Game game;
-
-    public MainMenuScreen(Game game) {
-        this.game = game;
-    }
 
     public void show() {
         stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
@@ -72,7 +69,7 @@ public class MainMenuScreen extends ScreenAdapter {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 GameSettings.getInstance().setDifficulty(GameSettings.Difficulty.NORMAL);
-                game.setScreen(new GameScreen(game));
+                MessageManager.getInstance().dispatchMessage(MessageCode.OPEN_GAME_SCREEN);
             }
         });
     }
@@ -89,7 +86,7 @@ public class MainMenuScreen extends ScreenAdapter {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 GameSettings.getInstance().setDifficulty(GameSettings.Difficulty.HARDCORE);
-                game.setScreen(new GameScreen(game));
+                MessageManager.getInstance().dispatchMessage(MessageCode.OPEN_GAME_SCREEN);
             }
         });
     }

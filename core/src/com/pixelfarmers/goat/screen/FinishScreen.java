@@ -3,7 +3,6 @@ package com.pixelfarmers.goat.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,10 +15,10 @@ public class FinishScreen extends ScreenAdapter {
     private Stage stage;
     private Image background, white;
 
-    public FinishScreen(AssetManager assetManager) {
+    public FinishScreen() {
         Texture backgroundTexture = new Texture(Gdx.files.internal("win_bg.png"));
         background = new Image(backgroundTexture);
-        white = new Image(assetManager.get(Textures.WHITE, Texture.class));
+        white = new Image(new Texture(Gdx.files.internal(Textures.WHITE)));
     }
 
     @Override
