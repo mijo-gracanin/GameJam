@@ -95,6 +95,8 @@ public class Hud implements Telegraph {
     }
 
     public CinematicBlock buildIntroCinematic() {
+        MessageManager.getInstance().dispatchMessage(MessageCode.CINEMATIC_START);
+
         final Skin uiSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         final Group subtitlesContainer = new Group();
         stage.addActor(subtitlesContainer);
@@ -131,7 +133,7 @@ public class Hud implements Telegraph {
         return new CinematicBlock(cinematicList, new CinematicBlock.CameraControl() {
             @Override
             public void returnCameraControl() {
-                MessageManager.getInstance().dispatchMessage(0, MessageCode.CINEMATIC_OVER);
+                MessageManager.getInstance().dispatchMessage(0, MessageCode.CINEMATIC_END);
                 subtitlesContainer.clear();
             }
         });

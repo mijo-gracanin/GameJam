@@ -24,8 +24,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.pixelfarmers.goat.constants.MessageCode;
 import com.pixelfarmers.goat.enemy.spawner.EnemySpawner;
-import com.pixelfarmers.goat.fx.BloodParticle;
-import com.pixelfarmers.goat.fx.ParticleEngine;
 import com.pixelfarmers.goat.util.Box2dRaycastCollisionDetector;
 import com.pixelfarmers.goat.level.Tile;
 import com.pixelfarmers.goat.player.Player;
@@ -42,7 +40,7 @@ public class EnemyManager implements Telegraph {
     private boolean paused = false;
 
     public EnemyManager(Player player, World world) {
-        MessageManager.getInstance().addListener(this, MessageCode.CINEMATIC_OVER);
+        MessageManager.getInstance().addListeners(this, MessageCode.CINEMATIC_END, MessageCode.CINEMATIC_START);
         this.player = player;
         enemyList = new DelayedRemovalArray<Enemy>();
         cultists = new Array<Cultist>();
@@ -258,13 +256,19 @@ public class EnemyManager implements Telegraph {
 
     @Override
     public boolean handleMessage(Telegram msg) {
-        if(msg.message == MessageCode.CINEMATIC_OVER) {
+        if(msg.message == MessageCode.CINEMATIC_END) {
             resume();
             for(Cultist cultist : cultists) {
                 cultist.setSteeringBehavior(null);
             }
             return true;
         }
+
+        if(msg.message == MessageCode.CINEMATIC_START) {
+            pause();
+            return true;
+        }
+
         return false;
     }
 

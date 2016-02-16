@@ -27,6 +27,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.pixelfarmers.goat.MusicPlayer;
 import com.pixelfarmers.goat.SoundPlayer;
 import com.pixelfarmers.goat.constants.MessageCode;
 import com.pixelfarmers.goat.constants.Sounds;
@@ -56,32 +57,21 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
     private Viewport viewport;
     private Camera camera;
     private SpriteBatch batch;
-
     private Player player;
     private Goat goat;
-
     private Level currentLevel;
     private LevelRenderer levelRenderer;
     private ParticleEngine particleEngine;
     private DelayedRemovalArray<Projectile> projectiles = new DelayedRemovalArray<Projectile>();
-
     private EnemyManager enemyManager;
-
-    private BitmapFont bitmapFont;
-
     private CinematicBlock introCinematic;
-
-    Game game;
-
-    private Music music;
-
-    Hud hud;
+    private Game game;
+    private Hud hud;
+    private MusicPlayer musicPlayer;
 
     public GameScreen(Game game) {
         this.game = game;
-        bitmapFont = new BitmapFont();
         particleEngine = new ParticleEngine();
-        bitmapFont.setColor(Color.WHITE);
     }
 
     @Override
@@ -92,34 +82,30 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     @Override
     public void show() {
-        MessageManager.getInstance().addListeners(this, MessageCode.OPEN_WIN_SCREEN, MessageCode.CINEMATIC_OVER);
+        MessageManager.getInstance().addListeners(this, MessageCode.OPEN_WIN_SCREEN, MessageCode.CINEMATIC_END);
         loadAssets();
-
         hud = new Hud(WORLD_WIDTH, WORLD_HEIGHT);
-
-        camera = new OrthographicCamera();
-        camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
-        camera.update();
-
+        setupCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
-
         new SoundPlayer(assetManager);
-
         levelRenderer = new LevelRenderer();
-
-        music = assetManager.get("song.mp3", Music.class);
-        music.setLooping(true);
-        music.setVolume(0.5f);
-        music.play();
+        musicPlayer = new MusicPlayer(assetManager);
+        musicPlayer.play();
         setupInputProcessor();
-
         init();
+    }
+
+    private void setupCamera() {
+        camera = new OrthographicCamera();
+        camera.position.set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 0);
+        camera.update();
     }
 
     private void loadAssets() {
         assetManager = new AssetManager();
+
         assetManager.load(Textures.CHARACTER, Texture.class);
         assetManager.load(Textures.PROJECTILE, Texture.class);
         assetManager.load(Textures.HEALTH_POWERUP, Texture.class);
@@ -134,29 +120,21 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         assetManager.load(Sounds.SWORD_HIT, Sound.class);
         assetManager.load(Sounds.PAIN, Sound.class);
         assetManager.load(Sounds.FADEOUT_NOISE, Sound.class);
-
-        assetManager.load("song.mp3", Music.class);
+        assetManager.load(Sounds.MUSIC, Music.class);
 
         assetManager.finishLoading();
     }
 
     private void init() {
         currentLevel = new TiledMapLevelLoader("map.tmx").generate();
-
         player = new Player(assetManager, currentLevel.getPlayerStartPosition());
-
         enemyManager = new EnemyManager(player, currentLevel.getWorld());
         SpawnerFactory.Parameters spawnParameters = new SpawnerFactory.Parameters(256, 10);
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, currentLevel, spawnParameters));
-
         goat = new Goat(currentLevel.getGoatStartingPosition());
         goat.setSteeringBehavior(enemyManager.createGoatSteeringBehavior(goat));
-
-        enemyManager.pause();
         introCinematic = hud.buildIntroCinematic();
-
         new PowerupHandler(assetManager);
-
         hud.setup(assetManager);
     }
 
@@ -180,23 +158,18 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
-
-        if (!introCinematic.isFinished()) {
-            return;
-        }
     }
 
     private void draw() {
         batch.setProjectionMatrix(camera.projection);
         batch.setTransformMatrix(camera.view);
-
         batch.begin();
+
         levelRenderer.render(batch, currentLevel);
         enemyManager.draw(batch);
         player.draw(batch);
         goat.draw(batch);
         particleEngine.draw(batch);
-
         for (Projectile projectile: projectiles) {
             projectile.draw(batch);
         }
@@ -224,22 +197,16 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     private void update(float delta) {
         MessageManager.getInstance().update();
-
         checkForGameOver();
-
         GdxAI.getTimepiece().update(delta);
-
         player.update(delta, currentLevel);
         updateGoat(delta);
         updateProjectiles(delta);
-
         CollisionDetection.checkPlayerPowerupCollisions(player, levelRenderer.powerups);
         enemyManager.checkForProjectileCollisions(projectiles);
         enemyManager.checkForSwordCollisions(player.sword);
-
         enemyManager.update(delta);
         particleEngine.update(delta);
-
         updateCamera();
         introCinematic.update(delta, camera);
     }
@@ -333,7 +300,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
 
     @Override
     public void hide() {
-        music.stop();
+        musicPlayer.stop();
         assetManager.dispose();
     }
 
@@ -343,7 +310,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
             game.setScreen(new FinishScreen(assetManager));
             return true;
         }
-        if(msg.message == MessageCode.CINEMATIC_OVER) {
+        if(msg.message == MessageCode.CINEMATIC_END) {
             camera.position.set(player.getPosition().x, player.getPosition().y, 0);
             return true;
         }

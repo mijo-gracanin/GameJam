@@ -56,13 +56,13 @@ public class LevelRenderer implements Telegraph {
         }
     }
 
-    public void addBloodStain(Vector2 pos) {
+    private void addBloodStain(Vector2 pos) {
         if (GameSettings.getInstance().getBloodLevel() == GameSettings.BloodLevel.NORMAL) {
             bloodStains.add(new BloodStain(pos.x, pos.y));
         }
     }
 
-    public void renderTile(SpriteBatch batch, Tile tile, float x, float y) {
+    private void renderTile(SpriteBatch batch, Tile tile, float x, float y) {
         batch.draw(textures[tile.tilesetIndex - 1], x, y);
     }
 
