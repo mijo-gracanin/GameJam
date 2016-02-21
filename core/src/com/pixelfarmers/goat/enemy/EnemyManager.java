@@ -42,15 +42,15 @@ public class EnemyManager implements Telegraph {
     public EnemyManager(Player player, World world) {
         MessageManager.getInstance().addListeners(this, MessageCode.CINEMATIC_END, MessageCode.CINEMATIC_START);
         this.player = player;
-        enemyList = new DelayedRemovalArray<Enemy>();
-        cultists = new Array<Cultist>();
-        this.enemySpawners = new Array<EnemySpawner>();
+        enemyList = new DelayedRemovalArray<>();
+        cultists = new Array<>();
+        this.enemySpawners = new Array<>();
         this.world = world;
         addCultists();
     }
 
     private void addCultists() {
-        Array<Vector2> cultistLocations = new Array<Vector2>();
+        Array<Vector2> cultistLocations = new Array<>();
 
         cultistLocations.add(calculateCultistLocation(103, 35, 0));
         cultistLocations.add(calculateCultistLocation(95, 35, 8));
@@ -85,11 +85,11 @@ public class EnemyManager implements Telegraph {
     }
 
     private void addCultistSteeringBehavior(Cultist cultist, Vector2 p1) {
-        Array<Vector2> waypoints = new Array<Vector2>();
+        Array<Vector2> waypoints = new Array<>();
         waypoints.add(p1);
         waypoints.add(cultist.getPosition());
-        LinePath<Vector2> path = new LinePath<Vector2>(waypoints, false);
-        FollowPath<Vector2, LinePath.LinePathParam> followSb = new FollowPath<Vector2, LinePath.LinePathParam>(cultist, path, 40);
+        LinePath<Vector2> path = new LinePath<>(waypoints, false);
+        FollowPath<Vector2, LinePath.LinePathParam> followSb = new FollowPath<>(cultist, path, 40);
         followSb.setArrivalTolerance(20);
         followSb.setDecelerationRadius(60);
 
@@ -108,8 +108,10 @@ public class EnemyManager implements Telegraph {
         enemySpawners.addAll(spawners);
     }
 
-    public void update(float delta) {
+    public void update(float delta, DelayedRemovalArray<Projectile> projectiles) {
         checkForPlayerCollisions();
+        checkForProjectileCollisions(projectiles);
+        checkForSwordCollisions(player.sword);
 
         for (int i = 0; i < enemyList.size; i++) {
             enemyList.get(i).update(delta);
@@ -197,8 +199,8 @@ public class EnemyManager implements Telegraph {
         Bat enemy = new Bat(position);
 
         BlendedSteering<Vector2> steering = createStandardSteeringBehaviors(enemy);
-        Pursue<Vector2> pursue = new Pursue<Vector2>(enemy, player);
-        steering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(pursue, 1));
+        Pursue<Vector2> pursue = new Pursue<>(enemy, player);
+        steering.add(new BlendedSteering.BehaviorAndWeight<>(pursue, 1));
         enemy.setSteeringBehavior(steering);
         return enemy;
     }
@@ -206,51 +208,51 @@ public class EnemyManager implements Telegraph {
     public Enemy createMummy(Vector2 position, Steerable<Vector2> player) {
         Enemy enemy = new Mummy(position);
         BlendedSteering<Vector2> steering = createStandardSteeringBehaviors(enemy);
-        Seek<Vector2> seek = new Seek<Vector2>(enemy, player);
-        steering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(seek, 1));
+        Seek<Vector2> seek = new Seek<>(enemy, player);
+        steering.add(new BlendedSteering.BehaviorAndWeight<>(seek, 1));
         enemy.setSteeringBehavior(steering);
         enemy.setSteeringBehavior(steering);
         return enemy;
     }
 
     private BlendedSteering<Vector2> createStandardSteeringBehaviors(Enemy enemy) {
-        BlendedSteering<Vector2> kamikazeSteering = new BlendedSteering<Vector2>(enemy);
+        BlendedSteering<Vector2> kamikazeSteering = new BlendedSteering<>(enemy);
 
         Proximity<Vector2> proximity = new KamikazeProximity();
         proximity.setOwner(enemy);
-        CollisionAvoidance<Vector2> separationSb = new CollisionAvoidance<Vector2>(enemy, proximity);
+        CollisionAvoidance<Vector2> separationSb = new CollisionAvoidance<>(enemy, proximity);
 
         Box2dRaycastCollisionDetector raycastCollisionDetector = new Box2dRaycastCollisionDetector(world);
-        RaycastObstacleAvoidance<Vector2> raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<Vector2>(enemy, createRayConfiguration(enemy));
+        RaycastObstacleAvoidance<Vector2> raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<>(enemy, createRayConfiguration(enemy));
         raycastObstacleAvoidanceSB.setRaycastCollisionDetector(raycastCollisionDetector);
 
-        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(separationSb, 1));
-        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(raycastObstacleAvoidanceSB, 4));
+        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<>(separationSb, 1));
+        kamikazeSteering.add(new BlendedSteering.BehaviorAndWeight<>(raycastObstacleAvoidanceSB, 4));
         return kamikazeSteering;
     }
 
     public BlendedSteering<Vector2> createGoatSteeringBehavior(Enemy goat) {
-        BlendedSteering<Vector2> steering = new BlendedSteering<Vector2>(goat);
+        BlendedSteering<Vector2> steering = new BlendedSteering<>(goat);
 
         Proximity<Vector2> proximity = new KamikazeProximity();
         proximity.setOwner(goat);
 
         Box2dRaycastCollisionDetector raycastCollisionDetector = new Box2dRaycastCollisionDetector(world);
-        RaycastObstacleAvoidance<Vector2> raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<Vector2>(goat, createGoatRayConfiguration(goat));
+        RaycastObstacleAvoidance<Vector2> raycastObstacleAvoidanceSB = new RaycastObstacleAvoidance<>(goat, createGoatRayConfiguration(goat));
         raycastObstacleAvoidanceSB.setRaycastCollisionDetector(raycastCollisionDetector);
 
-        Seek<Vector2> seek = new Seek<Vector2>(goat, player);
-        steering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(seek, 1));
-        steering.add(new BlendedSteering.BehaviorAndWeight<Vector2>(raycastObstacleAvoidanceSB, 2));
+        Seek<Vector2> seek = new Seek<>(goat, player);
+        steering.add(new BlendedSteering.BehaviorAndWeight<>(seek, 1));
+        steering.add(new BlendedSteering.BehaviorAndWeight<>(raycastObstacleAvoidanceSB, 2));
         return steering;
     }
 
     private RayConfiguration<Vector2> createGoatRayConfiguration(Enemy enemy) {
-        return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.getMaxLinearSpeed(), 40, 20 * MathUtils.degreesToRadians);
+        return new CentralRayWithWhiskersConfiguration<>(enemy, enemy.getMaxLinearSpeed(), 40, 20 * MathUtils.degreesToRadians);
     }
 
     private RayConfiguration<Vector2> createRayConfiguration(Enemy enemy) {
-        return new CentralRayWithWhiskersConfiguration<Vector2>(enemy, enemy.getMaxLinearSpeed(), 40, 35 * MathUtils.degreesToRadians);
+        return new CentralRayWithWhiskersConfiguration<>(enemy, enemy.getMaxLinearSpeed(), 40, 35 * MathUtils.degreesToRadians);
     }
 
     @Override

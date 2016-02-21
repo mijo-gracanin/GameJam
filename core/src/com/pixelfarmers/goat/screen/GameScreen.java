@@ -193,9 +193,7 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         updateGoat(delta);
         updateProjectiles(delta);
         CollisionDetection.checkPlayerPowerupCollisions(player, levelRenderer.powerups);
-        enemyManager.checkForProjectileCollisions(projectiles);
-        enemyManager.checkForSwordCollisions(player.sword);
-        enemyManager.update(delta);
+        enemyManager.update(delta, projectiles);
         particleEngine.update(delta);
         updateCamera();
         introCinematic.update(delta, camera);
