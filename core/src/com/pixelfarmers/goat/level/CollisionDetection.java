@@ -19,10 +19,32 @@ public class CollisionDetection {
     private static Array<Powerup> collidingPowerups = new Array<Powerup>();
 
     public static boolean isCharacterCollidingWall(PhysicalEntity character, Level level) {
-        List<Tile> overlappingTiles = findOverlappingTiles(character, level);
-        return !overlappingTiles.isEmpty();
+        for (int row = 0; row < level.height(); row++) {
+            for (int col = 0; col < level.width(); col++) {
+                Tile tile = level.getTile(col, row);
+                if (tile.isSolid && Intersector.overlaps(character.getCollisionCircle(), tile.boundingBox)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
+    public static void checkPlayerPowerupCollisions(Player player, Array<Powerup>powerups) {
+        for(Powerup powerup : powerups) {
+            if(Intersector.overlaps(powerup.getCollisionCircle(), player.getCollisionCircle())) {
+                collidingPowerups.add(powerup);
+            }
+        }
+
+        for(Powerup powerup : collidingPowerups) {
+            MessageManager.getInstance().dispatchMessage(0, MessageCode.POWERUP_PICKUP, powerup);
+        }
+
+        collidingPowerups.clear();
+    }
+
+    //TODO do we need this?
     private static List<Tile> findOverlappingTiles(PhysicalEntity character, Level level) {
         List<Tile> overlappingTiles = new ArrayList<Tile>();
 
@@ -41,6 +63,7 @@ public class CollisionDetection {
         return overlappingTiles;
     }
 
+    //TODO do we need this?
     private static void checkNeighbouringTilesForCollision(List<Tile> overlappingTiles, PhysicalEntity character, Level level, int startingRow, int staringCol) {
         for (int i = 0; i < 4; i++) {
             int col = staringCol + dx[i];
@@ -51,20 +74,6 @@ public class CollisionDetection {
                 overlappingTiles.add(tile);
             }
         }
-    }
-
-    public static void checkPlayerPowerupCollisions(Player player, Array<Powerup>powerups) {
-        for(Powerup powerup : powerups) {
-            if(Intersector.overlaps(powerup.getCollisionCircle(), player.getCollisionCircle())) {
-                collidingPowerups.add(powerup);
-            }
-        }
-
-        for(Powerup powerup : collidingPowerups) {
-            MessageManager.getInstance().dispatchMessage(0, MessageCode.POWERUP_PICKUP, powerup);
-        }
-
-        collidingPowerups.clear();
     }
 
 }
