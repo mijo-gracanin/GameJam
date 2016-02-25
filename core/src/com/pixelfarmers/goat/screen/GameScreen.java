@@ -96,9 +96,9 @@ public class GameScreen extends ScreenAdapter implements Telegraph {
         enemyManager.addSpawners(SpawnerFactory.createSpawnersForLevel(enemyManager, currentLevel, spawnParameters));
         goat = new Goat(currentLevel.getGoatStartingPosition());
         goat.setSteeringBehavior(enemyManager.createGoatSteeringBehavior(goat));
-        introCinematic = hud.buildIntroCinematic();
         new PowerupHandler(assetManager);
         hud.setup(assetManager);
+        introCinematic = hud.buildIntroCinematic();
     }
 
     private void loadAssets() {
